@@ -1,12 +1,19 @@
-#include <GL/glut.h>
+#include <math.h>
 #include <stdio.h>
+#include <iostream>
+#include <GL/glut.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "cenario.h"
 
 #define LINHAS_MAPA 7
-#define COLUNAS_MAPA 14 
+#define COLUNAS_MAPA 14
 
 bool visaoCima = false;
 int cameraY, cameraZ;
+
+GLuint texID[2];  // Vetor de texturas
 
 // Função de redimensionamento
 void redimensiona(int w, int h) {
@@ -24,19 +31,19 @@ void display() {
 
     glLoadIdentity();
 
-	if(visaoCima){
-		cameraY = 51;
-		cameraZ = -1;
-	} else{
-		cameraY = 41;
-		cameraZ = 35;
-	}
-	
-	gluLookAt(-2, cameraY, cameraZ,
+    if(visaoCima){
+        cameraY = 51;
+        cameraZ = -1;
+    } else{
+        cameraY = 41;
+        cameraZ = 35;
+    }
+
+    gluLookAt(-2, cameraY, cameraZ,
               -2, 0, -2,
               0, 1, 0);
 
-    desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4.0);
+    desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4.0, texID);
 
     glFlush();
     glutSwapBuffers();
@@ -46,8 +53,8 @@ void display() {
 void teclado(unsigned char key, int x, int y) {
     switch (key) {
         case 'p': case 'P':
-        	visaoCima = !visaoCima;
-	    break;
+            visaoCima = !visaoCima;
+            break;
         default:
             break;
     }
@@ -63,13 +70,20 @@ int main(int argc, char** argv) {
     glutCreateWindow("Bomberman 3D"); 							// Cria a janela
     glClearColor(0.4, 0.7, 1, 1.0); 							// Cor de fundo azul claro
     configurarIluminacao();										// Configura a iluminação
+    
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glGenTextures(2, texID);
+    
+    // Carrega as texturas no vetor
+    carregaTextura(texID[0], "imagens/grama_cima.jpg");  	// Textura 0 = parte de cima de grama
+    carregaTextura(texID[1], "imagens/grama_lateral.jpg");  // Textura 1 = lateral de grama
+    
+    
     glutDisplayFunc(display);								 	// Função para desenhar a janela
     glutReshapeFunc(redimensiona); 								// Função para redimensionar a janela
     glutKeyboardFunc(teclado); 									// Registra a função de teclado
     glEnable(GL_DEPTH_TEST); 									// Ativa o teste de profundidade
-    glEnable(GL_CULL_FACE);        								// Ativa o face culling
-    glCullFace(GL_BACK);           								// Descarta as faces traseiras
-    glFrontFace(GL_CCW);           								// Define sentido anti-horário como padrão
-    glutMainLoop(); 											// Inicia o loop principal
-    return 0;
+
+    glutMainLoop(); 												// Inicia o loop do GLUT
 }
