@@ -62,6 +62,7 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100); 							// Posição inicial da janela
     glutCreateWindow("Bomberman 3D"); 							// Cria a janela
     glClearColor(0.4, 0.7, 1, 1.0); 							// Cor de fundo azul claro
+    configurarIluminacao();										// Configura a iluminação
     glutDisplayFunc(display);								 	// Função para desenhar a janela
     glutReshapeFunc(redimensiona); 								// Função para redimensionar a janela
     glutKeyboardFunc(teclado); 									// Registra a função de teclado
