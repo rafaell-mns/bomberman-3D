@@ -55,7 +55,7 @@ void desenhaCubo(float x, float y, float z, float tamanho) {
 }
 
 // Desenha o terreno com os cubos
-void desenhaTerreno(float alturaBase, int linhas, int colunas, float tamanhoCubo) {
+void desenhaTerreno(int linhas, int colunas, float tamanhoCubo) {
     float inicioX = -colunas * tamanhoCubo / 2.0; // Centraliza o terreno no eixo X
     float inicioZ = -linhas * tamanhoCubo / 2.0;  // Centraliza o terreno no eixo Z
 
@@ -63,7 +63,7 @@ void desenhaTerreno(float alturaBase, int linhas, int colunas, float tamanhoCubo
         for (int j = 0; j < colunas; j++) {
             float x = inicioX + j * tamanhoCubo;
             float z = inicioZ + i * tamanhoCubo;
-            desenhaCubo(x, alturaBase, z, tamanhoCubo);
+            desenhaCubo(x, 0, z, tamanhoCubo);
         }
     }
 }

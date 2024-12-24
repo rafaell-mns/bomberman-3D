@@ -30,6 +30,8 @@
 	<AppType Value="CONSOLE"/>
 	<Files>
 		<File Name="main.cpp"/>
+		<File Name="cenario.h"/>
+		<File Name="cenario.cpp"/>
 	</Files>
 	<AppIcon>
 		0000010001003030000001002000A82500001600000028000000300000006000
