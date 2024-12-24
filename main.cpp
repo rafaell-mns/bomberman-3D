@@ -25,6 +25,7 @@ void redimensiona(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
+
 // Função de desenho
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -62,28 +63,36 @@ void teclado(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+
+
+void init() {
+    glClearColor(0.4, 0.7, 1, 1.0); // Cor de fundo azul claro
+    configurarIluminacao();         // Configura a iluminação
+    
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    
+    glGenTextures(2, texID);
+    
+    // Carrega as texturas no vetor
+    carregaTextura(texID[0], "imagens/grama_cima.jpg");   	// Textura 0 = parte de cima de grama
+    carregaTextura(texID[1], "imagens/grama_lateral.jpg");  // Textura 1 = lateral de grama
+    
+    glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
+}
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv); 										// Inicializa o GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 	// Modo de exibição com duplo buffer, RGB e Depth
     glutInitWindowSize(800, 500); 								// Tamanho da janela
     glutInitWindowPosition(100, 100); 							// Posição inicial da janela
     glutCreateWindow("Bomberman 3D"); 							// Cria a janela
-    glClearColor(0.4, 0.7, 1, 1.0); 							// Cor de fundo azul claro
-    configurarIluminacao();										// Configura a iluminação
-    
-    glEnable(GL_TEXTURE_2D);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glGenTextures(2, texID);
-    
-    // Carrega as texturas no vetor
-    carregaTextura(texID[0], "imagens/grama_cima.jpg");  	// Textura 0 = parte de cima de grama
-    carregaTextura(texID[1], "imagens/grama_lateral.jpg");  // Textura 1 = lateral de grama
-    
-    
+    init();
     glutDisplayFunc(display);								 	// Função para desenhar a janela
     glutReshapeFunc(redimensiona); 								// Função para redimensionar a janela
     glutKeyboardFunc(teclado); 									// Registra a função de teclado
-    glEnable(GL_DEPTH_TEST); 									// Ativa o teste de profundidade
 
     glutMainLoop(); 												// Inicia o loop do GLUT
 }
+
