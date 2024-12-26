@@ -4,7 +4,7 @@
 #include <GL/glut.h>
 #include <string>
 
-// Funções de carregamento e desenho das texturas
+// Funcoes de carregamento e desenho das texturas
 void carregaTextura(GLuint tex_id, std::string filePath);
 void desenhaFace(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texid);
 void desenhaCubo(float x, float y, float z, float tamanho, GLuint texID[]);

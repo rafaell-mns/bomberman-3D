@@ -3,6 +3,8 @@
 #include <GL/glut.h>
 #include "stb_image.h"
 
+// Carregar a textura
+// Fonte: https://youtu.be/AKz52bZb-9I?si=0dvG-fuKZ7fxSz9s
 void carregaTextura(GLuint tex_id, std::string filePath){
     unsigned char* imgData;
     int largura, altura, canais;
@@ -23,7 +25,7 @@ void carregaTextura(GLuint tex_id, std::string filePath){
     }
 }
 
-// Função para desenhar uma face com a textura
+// Funcao para desenhar uma face com a textura
 void desenhaFace(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texid) {
     glBindTexture(GL_TEXTURE_2D, texid);
 
@@ -35,7 +37,7 @@ void desenhaFace(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texi
     glEnd();
 }
 
-// Função para desenhar o cubo com diferentes texturas para a parte de cima e laterais
+// Funcao para desenhar o cubo com diferentes texturas
 void desenhaCubo(float x, float y, float z, float tamanho, GLuint texID[]) {
     float d = tamanho / 2.0;
 
@@ -67,7 +69,7 @@ void desenhaCubo(float x, float y, float z, float tamanho, GLuint texID[]) {
     //desenhaFace(v2, v7, v6, v3, texID[0]);
 }
 
-// Função para desenhar o terreno com cubos
+// Funcao para desenhar o terreno com cubos
 void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[]) {
     float inicioX = -colunas * tamanhoCubo / 2.0;
     float inicioZ = -linhas * tamanhoCubo / 2.0;
@@ -76,12 +78,12 @@ void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[]) 
         for (int j = 0; j < colunas; j++) {
             float x = inicioX + j * tamanhoCubo;
             float z = inicioZ + i * tamanhoCubo;
-            desenhaCubo(x, 0, z, tamanhoCubo, texID); // Textura de cima com texID[1] e laterais com texID[0]
+            desenhaCubo(x, 0, z, tamanhoCubo, texID);
         }
     }
 }
 
-// Função de iluminação
+// Funcao de iluminacao
 void configurarIluminacao() {
     GLfloat light_position[] = {-1.0, 1.0, 1.0, 0.0};
     GLfloat light_color[] = {1.0, 1.0, 1.0, 0.0};

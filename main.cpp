@@ -10,12 +10,14 @@
 #define LINHAS_MAPA 7
 #define COLUNAS_MAPA 14
 
+// Variaveis para controlar a camera
 bool visaoCima = false;
 int cameraY, cameraZ;
 
-GLuint texID[2];  // Vetor de texturas
+// Vetor de texturas
+GLuint texID[2];  
 
-// Função de redimensionamento
+// Funcao de redimensionamento
 void redimensiona(int w, int h) {
     glViewport(0, 0, w, h);
     float aspect = (float)w / (float)h;
@@ -25,8 +27,7 @@ void redimensiona(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-
-// Função de desenho
+// Funcao de desenho
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -50,7 +51,7 @@ void display() {
     glutSwapBuffers();
 }
 
-// Função para capturar entradas do teclado
+// Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y) {
     switch (key) {
         case 'p': case 'P':
@@ -63,15 +64,13 @@ void teclado(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
-
-
 void init() {
     glClearColor(0.4, 0.7, 1, 1.0); // Cor de fundo azul claro
-    configurarIluminacao();         // Configura a iluminação
+    //configurarIluminacao();         // Configura a iluminacao
     
+	// Configurar as texturas
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    
     glGenTextures(2, texID);
     
     // Carrega as texturas no vetor
@@ -81,18 +80,16 @@ void init() {
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
 
-
 int main(int argc, char** argv) {
     glutInit(&argc, argv); 										// Inicializa o GLUT
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 	// Modo de exibição com duplo buffer, RGB e Depth
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH); 	// Modo de exibicao com duplo buffer, RGB e Depth
     glutInitWindowSize(800, 500); 								// Tamanho da janela
-    glutInitWindowPosition(100, 100); 							// Posição inicial da janela
+    glutInitWindowPosition(100, 100); 							// Posicao inicial da janela
     glutCreateWindow("Bomberman 3D"); 							// Cria a janela
-    init();
-    glutDisplayFunc(display);								 	// Função para desenhar a janela
-    glutReshapeFunc(redimensiona); 								// Função para redimensionar a janela
-    glutKeyboardFunc(teclado); 									// Registra a função de teclado
-
-    glutMainLoop(); 												// Inicia o loop do GLUT
+    init();														// Configuracoes iniciais
+    glutDisplayFunc(display);								 	// Funcao para desenhar a janela
+    glutReshapeFunc(redimensiona); 								// Funcao para redimensionar a janela
+    glutKeyboardFunc(teclado); 									// Registra a funcao de teclado
+    glutMainLoop(); 											// Inicia o loop do GLUT
 }
 
