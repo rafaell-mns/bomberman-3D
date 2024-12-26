@@ -3,17 +3,15 @@
 #include <GL/glut.h>
 #include "stb_image.h"
 
-#define MURO 1
-#define CAIXA 2
-
 // Carregar a textura
-// Fonte: https://youtu.be/AKz52bZb-9I?si=0dvG-fuKZ7fxSz9s
 void carregaTextura(GLuint tex_id, std::string filePath){
     unsigned char* imgData;
     int largura, altura, canais;
-
+    
+    filePath = "imagens/" + filePath + ".jpg";
     stbi_set_flip_vertically_on_load(true);
     imgData = stbi_load(filePath.c_str(), &largura, &altura, &canais, 4);
+    
     if (imgData){
         glBindTexture(GL_TEXTURE_2D, tex_id);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, largura, altura, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgData);
@@ -33,26 +31,15 @@ void desenhaFace(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texi
     glBindTexture(GL_TEXTURE_2D, texid);
 
     glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex3fv(v1);  
-    glTexCoord2f(1, 0); glVertex3fv(v2);  
-    glTexCoord2f(1, 1); glVertex3fv(v3);  
-    glTexCoord2f(0, 1); glVertex3fv(v4);  
+    glTexCoord2f(0, 1); glVertex3fv(v1); 
+    glTexCoord2f(0, 0); glVertex3fv(v2); 
+    glTexCoord2f(1, 0); glVertex3fv(v3); 
+    glTexCoord2f(1, 1); glVertex3fv(v4);   
     glEnd();
 }
 
-void desenhaFaceRotacionada(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texid) { 
-	glBindTexture(GL_TEXTURE_2D, texid); 
-	
-	glBegin(GL_QUADS); 
-	glTexCoord2f(0, 1); glVertex3fv(v1); 
-	glTexCoord2f(0, 0); glVertex3fv(v2); 
-	glTexCoord2f(1, 0); glVertex3fv(v3); 
-	glTexCoord2f(1, 1); glVertex3fv(v4); 
-	glEnd();
-} 
-
-// Funcao para desenhar o cubo com diferentes texturas
-void desenhaCubo(float x, float y, float z, float tamanho, GLuint texID[]) {
+// Funcao para desenhar o cubo com diferentes texturas nas faces
+void desenhaCubo(float x, float y, float z, float tamanho, GLuint texIDSup, GLuint texIDOut) {
     float d = tamanho / 2;
 
     float v1[3] = {x - d, y + d, z + d};
@@ -64,22 +51,33 @@ void desenhaCubo(float x, float y, float z, float tamanho, GLuint texID[]) {
     float v7[3] = {x - d, y - d, z - d};
     float v8[3] = {x - d, y + d, z - d};
 
-	desenhaFace(v1, v4, v5, v8, texID[0]); // Face superior
-	
-	desenhaFaceRotacionada(v1, v2, v3, v4, texID[1]); // Face frontal
-	desenhaFaceRotacionada(v4, v3, v6, v5, texID[1]); // Face direita
-	desenhaFaceRotacionada(v5, v6, v7, v8, texID[1]); // Face traseira
-	desenhaFaceRotacionada(v8, v7, v2, v1, texID[1]); // Face esquerda
-	//desenhaFace(v2, v7, v6, v3, texID[1]); // Face inferior (desnecessario?)
-	
+    desenhaFace(v1, v4, v5, v8, texIDSup); // Face superior
+    desenhaFace(v1, v2, v3, v4, texIDOut); // Face frontal
+    desenhaFace(v4, v3, v6, v5, texIDOut); // Face direita
+    desenhaFace(v5, v6, v7, v8, texIDOut); // Face traseira
+    desenhaFace(v8, v7, v2, v1, texIDOut); // Face esquerda
+    //desenhaFace(v2, v7, v6, v3, texIDOut); // Face inferior (desnecessário?)
 }
 
-/*
-// Funcao para desenhar os blocos de muro e caixa
-void desenhaObstaculos(){
-	
+// Funcao para desenhar muros e caixas acima do chão do terreno
+void desenhaObstaculos(int linhas, int colunas, float tamanhoCubo, GLuint texID[], int matrizMapa[11][16]) {
+    float inicioX = -colunas * tamanhoCubo / 2;
+    float inicioZ = -linhas * tamanhoCubo / 2;
+
+    for (int i = 0; i < linhas; i++) {
+        for (int j = 0; j < colunas; j++) {
+            float x = inicioX + j * tamanhoCubo;
+            float z = inicioZ + i * tamanhoCubo;
+            float y = tamanhoCubo;  // Desenha acima do terreno base
+
+            if (matrizMapa[i][j] == 1){
+				desenhaCubo(x, y, z, tamanhoCubo, texID[2], texID[2]); // desenha o muro	
+			}else if(matrizMapa[i][j] == 2) {
+				desenhaCubo(x, y, z, tamanhoCubo, texID[3], texID[3]); // desenha a caixa
+			}
+        }
+    }
 }
-*/
 
 // Funcao para desenhar o terreno com cubos
 void desenhaBaseTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[]) {
@@ -90,7 +88,7 @@ void desenhaBaseTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID
         for (int j = 0; j < colunas; j++) {
             float x = inicioX + j * tamanhoCubo;
             float z = inicioZ + i * tamanhoCubo;
-            desenhaCubo(x, 0, z, tamanhoCubo, texID);
+            desenhaCubo(x, 0, z, tamanhoCubo, texID[0], texID[1]); // texID[0] para a face superior e texID[1] para as outras faces
         }
     }
 }

@@ -7,16 +7,33 @@
 #include "stb_image.h"
 #include "cenario.h"
 
-#define LINHAS_MAPA 7
-#define COLUNAS_MAPA 14
+#define LINHAS_MAPA 11
+#define COLUNAS_MAPA 16
+
+#define M 1
+#define C 2
+
+int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
+    {M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M},
+    {M, 0, M, 0, 0, C, 0, M, 0, M, 0, 0, C, C, 0, M},
+    {M, 0, M, 0, 0, M, 0, 0, 0, 0, 0, 0, 0, C, 0, M},
+    {M, 0, C, C, 0, M, 0, 0, 0, M, 0, M, M, 0, 0, M},
+    {M, 0, 0, 0, 0, 0, 0, C, 0, 0, C, 0, 0, 0, 0, M},
+    {M, 0, 0, 0, 0, 0, M, C, 0, 0, M, M, M, 0, C, M},
+    {M, 0, M, C, M, 0, 0, 0, 0, C, C, 0, M, 0, C, M},
+    {M, 0, 0, 0, 0, 0, 0, 0, 0, 0, M, 0, 0, 0, 0, M},
+    {M, 0, 0, 0, C, C, 0, M, 0, 0, 0, 0, M, 0, 0, M},
+    {M, 0, 0, 0, 0, M, 0, C, 0, C, 0, M, M, 0, 0, M},
+    {M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+};
 
 // Variaveis para controlar a camera
 bool visaoCima = false;
-float eyeX = -2, eyeY = 41, eyeZ = 35;   	   // Posicao inicial da camera
+float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
 float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
 
 // Vetor de texturas
-GLuint texID[2];  
+GLuint texID[4];  
 
 // Funcao de redimensionamento
 void redimensiona(int w, int h) {
@@ -39,6 +56,7 @@ void display() {
 
     // Desenhar o mapa
     desenhaBaseTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID);
+    desenhaObstaculos(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 
     glFlush();
     glutSwapBuffers();
@@ -105,11 +123,13 @@ void init() {
     // Configurar as texturas
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glGenTextures(2, texID);
+    glGenTextures(4, texID);
     
     // Carrega as texturas no vetor
-    carregaTextura(texID[0], "imagens/grama_cima.jpg");     // Textura 0 = parte de cima de grama
-    carregaTextura(texID[1], "imagens/grama_lateral.jpg");  // Textura 1 = lateral de grama
+    carregaTextura(texID[0], "grama_cima");     // Textura 0 = parte de cima da grama
+    carregaTextura(texID[1], "grama_lateral");  // Textura 1 = lateral da grama
+    carregaTextura(texID[2], "pedra");  		// Textura 2 = muro
+	carregaTextura(texID[3], "caixa");  		// Textura 3 = caixa
     
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
