@@ -8,7 +8,7 @@ void carregaTextura(GLuint tex_id, std::string filePath){
     unsigned char* imgData;
     int largura, altura, canais;
     
-    filePath = "imagens/" + filePath + ".jpg";
+    filePath = "imagens/" + filePath;
     stbi_set_flip_vertically_on_load(true);
     imgData = stbi_load(filePath.c_str(), &largura, &altura, &canais, 4);
     
@@ -59,8 +59,8 @@ void desenhaCubo(float x, float y, float z, float tamanho, GLuint texIDSup, GLui
     //desenhaFace(v2, v7, v6, v3, texIDOut); // Face inferior (desnecessário?)
 }
 
-// Funcao para desenhar muros e caixas acima do chão do terreno
-void desenhaObstaculos(int linhas, int colunas, float tamanhoCubo, GLuint texID[], int matrizMapa[11][16]) {
+// Funcao para desenhar o terreno e obstaculos
+void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[], int matrizMapa[11][16]) {
     float inicioX = -colunas * tamanhoCubo / 2;
     float inicioZ = -linhas * tamanhoCubo / 2;
 
@@ -68,27 +68,18 @@ void desenhaObstaculos(int linhas, int colunas, float tamanhoCubo, GLuint texID[
         for (int j = 0; j < colunas; j++) {
             float x = inicioX + j * tamanhoCubo;
             float z = inicioZ + i * tamanhoCubo;
-            float y = tamanhoCubo;  // Desenha acima do terreno base
 
-            if (matrizMapa[i][j] == 1){
-				desenhaCubo(x, y, z, tamanhoCubo, texID[2], texID[2]); // desenha o muro	
-			}else if(matrizMapa[i][j] == 2) {
-				desenhaCubo(x, y, z, tamanhoCubo, texID[3], texID[3]); // desenha a caixa
-			}
-        }
-    }
-}
-
-// Funcao para desenhar o terreno com cubos
-void desenhaBaseTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[]) {
-    float inicioX = -colunas * tamanhoCubo / 2;
-    float inicioZ = -linhas * tamanhoCubo / 2;
-
-    for (int i = 0; i < linhas; i++) {
-        for (int j = 0; j < colunas; j++) {
-            float x = inicioX + j * tamanhoCubo;
-            float z = inicioZ + i * tamanhoCubo;
+            // Desenha a base do terreno
             desenhaCubo(x, 0, z, tamanhoCubo, texID[0], texID[1]); // texID[0] para a face superior e texID[1] para as outras faces
+
+            // Desenha os obstaculos (muros e caixas) acima do terreno
+            if (matrizMapa[i][j] == 1) {
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[2], texID[2]); // muro normal
+            } else if (matrizMapa[i][j] == 2) {
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[3], texID[3]); // muro com musgo
+            } else if (matrizMapa[i][j] == 3) {
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[4], texID[4]); // caixote
+            }
         }
     }
 }

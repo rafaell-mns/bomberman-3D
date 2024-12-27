@@ -8,8 +8,7 @@
 void carregaTextura(GLuint tex_id, std::string filePath);
 void desenhaFace(float v1[3], float v2[3], float v3[3], float v4[3], GLuint texid);
 void desenhaCubo(float x, float y, float z, float tamanho, GLuint texIDSup, GLuint texIDOut);
-void desenhaObstaculos(int linhas, int colunas, float tamanhoCubo, GLuint texID[], int matrix[11][16]);
-void desenhaBaseTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[]);
+void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[], int matrizMapa[11][16]);
 void configurarIluminacao();
 
 #endif

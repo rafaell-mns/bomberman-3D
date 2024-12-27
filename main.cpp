@@ -9,22 +9,24 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
+#define QTD_TEXTURAS 5
 
-#define M 1
-#define C 2
+#define N 1 	// muro normal
+#define M 2 	// muro com musgo
+#define C 3 	// caixote
 
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-    {M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M},
-    {M, 0, M, 0, 0, C, 0, M, 0, M, 0, 0, C, C, 0, M},
-    {M, 0, M, 0, 0, M, 0, 0, 0, 0, 0, 0, 0, C, 0, M},
-    {M, 0, C, C, 0, M, 0, 0, 0, M, 0, M, M, 0, 0, M},
-    {M, 0, 0, 0, 0, 0, 0, C, 0, 0, C, 0, 0, 0, 0, M},
-    {M, 0, 0, 0, 0, 0, M, C, 0, 0, M, M, M, 0, C, M},
-    {M, 0, M, C, M, 0, 0, 0, 0, C, C, 0, M, 0, C, M},
-    {M, 0, 0, 0, 0, 0, 0, 0, 0, 0, M, 0, 0, 0, 0, M},
-    {M, 0, 0, 0, C, C, 0, M, 0, 0, 0, 0, M, 0, 0, M},
-    {M, 0, 0, 0, 0, M, 0, C, 0, C, 0, M, M, 0, 0, M},
-    {M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M}
+    {M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
+	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, 0, C, M, N},
+	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, 0, C, M},
+	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+	{M, C, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
+	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
+	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
+	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
+	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
+	{M, C, C, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
 // Variaveis para controlar a camera
@@ -33,7 +35,7 @@ float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
 float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
 
 // Vetor de texturas
-GLuint texID[4];  
+GLuint texID[QTD_TEXTURAS];  
 
 // Funcao de redimensionamento
 void redimensiona(int w, int h) {
@@ -55,8 +57,7 @@ void display() {
               0, 1, 0);
 
     // Desenhar o mapa
-    desenhaBaseTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID);
-    desenhaObstaculos(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
+    desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 
     glFlush();
     glutSwapBuffers();
@@ -123,13 +124,14 @@ void init() {
     // Configurar as texturas
     glEnable(GL_TEXTURE_2D);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glGenTextures(4, texID);
+    glGenTextures(QTD_TEXTURAS, texID);
     
     // Carrega as texturas no vetor
-    carregaTextura(texID[0], "grama_cima");     // Textura 0 = parte de cima da grama
-    carregaTextura(texID[1], "grama_lateral");  // Textura 1 = lateral da grama
-    carregaTextura(texID[2], "pedra");  		// Textura 2 = muro
-	carregaTextura(texID[3], "caixa");  		// Textura 3 = caixa
+    carregaTextura(texID[0], "grama_cima.jpg");     // Textura 0 = parte de cima da grama
+    carregaTextura(texID[1], "grama_lateral.jpg");  // Textura 1 = lateral da grama
+    carregaTextura(texID[2], "pedra.jpg");  		// Textura 2 = muro normal
+    carregaTextura(texID[3], "pedra_musgo.png");  	// Textura 2 = muro com musgo
+	carregaTextura(texID[4], "caixa.jpg");  		// Textura 3 = caixa
     
     glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 }
