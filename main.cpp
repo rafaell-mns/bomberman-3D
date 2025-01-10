@@ -35,24 +35,41 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 };
 
 
-// Protótipos das funções
+// Prototipos das funções
 void drawSphere(float radius, float r, float g, float b);
 void drawCube(float size, float r, float g, float b);
 void moverPersonagem(float novoX, float novoZ);
 void mousePassiveMotion(int x, int y);
 
-// Função para desenhar o personagem Bomberman
+// Funcao para desenhar o personagem Bomberman
 void drawBomberman() {
 	glPushMatrix();
-	// mexer na posição do player
+	// mexer na posicao do player
 	 glTranslatef(-28, 3.7, 0.0f);
 	 float e = 2.5;
 	 glScaled(e,e,e);
-    // Cabeça
+	 
+    // Cabeca
     glPushMatrix();
     glTranslatef(0.0f, 1.2f, 0.0f);
-    drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeça branca
+    drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeca branca
     glPopMatrix();
+    
+    // Olho esquerdo
+	glPushMatrix();
+	glTranslatef(-0.225f, 1.2f, 0.4f); // Ajuste no X para compensar o aumento da largura
+	glScalef(0.15f, 0.2f, 0.1f);      // Olho mais largo
+	drawCube(1.0f, 0.0f, 0.0f, 0.0f); // Cor preta
+	glPopMatrix();
+	
+	// Olho direito
+	glPushMatrix();
+	glTranslatef(0.225f, 1.2f, 0.4f);  // Ajuste sim�trico no X para o outro lado
+	glScalef(0.15f, 0.2f, 0.1f);       // Mesmo aumento de largura
+	drawCube(1.0f, 0.0f, 0.0f, 0.0f);  // Cor preta
+	glPopMatrix();
+
+    
 
     // Corpo
     glPushMatrix();
@@ -60,7 +77,21 @@ void drawBomberman() {
     drawCube(0.7f, 0.0f, 0.0f, 1.0f); // Corpo azul
     glPopMatrix();
 
-    // Pernas
+	// Pernas
+	glPushMatrix();
+	glTranslatef(-0.2f, -0.5f, 0.0f); // Posiciona a perna esquerda
+	glScalef(0.3f, 0.7f, 0.3f);       // Mesma largura e profundidade que o ombro
+	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Perna esquerda branca
+	glPopMatrix();
+	
+	glPushMatrix();
+	glTranslatef(0.2f, -0.5f, 0.0f);  // Posiciona a perna direita
+	glScalef(0.3f, 0.7f, 0.3f);       // Mesma largura e profundidade que o ombro
+	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Perna direita branca
+	glPopMatrix();
+
+	
+    // Pe
     glPushMatrix();
     glTranslatef(-0.2f, -0.5f, 0.0f);
     drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
@@ -71,17 +102,33 @@ void drawBomberman() {
     drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna direita vermelha
     glPopMatrix();
 
-    // Braços
+    // Ombro
     glPushMatrix();
     glTranslatef(-0.5f, 0.8f, 0.0f);
-    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braço esquerdo amarelo
+    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braco esquerdo amarelo
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef(0.5f, 0.8f, 0.0f);
     drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braço direito amarelo
     glPopMatrix();
-
+    
+    
+	// Bracos (abaixo do ombro)
+	glPushMatrix();
+	glTranslatef(-0.5f, 0.5f, 0.0f); // Bra�o esquerdo
+	glScalef(0.3f, 0.6f, 0.3f);      // Mesma largura e profundidade que o ombro
+	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Bra�o branco
+	glPopMatrix();
+	
+	glPushMatrix();
+	glTranslatef(0.5f, 0.5f, 0.0f); // Bra�o direito
+	glScalef(0.3f, 0.6f, 0.3f);     // Mesma largura e profundidade que o ombro
+	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Bra�o branco
+	glPopMatrix();
+    
+    
+	
     // Antena
     glPushMatrix();
     glTranslatef(0.0f, 1.8f, 0.0f);
