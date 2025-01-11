@@ -297,59 +297,66 @@ void teclado(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case '1':
-		eyeX = -2;
+		eyeX = personagemX-2;
 		eyeY = 41;
-		eyeZ = 47;
-		centerX = -2;
+		eyeZ = personagemZ+47;
+		centerX = personagemX-2;
 		centerY = 0;
-		centerZ = -2;
+		centerZ = personagemZ-2;
 		break ;
 	case '2':
-		eyeZ = 0;
+		eyeZ = personagemZ+0;
 		eyeY = 64;
-		eyeX = -2;
-		centerX = -2;
+		eyeX = personagemX-2-28;
+		centerX = personagemX-2-28;
 		centerY = 0;
-		centerZ = -2;
+		centerZ = personagemZ-2;
 		break;
 	case '3':
-		eyeX = -26;
+		eyeX = personagemX-26;
 		eyeY = 22;
-		eyeZ = -25;
-		centerX = -23;
+		eyeZ = personagemZ-25;
+		centerX = personagemX+-23;
 		centerY = 0;
-		centerZ = 18;
+		centerZ = personagemZ+18;
 		break;
 
 	case '4':
-		eyeX = -1;
+		eyeX = personagemX-28-1;
 		eyeY = 41;
-		eyeZ = -64;
-		centerX = -2,
+		eyeZ = personagemZ-64;
+		centerX = personagemX-28-2,
 		centerY = 0,
-		centerZ = -2;
+		centerZ = personagemZ-2;
 		break;
 
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		printf("mover");
 		personagemZ -= movimento;
+		centerZ -= movimento;
+		eyeZ-=movimento;
 		printf("%f",personagemZ);
 		anguloRotacao = 180.0f;
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras
 		personagemZ += movimento;
+		centerZ+= movimento;
+		eyeZ+=movimento;
 		anguloRotacao = 0.0f;
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
 		personagemX -= movimento;
+		eyeX -= movimento;
+		centerX -= movimento;
 		anguloRotacao = 270.0f;
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
 		personagemX += movimento;
+		eyeX += movimento;
+		centerX += movimento;
 		anguloRotacao = 90.0f;
 		break;
 	case 't':
@@ -411,8 +418,8 @@ void teclado(unsigned char key, int x, int y)
 
 void moverPersonagem(float novoX, float novoZ)
 {
-	int mapaX = (int)(novoX / 4); // Dividir por 4, que é a escala do terreno
-	int mapaZ = (int)(novoZ / 4);
+	//int mapaX = (int)(novoX / 4); // Dividir por 4, que é a escala do terreno
+	//int mapaZ = (int)(novoZ / 4);
 
 	// Verificar se a nova posição está dentro dos limites do mapa e não é um muro
 
