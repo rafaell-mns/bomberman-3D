@@ -16,7 +16,7 @@
 #define C 3 	// caixote
 //Largura e altura da janela
 int width = 800, height = 500;
-float personagemX = 0.0f, personagemY = 0.0f, personagemZ = -100.0f;
+
 //Coordenadas da posicao atual do mouse
 int m_x, m_y;
 
@@ -35,111 +35,71 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 };
 
 
-// Prototipos das funÃ§Ãµes
+// Prototipos das funcoes
 void drawSphere(float radius, float r, float g, float b);
 void drawCube(float size, float r, float g, float b);
 void moverPersonagem(float novoX, float novoZ);
 void mousePassiveMotion(int x, int y);
 
+
+float personagemX = -28.0f, personagemZ = 0.0f;
+float anguloRotacao = 0.0f; 
+
+
 // Funcao para desenhar o personagem Bomberman
 void drawBomberman() {
 	glPushMatrix();
-	// mexer na posicao do player
-	 glTranslatef(-28, 3.7, 0.0f);
-	 float e = 2.5;
-	 glScaled(e,e,e);
-	 
-    // Cabeca
-    glPushMatrix();
-    glTranslatef(0.0f, 1.2f, 0.0f);
-    drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeca branca
-    glPopMatrix();
-    
-    // Olho esquerdo
-	glPushMatrix();
-	glTranslatef(-0.225f, 1.2f, 0.4f); // Ajuste no X para compensar o aumento da largura
-	glScalef(0.15f, 0.2f, 0.1f);      // Olho mais largo
-	drawCube(1.0f, 0.0f, 0.0f, 0.0f); // Cor preta
-	glPopMatrix();
 	
-	// Olho direito
-	glPushMatrix();
-	glTranslatef(0.225f, 1.2f, 0.4f);  // Ajuste simétrico no X para o outro lado
-	glScalef(0.15f, 0.2f, 0.1f);       // Mesmo aumento de largura
-	drawCube(1.0f, 0.0f, 0.0f, 0.0f);  // Cor preta
-	glPopMatrix();
-
-    
-
-    // Corpo
-    glPushMatrix();
-    glTranslatef(0.0f, 0.5f, 0.0f);
-    drawCube(0.7f, 0.0f, 0.0f, 1.0f); // Corpo azul
-    glPopMatrix();
-
-	// Pernas
-	glPushMatrix();
-	glTranslatef(-0.2f, -0.5f, 0.0f); // Posiciona a perna esquerda
-	glScalef(0.3f, 0.7f, 0.3f);       // Mesma largura e profundidade que o ombro
-	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Perna esquerda branca
-	glPopMatrix();
-	
-	glPushMatrix();
-	glTranslatef(0.2f, -0.5f, 0.0f);  // Posiciona a perna direita
-	glScalef(0.3f, 0.7f, 0.3f);       // Mesma largura e profundidade que o ombro
-	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Perna direita branca
-	glPopMatrix();
-
-	
-    // Pe
-    glPushMatrix();
-    glTranslatef(-0.2f, -0.5f, 0.0f);
-    drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(0.2f, -0.5f, 0.0f);
-    drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna direita vermelha
-    glPopMatrix();
-
-    // Ombro
-    glPushMatrix();
-    glTranslatef(-0.5f, 0.8f, 0.0f);
-    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braco esquerdo amarelo
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(0.5f, 0.8f, 0.0f);
-    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // BraÃ§o direito amarelo
-    glPopMatrix();
-    
-    
-	// Bracos (abaixo do ombro)
-	glPushMatrix();
-	glTranslatef(-0.5f, 0.5f, 0.0f); // Braço esquerdo
-	glScalef(0.3f, 0.6f, 0.3f);      // Mesma largura e profundidade que o ombro
-	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Braço branco
-	glPopMatrix();
-	
-	glPushMatrix();
-	glTranslatef(0.5f, 0.5f, 0.0f); // Braço direito
-	glScalef(0.3f, 0.6f, 0.3f);     // Mesma largura e profundidade que o ombro
-	drawCube(1.0f, 1.0f, 1.0f, 1.0f); // Braço branco
-	glPopMatrix();
-    
-    
-	
-    // Antena
-    glPushMatrix();
-    glTranslatef(0.0f, 1.8f, 0.0f);
-    drawSphere(0.1f, 1.0f, 0.0f, 0.0f); // Bolinha vermelha na antena
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(0.0f, 1.5f, 0.0f);
-    glScalef(0.1f, 0.5f, 0.1f);
-    drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
-    glPopMatrix();
+		// mexer na posicao do player (fixo no eixo y)
+		glTranslatef(personagemX, 3.7, personagemZ);
+		glRotatef(anguloRotacao, 0.0f, 1.0f, 0.0f);
+		float e = 2.5;
+		glScaled(e,e,e);
+		 
+   	    // Cabeca
+	    glPushMatrix();
+	    glTranslatef(0.0f, 1.2f, 0.0f);
+	    drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeça branca
+	    glPopMatrix();
+	    
+	    // Corpo
+	    glPushMatrix();
+	    glTranslatef(0.0f, 0.5f, 0.0f);
+	    drawCube(0.7f, 0.0f, 0.0f, 1.0f); // Corpo azul
+	    glPopMatrix();
+	    
+	    // Pernas
+	    glPushMatrix();
+	    glTranslatef(-0.2f, -0.5f, 0.0f);
+	    drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
+	    glPopMatrix();
+	    
+   	    glPushMatrix();
+	    glTranslatef(0.2f, -0.5f, 0.0f);
+	    drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna direita vermelha
+	    glPopMatrix();
+	    
+	    // Bracos
+	    glPushMatrix();
+	    glTranslatef(-0.5f, 0.8f, 0.0f);
+	    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braço esquerdo amarelo
+	    glPopMatrix();
+	    glPushMatrix();
+	    glTranslatef(0.5f, 0.8f, 0.0f);
+	    drawCube(0.3f, 1.0f, 0.8f, 0.0f); // Braço direito amarelo
+	    glPopMatrix();
+	    
+	    // Antena
+	    glPushMatrix();
+	    glTranslatef(0.0f, 1.8f, 0.0f);
+	    drawSphere(0.1f, 1.0f, 0.0f, 0.0f); // Bolinha vermelha na antena
+	    glPopMatrix();
+	    
+	    glPushMatrix();
+	    glTranslatef(0.0f, 1.5f, 0.0f);
+	    glScalef(0.1f, 0.5f, 0.1f);
+	    drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
+	    glPopMatrix();
     
     glPopMatrix();
 }
@@ -216,16 +176,32 @@ void drawSphere(float radius, float r, float g, float b) {
 void teclado(unsigned char key, int x, int y) {
     const float movimento = 1.0; // Define a quantidade de movimento
     switch (key) {
-        case 'w': case 'W': // Mover a camera para frente (ao longo do eixo Z)
+        case 'w': case 'W': // Mover o personagem pra frente
+            personagemZ -= movimento;
+            anguloRotacao = 180.0f;
+            break;
+        case 's': case 'S': // Mover o personagem pra tras
+            personagemZ += movimento;
+            anguloRotacao = 0.0f; 
+            break;
+        case 'a': case 'A': // Mover o personagem pra esquerda
+            personagemX -= movimento;
+            anguloRotacao = 270.0f;
+            break;
+        case 'd': case 'D': // Mover o personagem pra direita
+            personagemX += movimento;
+            anguloRotacao = 90.0f;
+            break;
+        case 't': case 'T': // Mover a camera para frente (ao longo do eixo Z)
             eyeZ -= movimento;
             break;
-        case 's': case 'S': // Mover a camera para tras
+        case 'g': case 'G': // Mover a camera para tras
             eyeZ += movimento;
             break;
-        case 'a': case 'A': // Mover a camera para a esquerda (ao longo do eixo X)
+        case 'f': case 'F': // Mover a camera para a esquerda (ao longo do eixo X)
             eyeX -= movimento;
             break;
-        case 'd': case 'D': // Mover a camera para a direita
+        case 'h': case 'H': // Mover a camera para a direita
             eyeX += movimento;
             break;
         case 'q': case 'Q': // Mover a camera para cima (ao longo do eixo Y)
@@ -317,10 +293,7 @@ int main(int argc, char** argv) {
     glutReshapeFunc(redimensiona);                           
     glutKeyboardFunc(teclado);
     glutPassiveMotionFunc(mousePassiveMotion); //fucao callback do movimento passivo do mouse                                
-	printf("W/w: Mover para frente\n");
-	printf("S/s: Mover para tras\n");
-	printf("A/a: Mover para a esquerda\n");
-	printf("D/d: Mover para a direita\n");
+	printf("T/F/G/H: translada a camera pras 4 direcoes\n");
 	printf("Q/q: Mover para cima\n");
 	printf("E/e: Mover para baixo\n");
 	printf("I/i: Mover o ponto de foco para frente\n");
