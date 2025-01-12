@@ -35,6 +35,25 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] =
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
+// coordenadas reais (no mapa) da matriz
+void testaMatriz(){
+    int inicioX = -4;  // Valor inicial de X
+    int inicioZ = -22; // Valor inicial de Z
+    int razaoX = 4;    // Razão de incremento para X
+    int razaoZ = 4;    // Razão de incremento para Z
+
+    // Iterar por todas as linhas e colunas da matriz
+    for (int z = 0; z < LINHAS_MAPA; z++) {
+        for (int x = 0; x < COLUNAS_MAPA; x++) {
+            // Calcular as posições de acordo com a razão
+            int posX = inicioX + x * razaoX;
+            int posZ = inicioZ + z * razaoZ;
+            
+            // Imprimir as coordenadas ajustadas
+            printf("mapaX: %d, mapaZ: %d\n", posX, posZ);
+        }
+    }
+}
 
 // Protótipos das funções
 void drawSphere(float radius, float r, float g, float b);
@@ -43,181 +62,175 @@ void moverPersonagem(float novoX, float novoZ);
 void mousePassiveMotion(int x, int y);
 
 float personagemX = 0.0f, personagemZ = 0.0f;
-float anguloRotacao = 0.0f;
-bool movimentando = false;
+float anguloRotacao = 0.0f; 
 
 // Função para desenhar o personagem Bomberman
-void drawBomberman()
-{
+void drawBomberman(){
 	glPushMatrix();
-	// mexer na posição do player
-	glTranslatef(-28+personagemX, 3.7, 0.0f+personagemZ);
-	//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
-	float e = 2;
-	glScaled(e, e, e);
-	// Função para desenhar o personagem Bomberman
-	glPushMatrix();
-// mexer no rosto + cabeca + olhos
-	glTranslatef(0, -0.2, 0);
-	glScaled(1.1, 1.1, 1.1);
-	//Cabeça
+		// mexer na posição do player
+		glTranslatef(-28+personagemX, 3.7, 0.0f+personagemZ);
+		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
+		float e = 2;
+		glScaled(e, e, e);
+		
+		// Função para desenhar o personagem Bomberman
+		glPushMatrix();
+		// mexer no rosto + cabeca + olhos
+		glTranslatef(0, -0.2, 0);
+		glScaled(1.1, 1.1, 1.1);
 
-	glPushMatrix();
-	glTranslatef(0.0f, 1.2f, 0.0f);
-	drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeça branca
-	glPopMatrix();
+		//Cabeça
+		glPushMatrix();
+		glTranslatef(0.0f, 1.2f, 0.0f);
+		drawSphere(0.5f, 1.0f, 1.0f, 1.0f); // Cabeça branca
+		glPopMatrix();
 
+		// rosto
+		glPushMatrix();
+		glTranslatef(0.0f, 1.21f, 0.08);
+		e = 0.9;
+		glScaled(e, e, e);
+		drawSphere(0.5, 0.961, 0.741, 0.569); // rosto
+		glPopMatrix();
 
+		// olhos
+		glPushMatrix();
+		glTranslatef(-0.15, 1.21f, 0.32);
+		e = 0.6;
+		glScaled(0.2, 1, 1);
+		drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+		glPopMatrix();
 
-	// rosto
-	glPushMatrix();
-	glTranslatef(0.0f, 1.21f, 0.08);
-	e = 0.9;
-	glScaled(e, e, e);
-	drawSphere(0.5, 0.961, 0.741, 0.569); // rosto
-	glPopMatrix();
-
-	// olhos
-	glPushMatrix();
-	glTranslatef(-0.15, 1.21f, 0.32);
-	e = 0.6;
-	glScaled(0.2, 1, 1);
-	drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.15, 1.21f, 0.32);
-	e = 0.6;
-	glScaled(0.2, 1, 1);
-	drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
-	glPopMatrix();
-	glPopMatrix();
-	// Corpo
-	glPushMatrix();
-	glTranslatef(0.0f, 0.3, 0.0f);
-	glScaled(1, 1, 1);
-	drawCube(0.7f, 0.0f, 0.0f, 1.0f); // Corpo azul
-	glPopMatrix();
-
-	// fundo do cinto
-	glPushMatrix();
-	glTranslatef(0.0f, 0.1, 0.35f);
-	e = 0.6;
-	glScaled(1.8, 0.3, 0.1);
-	drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-	// parte dourada do cinto cireita
-	glPushMatrix();
-	glTranslatef(0.1, 0.1, 0.38f);
-	e = 0.2;
-	glScaled(0.05, 0.2, e);
-	drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-	// parte dourada do cinto esquerda
-	glPushMatrix();
-	glTranslatef(-0.1, 0.1, 0.38f);
-	e = 0.2;
-	glScaled(0.05, 0.2, e);
-	drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-	// parte dourada do cinto cima
-	glPushMatrix();
-	glTranslatef(0, 0.13, 0.38f);
-	e = 0.2;
-	glScaled(0.45, 0.05, e);
-	drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-	// parte dourada do cinto cima
-	glPushMatrix();
-	glTranslatef(0, 0.07, 0.38f);
-	e = 0.2;
-	glScaled(0.45, 0.05, e);
-	drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-	glPopMatrix();
-
-
-	// anteperna esquerda
-	glPushMatrix();
-	glTranslatef(-0.2, -0.2, 0.0f);
-	e = 0.9;
-	glScaled(e, 1.25, e);
-	drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
-	glPopMatrix();
-
-	// Perna  esquerda
-	glPushMatrix();
-	glTranslatef(-0.2f, -0.5, 0.0f);
-	e = 0.9;
-	glScaled(e, e, e);
-	drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
-	glPopMatrix();
-
-	// anteperna direita
-	glPushMatrix();
-	glTranslatef(0.2, -0.2, 0.0f);
-	e = 0.9;
-	glScaled(e, 1.25, e);
-	drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
-	glPopMatrix();
-
-	// Perna  direita
-	glPushMatrix();
-	glTranslatef(0.2f, -0.5, 0.0f);
-	glScaled(e, e, e);
-	drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
-	glPopMatrix();
-
-
-// mexer nos braços
-	glPushMatrix();
-	glTranslatef(0, -0.34, 0);
-	// antebraço esquerdo
-	glPushMatrix();
-	glTranslatef(-0.5f, 0.8f, 0.0f);
-	e = 0.9;
-	glScaled(e, e, e);
-	drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
-	glPopMatrix();
-
-	// Braço esquerdo (posicao normal)
-	glPushMatrix();
-	glTranslatef(-0.5f, 0.5f, 0.0f); // Posição inicial
-	glRotatef(30.0f, 0.0f, 0.0f, 1.0f); // Inclinação para baixo
-	drawCube(0.3f, 1, 0, 0); // Braço esquerdo amarelo
-	glPopMatrix();
-
-	// antebraço direito
-	glPushMatrix();
-	glTranslatef(0.5f, 0.8f, 0.0f);
-	e = 0.9;
-	glScaled(e, e, e);
-	drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
-	glPopMatrix();
-
-	// Braço direito
-	glPushMatrix();
-	glTranslatef(0.5f, 0.5f, 0.0f); // Posição inicial
-	glRotatef(-30.0f, 0.0f, 0.0f, 1.0f); // Inclinação para baixo
-	drawCube(0.3f, 1, 0, 0); // Braço esquerdo amarelo
-	glPopMatrix();
-	glPopMatrix();
-	// Antena
-	glPushMatrix();
-	glTranslatef(0.0f, 1.8f, 0.0f);
-	drawSphere(0.1f, 1.0f, 0.0f, 0.0f); // Bolinha vermelha na antena
-	glPopMatrix();
-
-	glPushMatrix();
-	glTranslatef(0.0f, 1.5f, 0.0f);
-	glScalef(0.1f, 0.5f, 0.1f);
-	drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
-	glPopMatrix();
-
-
+		glPushMatrix();
+		glTranslatef(0.15, 1.21f, 0.32);
+		e = 0.6;
+		glScaled(0.2, 1, 1);
+		drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+		glPopMatrix();
+		glPopMatrix();
+		
+		// Corpo
+		glPushMatrix();
+		glTranslatef(0.0f, 0.3, 0.0f);
+		glScaled(1, 1, 1);
+		drawCube(0.7f, 0.0f, 0.0f, 1.0f); // Corpo azul
+		glPopMatrix();
+	
+		// fundo do cinto
+		glPushMatrix();
+		glTranslatef(0.0f, 0.1, 0.35f);
+		e = 0.6;
+		glScaled(1.8, 0.3, 0.1);
+		drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cireita
+		glPushMatrix();
+		glTranslatef(0.1, 0.1, 0.38f);
+		e = 0.2;
+		glScaled(0.05, 0.2, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto esquerda
+		glPushMatrix();
+		glTranslatef(-0.1, 0.1, 0.38f);
+		e = 0.2;
+		glScaled(0.05, 0.2, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cima
+		glPushMatrix();
+		glTranslatef(0, 0.13, 0.38f);
+		e = 0.2;
+		glScaled(0.45, 0.05, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cima
+		glPushMatrix();
+		glTranslatef(0, 0.07, 0.38f);
+		e = 0.2;
+		glScaled(0.45, 0.05, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+	
+		// anteperna esquerda
+		glPushMatrix();
+		glTranslatef(-0.2, -0.2, 0.0f);
+		e = 0.9;
+		glScaled(e, 1.25, e);
+		drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
+		glPopMatrix();
+	
+		// Perna  esquerda
+		glPushMatrix();
+		glTranslatef(-0.2f, -0.5, 0.0f);
+		e = 0.9;
+		glScaled(e, e, e);
+		drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// anteperna direita
+		glPushMatrix();
+		glTranslatef(0.2, -0.2, 0.0f);
+		e = 0.9;
+		glScaled(e, 1.25, e);
+		drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
+		glPopMatrix();
+	
+		// Perna  direita
+		glPushMatrix();
+		glTranslatef(0.2f, -0.5, 0.0f);
+		glScaled(e, e, e);
+		drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
+		glPopMatrix();
+	
+	
+	// mexer nos braços
+		glPushMatrix();
+		glTranslatef(0, -0.34, 0);
+		// antebraço esquerdo
+		glPushMatrix();
+		glTranslatef(-0.5f, 0.8f, 0.0f);
+		e = 0.9;
+		glScaled(e, e, e);
+		drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
+		glPopMatrix();
+	
+		// Braço esquerdo
+		glPushMatrix();
+		glTranslatef(-0.8, 0.8f, 0.0f);
+		drawCube(0.3f, 1, 0, 0); // Braço esquerdo amarelo
+		glPopMatrix();
+	
+		// antebraço direito
+		glPushMatrix();
+		glTranslatef(0.5f, 0.8f, 0.0f);
+		e = 0.9;
+		glScaled(e, e, e);
+		drawCube(0.3f, 1, 1, 1); // Braço esquerdo amarelo
+		glPopMatrix();
+	
+		// Braço direito
+		glPushMatrix();
+		glTranslatef(0.8, 0.8f, 0.0f);
+		drawCube(0.3f, 1, 0, 0); // Braço esquerdo amarelo
+		glPopMatrix();
+		glPopMatrix();
+		// Antena
+		glPushMatrix();
+		glTranslatef(0.0f, 1.8f, 0.0f);
+		drawSphere(0.1f, 1.0f, 0.0f, 0.0f); // Bolinha vermelha na antena
+		glPopMatrix();
+	
+		glPushMatrix();
+		glTranslatef(0.0f, 1.5f, 0.0f);
+		glScalef(0.1f, 0.5f, 0.1f);
+		drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
+		glPopMatrix();
 	glPopMatrix();
 }
 
@@ -260,11 +273,6 @@ void display()
 
 
 
-	if (movimentando) {
-    printf("Personagem em movimento\n");
-} else {
-    printf("Personagem parado\n");
-}
 
 
 
@@ -343,33 +351,32 @@ void teclado(unsigned char key, int x, int y)
 		personagemZ -= movimento;
 		centerZ -= movimento;
 		eyeZ-=movimento;
-		printf("%f\n",personagemZ);
+		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 		anguloRotacao = 180.0f;
-		movimentando = true;
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras
 		personagemZ += movimento;
 		centerZ+= movimento;
 		eyeZ+=movimento;
+		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 		anguloRotacao = 0.0f;
-		movimentando = true;
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
 		personagemX -= movimento;
 		eyeX -= movimento;
 		centerX -= movimento;
+		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 		anguloRotacao = 270.0f;
-		movimentando = true;
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
 		personagemX += movimento;
 		eyeX += movimento;
 		centerX += movimento;
+		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 		anguloRotacao = 90.0f;
-		movimentando = true;
 		break;
 	case 't':
 	case 'T': // Mover a camera para frente (ao longo do eixo Z)
@@ -426,10 +433,6 @@ void teclado(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-void keyUp(unsigned char key, int x, int y) {
-    movimentando = false; // Quando qualquer tecla é solta, para o movimento
-}
-
 
 
 void moverPersonagem(float novoX, float novoZ)
@@ -466,8 +469,6 @@ void init()
 }
 
 
-
-
 void mousePassiveMotion(int x, int y)
 {
 	m_x = x;
@@ -486,7 +487,6 @@ int main(int argc, char** argv)
 	glutDisplayFunc(display);
 	glutReshapeFunc(redimensiona);
 	glutKeyboardFunc(teclado);
-	glutKeyboardUpFunc(keyUp); 
 	glutPassiveMotionFunc(mousePassiveMotion); //fucao callback do movimento passivo do mouse
 	printf("W/w: Mover para frente\n");
 	printf("S/s: Mover para tras\n");
@@ -498,7 +498,7 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-	
+	testaMatriz();
 
 	init();
 	glutMainLoop();
