@@ -28,19 +28,20 @@ int m_x, m_y;
 
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
-	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, 0, C, M, N},
-	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, 0, C, M},
+	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
+	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
 	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
 	{M, C, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
 	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
 	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
 	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
-	{M, C, C, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+	{M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
-std::set<std::pair<int, int> > muro;  // Conjunto para armazenar as posições de colisão
+std::set<std::pair<int, int> > muro;  // Conjunto para armazenar as posições de colisão com o muro
+std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posições de colisão com o muro
 
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
     // Iterar por todos os pares de coordenadas no set
@@ -53,34 +54,36 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
     return false;
 }
 
-
-// coordenadas reais (no mapa) da matriz
-void testaMatriz(){
+// captura coordenadas que geram colisao na matriz
+void colisoesMatriz(){
     int inicioX = -4;  // Valor inicial de X
     int inicioZ = -22; // Valor inicial de Z
-    int razaoX = 4;    // Razão de incremento para X
-    int razaoZ = 4;    // Razão de incremento para Z
 
     // Iterar por todas as linhas e colunas da matriz
     for (int z = 0; z < LINHAS_MAPA; z++) {
         for (int x = 0; x < COLUNAS_MAPA; x++) {
             // Se o valor na matriz for 'M' ou 'N', calcular todas as coordenadas dentro da célula
             if (matrizMapa[z][x] == M || matrizMapa[z][x] == N) {
-                // Para cada célula de 'M' ou 'N', iterar dentro dela (4x4 unidades)
+                // Para cada bloco de muro, iterar dentro dele (4x4 unidades)
                 for (int i = 0; i < 4; ++i) {
                     for (int j = 0; j < 4; ++j) {
-                        // Calcular as coordenadas de cada célula
-                        int posX = inicioX + x * razaoX + i;  // Incrementar por 1 unidade dentro da célula
-                        int posZ = inicioZ + z * razaoZ + j;  // Incrementar por 1 unidade dentro da célula
+                        int posX = inicioX + x * 4 + i;
+                        int posZ = inicioZ + z * 4 + j;
 
-                        // Adicionar as coordenadas no set
                         muro.insert(std::make_pair(posX, posZ));
-
-                        // Imprimir as coordenadas de cada posição dentro da célula
-                        printf("mapaX: %d, mapaZ: %d\n", posX, posZ);
                     }
                 }
-            }
+            }else if(matrizMapa[z][x] == C){
+				// Para cada caixote, iterar dentro dele (4x4 unidades)
+                for (int i = 0; i < 4; ++i) {
+                    for (int j = 0; j < 4; ++j) {
+                        int posX = inicioX + x * 4 + i;
+                        int posZ = inicioZ + z * 4 + j;
+
+                        caixa.insert(std::make_pair(posX, posZ));
+                    }
+                }
+			}
         }
     }
 }
@@ -219,7 +222,7 @@ void drawBomberman(){
 		glPopMatrix();
 	
 	
-	// mexer nos braços
+		// mexer nos braços
 		glPushMatrix();
 		glTranslatef(0, -0.34, 0);
 		// antebraço esquerdo
@@ -378,7 +381,7 @@ void teclado(unsigned char key, int x, int y)
 
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX, personagemZ - 1, muro)){
+		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 1, caixa)){
 			centerZ -= movimento;
 			eyeZ-=movimento;
 			
@@ -390,7 +393,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras
-		if (!temColisao(personagemX, personagemZ + 4, muro)){
+		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa)){
 			centerZ+= movimento;
 			eyeZ+=movimento;
 			
@@ -402,7 +405,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-		if (!temColisao(personagemX - 1, personagemZ, muro)){
+		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 1, personagemZ, caixa)){
 			eyeX -= movimento;
 			centerX -= movimento;
 			
@@ -414,7 +417,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-		if (!temColisao(personagemX + 4, personagemZ, muro)){
+		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa)){
 			eyeX += movimento;
 			centerX += movimento;
 			
@@ -512,6 +515,8 @@ void init()
 	carregaTextura(texID[4], "caixa.jpg");  		// Textura 3 = caixa
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
+	
+	colisoesMatriz();
 }
 
 
@@ -544,7 +549,6 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-	testaMatriz();
 
 	init();
 	glutMainLoop();
