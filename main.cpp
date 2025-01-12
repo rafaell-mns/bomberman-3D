@@ -40,8 +40,8 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
-std::set<std::pair<int, int> > muro;  // Conjunto para armazenar as posições de colisão com o muro
-std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posições de colisão com o muro
+std::set<std::pair<int, int> > muro;   // Conjunto para armazenar as posições de colisão com o muro
+std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posições de colisão com as caixas
 
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
     // Iterar por todos os pares de coordenadas no set
@@ -481,21 +481,6 @@ void teclado(unsigned char key, int x, int y)
 
 	glutPostRedisplay();
 }
-
-
-
-void moverPersonagem(float novoX, float novoZ)
-{
-	//int mapaX = (int)(novoX / 4); // Dividir por 4, que é a escala do terreno
-	//int mapaZ = (int)(novoZ / 4);
-
-	// Verificar se a nova posição está dentro dos limites do mapa e não é um muro
-
-	personagemX = novoX;
-	personagemZ = novoZ;
-
-}
-
 
 void init()
 {
