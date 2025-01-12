@@ -7,21 +7,26 @@
 #include "stb_image.h"
 #include "cenario.h"
 #include "glut_text.h"
+
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
 #define QTD_TEXTURAS 5
 
+#include <set>
+#include <utility>
+#include <cstdio>
+
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
+
 //Largura e altura da janela
 int width = 800, height = 500;
 
 //Coordenadas da posicao atual do mouse
 int m_x, m_y;
 
-int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] =
-{
+int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, 0, C, M, N},
 	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, 0, C, M},
@@ -35,6 +40,20 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] =
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
+std::set<std::pair<int, int> > muro;  // Conjunto para armazenar as posições de colisão
+
+bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
+    // Iterar por todos os pares de coordenadas no set
+    for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
+        // Comparar coordenadas
+        if (it->first == x && it->second == y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 // coordenadas reais (no mapa) da matriz
 void testaMatriz(){
     int inicioX = -4;  // Valor inicial de X
@@ -45,12 +64,23 @@ void testaMatriz(){
     // Iterar por todas as linhas e colunas da matriz
     for (int z = 0; z < LINHAS_MAPA; z++) {
         for (int x = 0; x < COLUNAS_MAPA; x++) {
-            // Calcular as posições de acordo com a razão
-            int posX = inicioX + x * razaoX;
-            int posZ = inicioZ + z * razaoZ;
-            
-            // Imprimir as coordenadas ajustadas
-            printf("mapaX: %d, mapaZ: %d\n", posX, posZ);
+            // Se o valor na matriz for 'M' ou 'N', calcular todas as coordenadas dentro da célula
+            if (matrizMapa[z][x] == M || matrizMapa[z][x] == N) {
+                // Para cada célula de 'M' ou 'N', iterar dentro dela (4x4 unidades)
+                for (int i = 0; i < 4; ++i) {
+                    for (int j = 0; j < 4; ++j) {
+                        // Calcular as coordenadas de cada célula
+                        int posX = inicioX + x * razaoX + i;  // Incrementar por 1 unidade dentro da célula
+                        int posZ = inicioZ + z * razaoZ + j;  // Incrementar por 1 unidade dentro da célula
+
+                        // Adicionar as coordenadas no set
+                        muro.insert(std::make_pair(posX, posZ));
+
+                        // Imprimir as coordenadas de cada posição dentro da célula
+                        printf("mapaX: %d, mapaZ: %d\n", posX, posZ);
+                    }
+                }
+            }
         }
     }
 }
@@ -348,35 +378,51 @@ void teclado(unsigned char key, int x, int y)
 
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		personagemZ -= movimento;
-		centerZ -= movimento;
-		eyeZ-=movimento;
-		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-		anguloRotacao = 180.0f;
+		if (!temColisao(personagemX, personagemZ - 1, muro)){
+			centerZ -= movimento;
+			eyeZ-=movimento;
+			
+			personagemZ -= movimento;
+			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			
+			anguloRotacao = 180.0f;
+		}
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras
-		personagemZ += movimento;
-		centerZ+= movimento;
-		eyeZ+=movimento;
-		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-		anguloRotacao = 0.0f;
+		if (!temColisao(personagemX, personagemZ + 4, muro)){
+			centerZ+= movimento;
+			eyeZ+=movimento;
+			
+			personagemZ += movimento;
+			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+
+			anguloRotacao = 0.0f;			
+		}
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-		personagemX -= movimento;
-		eyeX -= movimento;
-		centerX -= movimento;
-		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-		anguloRotacao = 270.0f;
+		if (!temColisao(personagemX - 1, personagemZ, muro)){
+			eyeX -= movimento;
+			centerX -= movimento;
+			
+			personagemX -= movimento;
+			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			
+			anguloRotacao = 270.0f;
+		}
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-		personagemX += movimento;
-		eyeX += movimento;
-		centerX += movimento;
-		printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-		anguloRotacao = 90.0f;
+		if (!temColisao(personagemX + 4, personagemZ, muro)){
+			eyeX += movimento;
+			centerX += movimento;
+			
+			personagemX += movimento;
+			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			
+			anguloRotacao = 90.0f;
+		}
 		break;
 	case 't':
 	case 'T': // Mover a camera para frente (ao longo do eixo Z)
