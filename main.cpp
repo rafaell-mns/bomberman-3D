@@ -103,7 +103,7 @@ bool valorW = true;
 std::vector<float> v;
 
 void preencherVetor(std::vector<float>& v) {
-    for (float i = 0.17f; i >= -0.17f; i -= 0.05f) {
+    for (float i = 0.27f; i >= -0.27f; i -= 0.05f) {
         v.push_back(i);
     }
 }
@@ -125,7 +125,7 @@ void andarBomberman(float t) {
 		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
 		float e = 2;
 		
-		glRotated(180,0,1,0);
+		glRotated(anguloRotacao,0,1,0);
 		glScaled(e, e, e);
 		
 		// Fun??o para desenhar o personagem Bomberman
@@ -258,7 +258,10 @@ glPushMatrix();
 		glTranslatef(0.0f, -0.34, 0.0f);
 
 		// antebra?o esquerdo
+
 		glPushMatrix();
+		
+	
 		glTranslatef(-0.5f, 0.8f, 0.0f);
 		e = 0.9;
 		glRotated(45, -1, 0, 0);      
@@ -274,7 +277,7 @@ glPushMatrix();
 		glRotated(45, -1, 0, 0);        
 		drawCube(0.3f, 1, 0, 0); // Bra?o esquerdo amarelo
 		glPopMatrix();
-	
+
 		// antebra?o direito
 		glPushMatrix();
 		glTranslatef(0.5f, 0.8f, 0.0f);
@@ -316,6 +319,7 @@ glPushMatrix();
 		glTranslatef(-28+personagemX, 3.7, 0.0f+personagemZ);
 		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
 		float e = 2;
+		glRotated(anguloRotacao,0,1,0);
 		glScaled(e, e, e);
 		
 		// Fun??o para desenhar o personagem Bomberman
@@ -435,24 +439,23 @@ glPushMatrix();
 		glPopMatrix();
 	
 	
-		// mexer nos bra?os
-		glPushMatrix();
-		
-		glTranslatef(0, -0.2, 0.5);
-		glRotated(45,-1,0,0);
-		
-	
+// mexer nos bra?os
+glPushMatrix();
+		glTranslatef(0.0f, -0.34, 0.0f);
 		// antebra?o esquerdo
 		glPushMatrix();
 		glTranslatef(-0.5f, 0.8f, 0.0f);
 		e = 0.9;
+		//glRotated(45, -1, 0, 0);      
 		glScaled(e, e, e);
 		drawCube(0.3f, 1, 1, 1); // Bra?o esquerdo amarelo
 		glPopMatrix();
 	
+	
 		// Bra?o esquerdo
 		glPushMatrix();
-		glTranslatef(-0.5, 0.55, 0.0f);
+		glTranslatef(-0.5, 0.63, 0);
+		//glRotated(45, -1, 0, 0);        
 		drawCube(0.3f, 1, 0, 0); // Bra?o esquerdo amarelo
 		glPopMatrix();
 	
@@ -460,16 +463,19 @@ glPushMatrix();
 		glPushMatrix();
 		glTranslatef(0.5f, 0.8f, 0.0f);
 		e = 0.9;
+		//glRotated(45, -1, 0, 0);  
 		glScaled(e, e, e);
 		drawCube(0.3f, 1, 1, 1); // Bra?o esquerdo amarelo
 		glPopMatrix();
 	
 		// Bra?o direito
 		glPushMatrix();
-		glTranslatef(0.5, 0.55, 0.0f);
+		glTranslatef(0.5, 0.63, 0);
+		//glRotated(45, -1, 0, 0);  
 		drawCube(0.3f, 1, 0, 0); // Bra?o esquerdo amarelo
 		glPopMatrix();
-		glPopMatrix();
+glPopMatrix();
+
 		// Antena
 		glPushMatrix();
 		glTranslatef(0.0f, 1.8f, 0.0f);
@@ -578,7 +584,7 @@ void drawSphere(float radius, float r, float g, float b)
 void teclado(unsigned char key, int x, int y)
 {
 	
-	const float movimento = 1.0; // Define a quantidade de movimento
+	const float movimento = 0.4; // Define a quantidade de movimento
 	switch (key)
 	{
 	case '1':
@@ -636,7 +642,7 @@ void teclado(unsigned char key, int x, int y)
 			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 			
 			
-			anguloRotacao = 180.0f;
+			anguloRotacao = 180;
 		}
 		break;
 	case 's':
@@ -644,8 +650,20 @@ void teclado(unsigned char key, int x, int y)
 		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa)){
 			centerZ+= movimento;
 			eyeZ+=movimento;
-			
 			personagemZ += movimento;
+			
+			andando = true;
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+			printf("t: %f ",t);
+			if (flag)
+				k++;	
+            else
+				k--;
+			
 			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 
 			anguloRotacao = 0.0f;			
@@ -656,8 +674,19 @@ void teclado(unsigned char key, int x, int y)
 		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 1, personagemZ, caixa)){
 			eyeX -= movimento;
 			centerX -= movimento;
-			
 			personagemX -= movimento;
+			
+			andando = true;
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+			printf("t: %f ",t);
+			if (flag)
+				k++;	
+            else
+				k--;
 			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 			
 			anguloRotacao = 270.0f;
@@ -668,8 +697,20 @@ void teclado(unsigned char key, int x, int y)
 		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa)){
 			eyeX += movimento;
 			centerX += movimento;
-			
 			personagemX += movimento;
+			
+			andando = true;
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+			printf("t: %f ",t);
+			if (flag)
+				k++;	
+            else
+				k--;
+			
 			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 			
 			anguloRotacao = 90.0f;
@@ -745,14 +786,14 @@ void tecladoSolta(unsigned char key, int x, int y){
 
 	case 's':
 	case 'S': // Mover o personagem pra tras
-
+		andando = false;
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-
+		andando = false;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-
+		andando = false;
 
 	default:
 		
