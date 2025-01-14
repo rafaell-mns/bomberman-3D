@@ -50,7 +50,7 @@ void desenhaBombas() {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) { // Usando iterador explícito
         glPushMatrix();
         glColor3f(0.0f, 0.0f, 0.0f); // Cor da bomba
-        glTranslated(it->x, 3.7, it->z); // Posição da bomba (X, Y fixo, Z)
+        glTranslated(it->x, 3.2, it->z); // Posição da bomba (X, Y fixo, Z)
         glutSolidSphere(1.0, 50, 50); // Desenha a esfera
         glPopMatrix();
     }

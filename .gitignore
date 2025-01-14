@@ -1,4 +1,8 @@
 *.exe
 *.layout
 *.o
+*.ico
+*.dat
+*.rc
+*.mak
 referencias/
