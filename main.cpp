@@ -1,23 +1,22 @@
+#include <set>
 #include <math.h>
+#include <cstdio>
+#include <vector>
+#include <utility>
+#include <conio.h> 
 #include <stdio.h>
 #include <iostream>
 #include <GL/glut.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "cenario.h"
+#include "stb_image.h"
 #include "glut_text.h"
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
 #define QTD_TEXTURAS 5
 
-#include <set>
-#include <utility>
-#include <cstdio>
-#include <conio.h> 
-#include <iostream>
-#include <vector>
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
@@ -42,8 +41,8 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
-std::set<std::pair<int, int> > muro;   // Conjunto para armazenar as posi??es de colis?o com o muro
-std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posi??es de colis?o com as caixas
+std::set<std::pair<int, int> > muro;   // Conjunto para armazenar as posicoes de colisao com o muro
+std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posicoes de colisao com as caixas
 
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
     // Iterar por todos os pares de coordenadas no set
@@ -119,7 +118,6 @@ void andarBomberman(float t) {
 		// perna esquerda pra tras e braço direito pra frente
 		
  glPushMatrix();
- 	 
 		// mexer na posi??o do player
 		glTranslatef(-28+personagemX, 3.7, 0.0f+personagemZ);
 		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
@@ -134,7 +132,6 @@ void andarBomberman(float t) {
 		glTranslatef(0, -0.2, 0);
 		glScaled(1.1, 1.1, 1.1);
 		
-
 		//Cabe?a
 		glPushMatrix();
 		glTranslatef(0.0f, 1.2f, 0.0f);
@@ -220,10 +217,6 @@ void andarBomberman(float t) {
 		glRotated(45,-1,0,0);
 		drawCube(0.3f, 1, 1, 1); // Bra?o esquerdo amarelo
 		glPopMatrix();
-	
-		
-	
-	
 		
 		// Perna  esquerda
 		glPushMatrix();
@@ -242,7 +235,6 @@ void andarBomberman(float t) {
 		glRotated(45,-1,0,0);
 		drawCube(0.3f, 1, 1, 1); // Bra?o esquerdo amarelo
 		glPopMatrix();
-	
 		
 		// Perna  direita
 		glPushMatrix();
@@ -252,7 +244,6 @@ void andarBomberman(float t) {
 		drawCube(0.4f, 1.0f, 0.0f, 0.0f); // Perna esquerda vermelha
 		glPopMatrix();
 
-	
 		// mexer nos bra?os
 glPushMatrix();
 		glTranslatef(0.0f, -0.34, 0.0f);
@@ -269,8 +260,6 @@ glPushMatrix();
 		drawCube(0.3f, 1, 1, 1); // Bra?o esquerdo amarelo
 		glPopMatrix();
 	
-	
-
 		// Bra?o esquerdo
 		glPushMatrix();
 		glTranslatef(-0.5, 0.63, t);
@@ -307,8 +296,6 @@ glPopMatrix();
 		glPopMatrix();
 glPopMatrix();
 }
-
-
 
 
 // Fun??o para desenhar o personagem Bomberman
@@ -582,8 +569,7 @@ void drawSphere(float radius, float r, float g, float b)
 // Controle do teclado
 // Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y)
-{
-	
+{	
 	const float movimento = 0.4; // Define a quantidade de movimento
 	switch (key)
 	{
@@ -604,12 +590,12 @@ void teclado(unsigned char key, int x, int y)
 		centerZ = personagemZ-2;
 		break;
 	case '3':
-		eyeX = personagemX-26;
-		eyeY = 22;
-		eyeZ = personagemZ-25;
-		centerX = personagemX+-23;
+		eyeX = personagemX-21;
+		eyeY = 16; // 14
+		eyeZ = personagemZ+24;
+		centerX = personagemX-21;
 		centerY = 0;
-		centerZ = personagemZ+18;
+		centerZ = personagemZ-3;
 		break;
 
 	case '4':
