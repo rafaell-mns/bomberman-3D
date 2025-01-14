@@ -27,6 +27,36 @@ float flag = true;
 //Coordenadas da posicao atual do mouse
 int m_x, m_y;
 
+struct Bomba {
+    float x, z;   // Posição da bomba (X e Z)
+};
+std::vector<Bomba> bombas;
+
+/*
+void atualizarBombas(float deltaTempo) {
+    for (auto& bomba : bombas) {
+        bomba.tempo -= deltaTempo; // Diminui o tempo de vida
+    }
+
+    // Remove bombas com tempo <= 0
+    bombas.erase(std::remove_if(bombas.begin(), bombas.end(),
+                                [](const Bomba& bomba) { return bomba.tempo <= 0.0f; }),
+                 bombas.end());
+}
+*/
+
+// Função para desenhar todas as bombas
+void desenhaBombas() {
+    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) { // Usando iterador explícito
+        glPushMatrix();
+        glColor3f(0.0f, 0.0f, 0.0f); // Cor da bomba
+        glTranslated(it->x, 3.7, it->z); // Posição da bomba (X, Y fixo, Z)
+        glutSolidSphere(1.0, 50, 50); // Desenha a esfera
+        glPopMatrix();
+    }
+}
+
+
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
@@ -500,6 +530,14 @@ void redimensiona(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void spawnBomba() {
+    Bomba novaBomba;
+    novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
+    novaBomba.z = personagemZ;        // Posição Z da bomba
+    //novaBomba.tempo = TEMPO_DE_VIDA_BOMBA; // Tempo de vida inicial
+    bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
+}
+
 void display()
 {
 	// Limpar os buffers de cor e profundidade
@@ -524,6 +562,8 @@ void display()
 	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto
 	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
 	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
+	
+	desenhaBombas();
 
 
 
@@ -606,7 +646,9 @@ void teclado(unsigned char key, int x, int y)
 		centerY = 0,
 		centerZ = personagemZ-2;
 		break;
-
+	case 32:
+		spawnBomba();
+		break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
 		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 1, caixa)){
