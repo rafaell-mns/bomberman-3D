@@ -117,9 +117,21 @@ void spawnBomba() {
     novaBomba.z = personagemZ;        // Posição Z da bomba
     novaBomba.tempoVida = 6000;			// 6 segundos
     novaBomba.imunidade = true;        // Começa com imunidade
-    novaBomba.tempoImunidade = 1000;    // Exemplo: 1s de imunidade
+    novaBomba.tempoImunidade = 100;    // Exemplo: 1s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
 }
+
+bool verificarColisaoComBombas(float jogadorX, float jogadorZ) {
+    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
+        if (it->x + 28.3f == jogadorX && it->z == jogadorZ && !it->imunidade) {
+            // Ação de colisão, como reduzir vida ou bloquear movimento
+            printf("colisao\n");
+            return true;  // Colisão detectada
+        }
+    }
+    return false; // Nenhuma colisão
+}
+
 
 // Desenhar todas as bombas (chamada na funcao display)
 void desenhaBombas() {
@@ -162,7 +174,6 @@ void atualizarBombas(int value) {
             it->tempoImunidade -= 50; // Reduz o tempo de imunidade
             if (it->tempoImunidade <= 0) {
                 it->imunidade = false; // Remove a imunidade
-                printf("pode colisao");
             }
         }
 
@@ -636,6 +647,7 @@ void display()
 	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
 	
 	desenhaBombas();
+	verificarColisaoComBombas(personagemX, personagemZ);
 	
 	if (andando){
 		andarBomberman(t);	
