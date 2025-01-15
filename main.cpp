@@ -21,42 +21,16 @@
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
 
-//Largura e altura da janela
+float personagemX = 0.0f, personagemZ = 0.0f;
+
+// Largura e altura da janela
 int width = 800, height = 500;
 float flag = true;
-//Coordenadas da posicao atual do mouse
+
+// Coordenadas da posicao atual do mouse
 int m_x, m_y;
 
-struct Bomba {
-    float x, z;   // Posição da bomba (X e Z)
-};
-std::vector<Bomba> bombas;
-
-/*
-void atualizarBombas(float deltaTempo) {
-    for (auto& bomba : bombas) {
-        bomba.tempo -= deltaTempo; // Diminui o tempo de vida
-    }
-
-    // Remove bombas com tempo <= 0
-    bombas.erase(std::remove_if(bombas.begin(), bombas.end(),
-                                [](const Bomba& bomba) { return bomba.tempo <= 0.0f; }),
-                 bombas.end());
-}
-*/
-
-// Função para desenhar todas as bombas
-void desenhaBombas() {
-    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) { // Usando iterador explícito
-        glPushMatrix();
-        glColor3f(0.0f, 0.0f, 0.0f); // Cor da bomba
-        glTranslated(it->x, 3.2, it->z); // Posição da bomba (X, Y fixo, Z)
-        glutSolidSphere(1.0, 50, 50); // Desenha a esfera
-        glPopMatrix();
-    }
-}
-
-
+// ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
@@ -71,13 +45,14 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
-std::set<std::pair<int, int> > muro;   // Conjunto para armazenar as posicoes de colisao com o muro
-std::set<std::pair<int, int> > caixa;  // Conjunto para armazenar as posicoes de colisao com as caixas
+// Conjunto para armazenar coordenadas de colisoes
+std::set<std::pair<int, int> > muro;
+std::set<std::pair<int, int> > caixa;
 
+// Funcao booleanda
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
-    // Iterar por todos os pares de coordenadas no set
+	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
-        // Comparar coordenadas
         if (it->first == x && it->second == y) {
             return true;
         }
@@ -87,8 +62,7 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 
 // captura coordenadas que geram colisao na matriz
 void colisoesMatriz(){
-    int inicioX = -4;  // Valor inicial de X
-    int inicioZ = -22; // Valor inicial de Z
+    int inicioX = -4, inicioZ = -22; // Valor inicial de X e Z
 
     // Iterar por todas as linhas e colunas da matriz
     for (int z = 0; z < LINHAS_MAPA; z++) {
@@ -119,17 +93,58 @@ void colisoesMatriz(){
     }
 }
 
+// ------------------- Configuracoes da Bomba -------------------
+// Estrutura
+struct Bomba {
+    float x, z;   // Posição da bomba (X e Z)
+};
+
+// vetor de bombas (permite atirar multiplas bombas)
+std::vector<Bomba> bombas;
+
+void spawnBomba() {
+    Bomba novaBomba;
+    novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
+    novaBomba.z = personagemZ;        // Posição Z da bomba
+    //novaBomba.tempo = TEMPO_DE_VIDA_BOMBA; // Tempo de vida inicial
+    bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
+}
+
+// Desenhar todas as bombas (chamada na funcao display)
+void desenhaBombas() {
+    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) { // Usando iterador explícito
+        glPushMatrix();
+        glColor3f(0.0f, 0.0f, 0.0f); // Cor da bomba
+        glTranslated(it->x, 3.2, it->z); // Posição da bomba (X, Y fixo, Z)
+        glutSolidSphere(1.0, 50, 50); // Desenha a esfera
+        glPopMatrix();
+    }
+}
+
+
+// ------------------- Desenha o Personagem -------------------
 // Prot?tipos das fun??es
 void drawSphere(float radius, float r, float g, float b);
 void drawCube(float size, float r, float g, float b);
 void moverPersonagem(float novoX, float novoZ);
 void mousePassiveMotion(int x, int y);
 
-float personagemX = 0.0f, personagemZ = 0.0f;
 float anguloRotacao = 0.0f; 
 bool andando = false;
 bool valorW = true;
 std::vector<float> v;
+
+void drawCube(float size, float r, float g, float b)
+{
+	glColor3f(r, g, b);
+	glutSolidCube(size);
+}
+
+void drawSphere(float radius, float r, float g, float b)
+{
+	glColor3f(r, g, b);
+	glutSolidSphere(radius, 20, 20);
+}
 
 void preencherVetor(std::vector<float>& v) {
     for (float i = 0.27f; i >= -0.27f; i -= 0.05f) {
@@ -327,7 +342,6 @@ glPopMatrix();
 glPopMatrix();
 }
 
-
 // Fun??o para desenhar o personagem Bomberman
 void drawBomberman(){
 	
@@ -507,9 +521,7 @@ glPopMatrix();
 glPopMatrix();
 }
 
-
-
-
+// ------------------- Configuracoes do GLUT -------------------
 // Variaveis para controlar a camera
 bool visaoCima = false;
 float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
@@ -530,14 +542,6 @@ void redimensiona(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void spawnBomba() {
-    Bomba novaBomba;
-    novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
-    novaBomba.z = personagemZ;        // Posição Z da bomba
-    //novaBomba.tempo = TEMPO_DE_VIDA_BOMBA; // Tempo de vida inicial
-    bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
-}
-
 void display()
 {
 	// Limpar os buffers de cor e profundidade
@@ -552,11 +556,6 @@ void display()
 	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	glPopMatrix(); // Restaurar o estado da matriz
 
-
-
-
-
-
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto
@@ -564,23 +563,13 @@ void display()
 	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
 	
 	desenhaBombas();
-
-
-
+	
 	if (andando){
 		andarBomberman(t);	
 	}		
 	else{
 		drawBomberman();
 	}
-	    
-		
-     
-			
-	
-		
-	
-	
 	
 	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necessÃ¡rio
 	glPopMatrix();
@@ -588,22 +577,6 @@ void display()
 	// Finalizar a renderizaÃ§Ã£o
 	glFlush();
 	glutSwapBuffers();
-}
-
-
-
-
-
-void drawCube(float size, float r, float g, float b)
-{
-	glColor3f(r, g, b);
-	glutSolidCube(size);
-}
-
-void drawSphere(float radius, float r, float g, float b)
-{
-	glColor3f(r, g, b);
-	glutSolidSphere(radius, 20, 20);
 }
 
 // Controle do teclado
@@ -797,11 +770,8 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	}
 	
-	
-
 	glutPostRedisplay();
 }
-
 
 void tecladoSolta(unsigned char key, int x, int y){
 	
@@ -834,6 +804,7 @@ void tecladoSolta(unsigned char key, int x, int y){
 	glutPostRedisplay();
 	
 }
+
 void init()
 { 
 	glClearColor(0.4, 0.7, 1, 1); // Cor de fundo azul claro
@@ -856,7 +827,6 @@ void init()
 	colisoesMatriz();
 }
 
-
 void mousePassiveMotion(int x, int y)
 {
 	m_x = x;
@@ -867,7 +837,6 @@ void mousePassiveMotion(int x, int y)
 int main(int argc, char** argv)
 {
 	preencherVetor(v);
-	// Inicializa o GLUT e configura a janela
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 500);
