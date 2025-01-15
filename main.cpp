@@ -753,7 +753,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 1, personagemZ, caixa)){
+		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 1, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
 			eyeX -= movimento;
 			centerX -= movimento;
 			personagemX -= movimento;
@@ -776,7 +776,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa)){
+		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
 			eyeX += movimento;
 			centerX += movimento;
 			personagemX += movimento;
