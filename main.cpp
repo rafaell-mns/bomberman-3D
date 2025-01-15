@@ -97,6 +97,9 @@ void colisoesMatriz(){
 // Estrutura
 struct Bomba {
     float x, z;   // Posição da bomba (X e Z)
+    int tempoVida;
+    bool imunidade;      // Flag para imunidade de colisão
+    int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
 
 // controla detalhes da animacao
@@ -112,7 +115,9 @@ void spawnBomba() {
     Bomba novaBomba;
     novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
     novaBomba.z = personagemZ;        // Posição Z da bomba
-    //novaBomba.tempo = TEMPO_DE_VIDA_BOMBA; // Tempo de vida inicial
+    novaBomba.tempoVida = 6000;			// 6 segundos
+    novaBomba.imunidade = true;        // Começa com imunidade
+    novaBomba.tempoImunidade = 1000;    // Exemplo: 1s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
 }
 
@@ -139,6 +144,35 @@ void atualizarCor(int valor){
     // Chama a função de atualização novamente após 350ms (0.35 segundos)
     glutTimerFunc(350, atualizarCor, 0);
 }
+
+void atualizarBombas(int value) {
+    // Usando iterador explícito
+    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ) {
+        if (it->tempoVida > 0) {
+            it->tempoVida -= 50; // Reduz o tempo de vida em 50ms
+
+            // Caso o tempo de vida expire, remove a bomba
+            if (it->tempoVida <= 0) {
+                it = bombas.erase(it); // Remove a bomba do vetor e retorna o próximo iterador válido
+                continue; // Pula a iteração para evitar acessar um iterador inválido
+            }
+        }
+
+        if (it->imunidade) {
+            it->tempoImunidade -= 50; // Reduz o tempo de imunidade
+            if (it->tempoImunidade <= 0) {
+                it->imunidade = false; // Remove a imunidade
+                printf("pode colisao");
+            }
+        }
+
+        ++it; // Avança para a próxima bomba
+    }
+
+    // Reagenda a atualização após 50ms
+    glutTimerFunc(50, atualizarBombas, 0);
+}
+
 
 void atualizarEscala(int value) {
     if (aumentando) {
@@ -673,7 +707,7 @@ void teclado(unsigned char key, int x, int y)
 			if (k <= 0)
 				flag = true;
 			t = v[k];
-			printf("t: %f ",t);
+			//printf("t: %f ",t);
 			if (flag)
 				k++;	
             else
@@ -698,7 +732,7 @@ void teclado(unsigned char key, int x, int y)
 			if (k <= 0)
 				flag = true;
 			t = v[k];
-			printf("t: %f ",t);
+			//printf("t: %f ",t);
 			if (flag)
 				k++;	
             else
@@ -722,7 +756,7 @@ void teclado(unsigned char key, int x, int y)
 			if (k <= 0)
 				flag = true;
 			t = v[k];
-			printf("t: %f ",t);
+			//printf("t: %f ",t);
 			if (flag)
 				k++;	
             else
@@ -745,7 +779,7 @@ void teclado(unsigned char key, int x, int y)
 			if (k <= 0)
 				flag = true;
 			t = v[k];
-			printf("t: %f ",t);
+			//printf("t: %f ",t);
 			if (flag)
 				k++;	
             else
@@ -900,6 +934,7 @@ int main(int argc, char** argv)
 	// Funcoes de animacao
 	glutTimerFunc(500, atualizarCor, 0);
 	glutTimerFunc(50, atualizarEscala, 0);  
+	glutTimerFunc(50, atualizarBombas, 0); // Inicia a animação das bombas
 	
 	init();
 	glutMainLoop();
