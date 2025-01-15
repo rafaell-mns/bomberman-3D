@@ -117,21 +117,18 @@ void spawnBomba() {
     novaBomba.z = personagemZ;        // Posição Z da bomba
     novaBomba.tempoVida = 6000;			// 6 segundos
     novaBomba.imunidade = true;        // Começa com imunidade
-    novaBomba.tempoImunidade = 100;    // Exemplo: 1s de imunidade
+    novaBomba.tempoImunidade = 1000;    // Exemplo: 1s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
 }
 
 bool verificarColisaoComBombas(float jogadorX, float jogadorZ) {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
-        if (it->x + 28.3f == jogadorX && it->z == jogadorZ && !it->imunidade) {
-            // Ação de colisão, como reduzir vida ou bloquear movimento
-            printf("colisao\n");
+        if (round(it->x + 28.3f) == round(jogadorX) && round(it->z) == round(jogadorZ) && !it->imunidade) {
             return true;  // Colisão detectada
         }
     }
     return false; // Nenhuma colisão
 }
-
 
 // Desenhar todas as bombas (chamada na funcao display)
 void desenhaBombas() {
@@ -647,7 +644,6 @@ void display()
 	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
 	
 	desenhaBombas();
-	verificarColisaoComBombas(personagemX, personagemZ);
 	
 	if (andando){
 		andarBomberman(t);	
@@ -709,7 +705,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 1, caixa)){
+		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
 			centerZ -= movimento;
 			eyeZ-=movimento;
 			personagemZ -= movimento;
@@ -733,7 +729,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras
-		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa)){
+		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ + 3)){
 			centerZ+= movimento;
 			eyeZ+=movimento;
 			personagemZ += movimento;
