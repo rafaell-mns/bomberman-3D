@@ -79,19 +79,14 @@ void colisoesMatriz(){
                     }
                 }
             }else if(matrizMapa[z][x] == C){
-				// Para cada caixote, iterar dentro dele (4x4 unidades)
-                for (int i = 0; i < 4; ++i) {
-                    for (int j = 0; j < 4; ++j) {
-                        int posX = inicioX + x * 4 + i;
-                        int posZ = inicioZ + z * 4 + j;
-
-                        caixa.insert(std::make_pair(posX, posZ));
-                    }
-                }
+                int posX = inicioX + x * 4 + 0; // ponto central
+                int posZ = inicioZ + z * 4 + 0; // ponto central
+                printf("%d %d\n\n", posX, posZ);
+                caixa.insert(std::make_pair(posX, posZ));     
+				}
 			}
         }
     }
-}
 
 // ------------------- Configuracoes da Bomba -------------------
 // Estrutura
@@ -772,7 +767,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
+		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
 			centerZ -= movimento;
 			eyeZ-=movimento;
 			personagemZ -= movimento;
@@ -820,7 +815,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 1, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
+		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 3, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
 			eyeX -= movimento;
 			centerX -= movimento;
 			personagemX -= movimento;
