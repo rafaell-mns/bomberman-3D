@@ -34,8 +34,8 @@ int m_x, m_y;
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
-	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
+	{N, C, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
 	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
 	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
@@ -157,12 +157,12 @@ void desenharExplosao(float x, float z) {
 }
 
 void removerCaixote(int posX, int posZ){
-	int xMatriz = posX - 1;
-	int zMatriz = posZ - 18;
+	int xMatriz = posX + 2;
+	int zMatriz = posZ + 15;
 	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
 	caixa.erase({posX, posZ}); // remover colisão
-	int x = (posX - 4) / 4; // Calcula a posição na matriz
-    int z = (posZ - 22) / 4;
+	int x = (posX - 2) / 4; // Calcula a posição na matriz
+    int z = (posZ - 15) / 4;
     printf("caixote em (%d, %d)\n", x, z);
 }
 
