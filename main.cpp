@@ -99,12 +99,15 @@ struct Bomba {
     float x, z;   // Posição da bomba (X e Z)
 };
 
-// flag para alternar cor
-bool isWhite = false;
+// controla detalhes da animacao
+float escala = 1.0f;    // tamanho da bomba para controlar ela pulsando
+bool isWhite = false;   // alterna entra branco e preto
+bool aumentando = true; // verificar a pulsacao dela
 
 // vetor de bombas (permite atirar multiplas bombas)
 std::vector<Bomba> bombas;
 
+// adiciona um novo registro de bomba
 void spawnBomba() {
     Bomba novaBomba;
     novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
@@ -120,11 +123,13 @@ void desenhaBombas() {
         if (isWhite) glColor3f(1.0f, 1.0f, 1.0f);  // Cor branca
     	else glColor3f(0.0f, 0.0f, 0.0f);  		   // Cor preta
         glTranslated(it->x, 3.2, it->z); // Posição da bomba (X, Y fixo, Z)
+    	glScalef(escala, escala, escala); 
         glutSolidSphere(1.0, 50, 50); // Desenha a esfera
         glPopMatrix();
     }
 }
 
+// Funcoes de animacao
 void atualizarCor(int valor){
 	isWhite = !isWhite;
 	
@@ -133,6 +138,26 @@ void atualizarCor(int valor){
 
     // Chama a função de atualização novamente após 350ms (0.35 segundos)
     glutTimerFunc(350, atualizarCor, 0);
+}
+
+void atualizarEscala(int value) {
+    if (aumentando) {
+        escala += 0.05f;  		// Aumenta a escala
+        if (escala >= 1.5f) {   // Limite máximo
+            aumentando = false;
+        }
+    } else {
+        escala -= 0.05f;  		// Diminui a escala
+        if (escala <= 1.0f) {   // Limite mínimo
+            aumentando = true;
+        }
+    }
+
+    // Solicita a atualização da tela
+    glutPostRedisplay();
+
+    // Chama a função novamente após 50ms
+    glutTimerFunc(50, atualizarEscala, 0);
 }
 
 
@@ -871,7 +896,11 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
+	
+	// Funcoes de animacao
 	glutTimerFunc(500, atualizarCor, 0);
+	glutTimerFunc(50, atualizarEscala, 0);  
+	
 	init();
 	glutMainLoop();
 }
