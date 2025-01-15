@@ -99,6 +99,9 @@ struct Bomba {
     float x, z;   // Posição da bomba (X e Z)
 };
 
+// flag para alternar cor
+bool isWhite = false;
+
 // vetor de bombas (permite atirar multiplas bombas)
 std::vector<Bomba> bombas;
 
@@ -114,11 +117,22 @@ void spawnBomba() {
 void desenhaBombas() {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) { // Usando iterador explícito
         glPushMatrix();
-        glColor3f(0.0f, 0.0f, 0.0f); // Cor da bomba
+        if (isWhite) glColor3f(1.0f, 1.0f, 1.0f);  // Cor branca
+    	else glColor3f(0.0f, 0.0f, 0.0f);  		   // Cor preta
         glTranslated(it->x, 3.2, it->z); // Posição da bomba (X, Y fixo, Z)
         glutSolidSphere(1.0, 50, 50); // Desenha a esfera
         glPopMatrix();
     }
+}
+
+void atualizarCor(int valor){
+	isWhite = !isWhite;
+	
+	// atualizar tela
+    glutPostRedisplay();
+
+    // Chama a função de atualização novamente após 350ms (0.35 segundos)
+    glutTimerFunc(350, atualizarCor, 0);
 }
 
 
@@ -857,7 +871,7 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-
+	glutTimerFunc(500, atualizarCor, 0);
 	init();
 	glutMainLoop();
 }
