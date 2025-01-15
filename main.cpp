@@ -36,7 +36,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
 	{M, C, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
 	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
-	{M, C, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
+	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
 	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
 	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
@@ -113,9 +113,9 @@ std::vector<Bomba> bombas;
 // adiciona um novo registro de bomba
 void spawnBomba() {
     Bomba novaBomba;
-    novaBomba.x = personagemX - 28.3f; // Posição X da bomba (relativa ao personagem)
+    novaBomba.x = personagemX - 28; // Posição X da bomba (relativa ao personagem)
     novaBomba.z = personagemZ;        // Posição Z da bomba
-    novaBomba.tempoVida = 6000;			// 6 segundos
+    novaBomba.tempoVida = 5000;			// 5 segundos
     novaBomba.imunidade = true;        // Começa com imunidade
     novaBomba.tempoImunidade = 1000;    // Exemplo: 1s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
@@ -124,7 +124,7 @@ void spawnBomba() {
 // verifica colisao bomba arredondando coordenadas
 bool verificarColisaoComBombas(float jogadorX, float jogadorZ) {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
-        if (round(it->x + 28.3f) == round(jogadorX) && round(it->z) == round(jogadorZ) && !it->imunidade) {
+        if (round(it->x + 28) == round(jogadorX) && round(it->z) == round(jogadorZ) && !it->imunidade) {
             return true;  // Colisão detectada
         }
     }
@@ -144,44 +144,42 @@ void desenhaBombas() {
     }
 }
 
+std::vector<std::pair<int, int> > posicoesExplosoes;
+
 void desenharExplosao(float x, float z) {
-    // Salvar a matriz atual
-    glPushMatrix();
+    glPushMatrix();  // Salva o estado atual da matriz
 
-    // Transladar para a posição da explosão
-    glTranslatef(x, 0.0f, z);
+    glColor3f(1.0f, 0.0f, 0.0f);  // Define a cor da esfera (vermelha)
+    glTranslatef(x, 3.7, z);      // Aplica a translação
+    printf("Explosao em (%.1f, %.1f)\n", x, z);
 
-    // Configurar cor inicial (amarelo para o centro da explosão)
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glutSolidSphere(0.5f, 20, 20); // Centro da explosão (amarelo)
+    // Cria um objeto quadrático para desenhar a esfera
+    GLUquadric* quadric = gluNewQuadric();
+    gluSphere(quadric, 1.0, 30, 30);  // Desenha uma esfera com raio 1.0 e 30 segmentos
 
-    // Configurar cor intermediária (laranja para meio da explosão)
-    glColor3f(1.0f, 0.5f, 0.0f);
-    glutSolidSphere(0.8f, 20, 20); // Camada intermediária (laranja)
+    gluDeleteQuadric(quadric);  // Libera os recursos usados pelo objeto quadrático
 
-    // Configurar cor externa (cinza para fumaça)
-    glColor3f(0.5f, 0.5f, 0.5f);
-    for (float angulo = 0; angulo < 360; angulo += 45) {
-        glPushMatrix();
-        float deslocamentoX = cos(angulo * M_PI / 180.0f) * 1.2f;
-        float deslocamentoZ = sin(angulo * M_PI / 180.0f) * 1.2f;
-        glTranslatef(deslocamentoX, 0.0f, deslocamentoZ);
-        glutSolidSphere(0.3f, 15, 15); // Fumaça
-        glPopMatrix();
-    }
-
-    // Restaurar a matriz original
-    glPopMatrix();
+    glPopMatrix();  // Restaura o estado da matriz
 }
 
+
 void rastroExplosao(int bombaX, int bombaZ) {
-	printf("começa em (%d, %d)", bombaX, bombaZ);
+	/*
+	printf("MURO");
+	for (std::set<std::pair<int, int> >::iterator it = muro.begin(); it != muro.end(); ++it) {
+        printf("(%d, %d)\n", it->first, it->second);
+    }
+    */
+	
+	
+	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
+	
     // Vetores para definir as direções (cima, baixo, esquerda, direita)
     int direcoes[4][2] = {
-        {0, 1},  // Para cima (Z+)
-        {0, -1}, // Para baixo (Z-)
-        {-1, 0}, // Para esquerda (X-)
-        {1, 0}   // Para direita (X+)
+        {0, 4},  // Para cima (Z+)
+        {0, -4}, // Para baixo (Z-)
+        {-4, 0}, // Para esquerda (X-)
+        {4, 0}   // Para direita (X+)
     };
 
     // Percorre cada direção
@@ -207,7 +205,7 @@ void rastroExplosao(int bombaX, int bombaZ) {
 
             // Marca a explosão na posição atual (aqui você pode desenhar, registrar, etc.)
             desenharExplosao(novoX, novoZ);
-            printf("\n(%d, %d)\n", novoX, novoZ);
+            glutPostRedisplay();
         }
     }
 }
@@ -232,7 +230,7 @@ void atualizarBombas(int value) {
             // Caso o tempo de vida expire, remove a bomba
             if (it->tempoVida <= 0) {
                 it = bombas.erase(it); // Remove a bomba do vetor e retorna o próximo iterador válido
-                rastroExplosao(round(it->x + 28.3), round(it->z));
+                rastroExplosao(round(it->x + 28), round(it->z));
                 continue; // Pula a iteração para evitar acessar um iterador inválido
             }
         }
@@ -314,7 +312,7 @@ void andarBomberman(float t) {
 		
  glPushMatrix();
 		// mexer na posi??o do player
-		glTranslatef(-28+personagemX, 3.7, 0.0f+personagemZ);
+		glTranslatef(-28+personagemX, 3.7, personagemZ);
 		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
 		float e = 2;
 		
