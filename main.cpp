@@ -79,9 +79,8 @@ void colisoesMatriz(){
                     }
                 }
             }else if(matrizMapa[z][x] == C){
-                int posX = inicioX + x * 4 + 0; // ponto central
-                int posZ = inicioZ + z * 4 + 0; // ponto central
-                printf("%d %d\n\n", posX, posZ);
+                int posX = inicioX + x * 4;
+                int posZ = inicioZ + z * 4;
                 caixa.insert(std::make_pair(posX, posZ));     
 				}
 			}
@@ -157,16 +156,17 @@ void desenharExplosao(float x, float z) {
     glPopMatrix();  // Restaura o estado da matriz
 }
 
+void removerCaixote(int posX, int posZ){
+	int xMatriz = posX - 1;
+	int zMatriz = posZ - 18;
+	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
+	caixa.erase({posX, posZ}); // remover colisão
+	int x = (posX - 4) / 4; // Calcula a posição na matriz
+    int z = (posZ - 22) / 4;
+    printf("caixote em (%d, %d)\n", x, z);
+}
 
 void rastroExplosao(int bombaX, int bombaZ) {
-	/*
-	printf("MURO");
-	for (std::set<std::pair<int, int> >::iterator it = muro.begin(); it != muro.end(); ++it) {
-        printf("(%d, %d)\n", it->first, it->second);
-    }
-    */
-	
-	
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
 	
     // Vetores para definir as direções (cima, baixo, esquerda, direita)
@@ -194,7 +194,7 @@ void rastroExplosao(int bombaX, int bombaZ) {
 
             // Verifica se há uma caixa, remove a caixa e interrompe a explosão
             if (caixa.find({novoX, novoZ}) != caixa.end()) {
-                caixa.erase({novoX, novoZ});
+            	removerCaixote(novoX, novoZ);
                 break;
             }
 
