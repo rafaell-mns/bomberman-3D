@@ -160,7 +160,7 @@ void removerCaixote(int posX, int posZ){
 	int xMatriz = posX + 2;
 	int zMatriz = posZ + 15;
 	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
-	caixa.erase({posX, posZ}); // remover colisão
+	caixa.erase(std::make_pair(posX, posZ));  // remover colisão
 	int x = (posX - 2) / 4; // Calcula a posição na matriz
     int z = (posZ - 15) / 4;
     printf("caixote em (%d, %d)\n", x, z);
@@ -188,12 +188,12 @@ void rastroExplosao(int bombaX, int bombaZ) {
             int novoZ = bombaZ + dz * passo;
 
             // Verifica se há um muro, se sim, interrompe a explosão nessa direção
-            if (muro.find({novoX, novoZ}) != muro.end()) {
+            if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) {
                 break;
             }
 
             // Verifica se há uma caixa, remove a caixa e interrompe a explosão
-            if (caixa.find({novoX, novoZ}) != caixa.end()) {
+            if (caixa.find(std::make_pair(novoX, novoZ)) != caixa.end()) {
             	removerCaixote(novoX, novoZ);
                 break;
             }
