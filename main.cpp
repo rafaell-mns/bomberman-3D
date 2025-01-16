@@ -747,7 +747,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case '3':
 		eyeX = personagemX-21;
-		eyeY = 16; // 14
+		eyeY = 16;
 		eyeZ = personagemZ+24;
 		centerX = personagemX-21;
 		centerY = 0;
@@ -755,12 +755,12 @@ void teclado(unsigned char key, int x, int y)
 		break;
 
 	case '4':
-		eyeX = personagemX-28-1;
-		eyeY = 41;
-		eyeZ = personagemZ-64;
-		centerX = personagemX-28-2,
+		eyeX = personagemX-2;
+		eyeY = 28;
+		eyeZ = personagemZ+52;
+		centerX = personagemX-2,
 		centerY = 0,
-		centerZ = personagemZ-2;
+		centerZ = personagemZ-12;
 		break;
 	case 32:
 		spawnBomba();
