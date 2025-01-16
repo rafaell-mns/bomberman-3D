@@ -25,6 +25,8 @@ float personagemX = 0.0f, personagemZ = 0.0f;
 enum cam{um = 1, dois, tres, quatro};
 enum paises{brasil = 1, argentina, portugal, japao};
 int ultima_cam = um;
+std::vector<float> v;
+
 // Largura e altura da janela
 int width = 800, height = 500;
 float flag = true;
@@ -68,10 +70,14 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
         if (it->first == x && it->second == y) {
+        	printf("\nTEM COLISAO\n");
             return true;
+            
         }
     }
+     printf("\n NAO TEM COLISAO\n");
     return false;
+   
 }
 
 // captura coordenadas que geram colisao na matriz
@@ -110,200 +116,9 @@ struct Bomba {
     int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
 
-struct Jogador{
-	float t; // variavel usada na translacao para fazer a animacao
-	float x,z; // posicao do bot
-	float anguloRotacao;
-	
-	// Função para desenhar o personagem Bomberman
-	void andarBomberman(float x2, float z2, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo) {
 
-		
-	 glPushMatrix();
-			// mexer na posi??o do player
-			glTranslatef(x+ x2, 3.7, z+z2);
-			//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
-			float e = 2;
-			
-			glRotated(anguloRotacao,0,1,0);
-			glScaled(e, e, e);
-			
-			// Fun??o para desenhar o personagem Bomberman
-			glPushMatrix();
-			// mexer no rosto + cabeca + olhos
-			glTranslatef(0, -0.2, 0);
-			glScaled(1.1, 1.1, 1.1);
-			
-			//Cabe?a
-			glPushMatrix();
-			glTranslatef(0.0f, 1.2f, 0.0f);
-			drawSphere(0.5f, r_capuz, g_capuz, b_capuz); // Cabe?a branca
-			glPopMatrix();
-	
-			// rosto
-			glPushMatrix();
-			glTranslatef(0.0f, 1.21f, 0.08);
-			 e = 0.9;
-			glScaled(e, e, e);
-			drawSphere(0.5, 0.961, 0.741, 0.569); // rosto
-			glPopMatrix();
-	
-			// olhos
-			glPushMatrix();
-			glTranslatef(-0.15, 1.21f, 0.32);
-			e = 0.6;
-			glScaled(0.2, 1, 1);
-			drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
-			glPopMatrix();
-	
-			glPushMatrix();
-			glTranslatef(0.15, 1.21f, 0.32);
-			e = 0.6;
-			glScaled(0.2, 1, 1);
-			drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
-			glPopMatrix();
-			glPopMatrix();
-			
-			// Corpo
-			glPushMatrix();
-			glTranslatef(0.0f, 0.3, 0.0f);
-			glScaled(1, 1, 1);
-			drawCube(0.7f, r_corpo,g_corpo, b_corpo); // Corpo azul
-			glPopMatrix();
-		
-			// fundo do cinto
-			glPushMatrix();
-			glTranslatef(0.0f, 0.1, 0.35f);
-			e = 0.6;
-			glScaled(1.8, 0.3, 0.1);
-			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
-			glPopMatrix();
-		
-			// parte dourada do cinto cireita
-			glPushMatrix();
-			glTranslatef(0.1, 0.1, 0.38f);
-			e = 0.2;
-			glScaled(0.05, 0.2, e);
-			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-			glPopMatrix();
-		
-			// parte dourada do cinto esquerda
-			glPushMatrix();
-			glTranslatef(-0.1, 0.1, 0.38f);
-			e = 0.2;
-			glScaled(0.05, 0.2, e);
-			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-			glPopMatrix();
-		
-			// parte dourada do cinto cima
-			glPushMatrix();
-			glTranslatef(0, 0.13, 0.38f);
-			e = 0.2;
-			glScaled(0.45, 0.05, e);
-			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-			glPopMatrix();
-		
-			// parte dourada do cinto cima
-			glPushMatrix();
-			glTranslatef(0, 0.07, 0.38f);
-			e = 0.2;
-			glScaled(0.45, 0.05, e);
-			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
-			glPopMatrix();
-	
-			// anteperna esquerda
-			glPushMatrix();
-			glTranslatef(-0.2, -0.2, 0.0f);
-			e = 0.9;
-			glScaled(e, 1.25, e);
-			glRotated(45,-1,0,0);
-			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
-			glPopMatrix();
-			
-			// Perna  esquerda
-			glPushMatrix();
-			glTranslatef(-0.2f, -0.4, -t);
-			glRotated(45,-1,0,0);
-			e = 0.9;
-			glScaled(e, e, e);
-			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
-			glPopMatrix();
-		
-			// anteperna direita
-			glPushMatrix();
-			glTranslatef(0.2, -0.2, 0.0f);
-			e = 0.9;
-			glScaled(e, 1.25, e);
-			glRotated(45,-1,0,0);
-			drawCube(0.3f,r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
-			glPopMatrix();
-			
-			// Perna  direita
-			glPushMatrix();
-			glTranslatef(0.2f, -0.4, t);
-			glRotated(45,-1,0,0);
-			glScaled(e, e, e);
-			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
-			glPopMatrix();
-	
-			// mexer nos bra?os
-	glPushMatrix();
-			glTranslatef(0.0f, -0.34, 0.0f);
-	
-			// antebra?o esquerdo
-	
-			glPushMatrix();
-			
-		
-			glTranslatef(-0.5f, 0.8f, 0.0f);
-			e = 0.9;
-			glRotated(45, -1, 0, 0);      
-			glScaled(e, e, e);
-			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
-			glPopMatrix();
-		
-			// Bra?o esquerdo
-			glPushMatrix();
-			glTranslatef(-0.5, 0.63, t);
-			glRotated(45, -1, 0, 0);        
-			drawCube(0.3f, r_sec,g_sec,b_sec); // Bra?o esquerdo amarelo
-			glPopMatrix();
-	
-			// antebra?o direito
-			glPushMatrix();
-			glTranslatef(0.5f, 0.8f, 0.0f);
-			e = 0.9;
-			glRotated(45, -1, 0, 0);  
-			glScaled(e, e, e);
-			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
-			glPopMatrix();
-		
-			// Bra?o direito
-			glPushMatrix();
-			glTranslatef(0.5, 0.63, -t);
-			glRotated(45, -1, 0, 0);  
-			drawCube(0.3f, r_sec,g_sec,b_sec); // Bra?o esquerdo amarelo
-			glPopMatrix();
-	glPopMatrix();
-			// Antena
-			glPushMatrix();
-			glTranslatef(0.0f, 1.8f, 0.0f);
-			drawSphere(0.1f, r_sec,g_sec,b_sec); // Bolinha vermelha na antena
-			glPopMatrix();
-		
-			glPushMatrix();
-			glTranslatef(0.0f, 1.5f, 0.0f);
-			glScalef(0.1f, 0.5f, 0.1f);
-			drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
-			glPopMatrix();
-	glPopMatrix();
-	}
 
-	
 
-};
-
-Jogador player;
 
 // controla detalhes da animacao
 float escala = 1.0f;    // tamanho da bomba para controlar ela pulsando
@@ -481,10 +296,10 @@ void drawCube(float size, float r, float g, float b);
 void moverPersonagem(float novoX, float novoZ);
 void mousePassiveMotion(int x, int y);
 
-float anguloRotacao = 0.0f; 
+
 bool andando = false;
 bool valorW = true;
-std::vector<float> v;
+
 
 
 
@@ -500,7 +315,7 @@ float k = 0;
 
 
 // Fun??o para desenhar o personagem Bomberman
-void drawBomberman(float x_inicial, float z_inicial,float x, float z, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo ){
+void drawBomberman(float anguloRotacao, float x_inicial, float z_inicial,float x, float z, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo ){
 	
 glPushMatrix();
 		// mexer na posi??o do player
@@ -700,21 +515,443 @@ void mudarPais(float pais ,float*Rcapuz,float*Gcapuz,float*Bcapuz, float*Rsec, f
 }
 
 
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+// Função para gerar um número aleatório dentro de um intervalo
+int numeroAleatorio(int minimo, int maximo) {
+    return minimo + rand() % ((maximo - minimo) + 1);
+}
+
+
+struct Jogador{
+	float addX, addZ;
+	float t; // variavel usada na translacao para fazer a animacao
+	float x,z; // posicao do bot
+	float anguloRotacao;
+	bool flag;
+	std::vector<float> v;
+	 float movimento;
+	float k;
+	
+void preencherVetor() {
+    for (float i = 0.27f; i >= -0.27f; i -= 0.05f) {
+        v.push_back(i);
+    }
+}
+	
+	// Função para desenhar o personagem Bomberman
+	void andarBomberman(float x2, float z2, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo) {
+
+		
+	 glPushMatrix();
+			// mexer na posi??o do player
+			glTranslatef(x+ x2, 3.7, z+z2);
+			//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
+			float e = 2;
+			
+			glRotated(anguloRotacao,0,1,0);
+			glScaled(e, e, e);
+			
+			// Fun??o para desenhar o personagem Bomberman
+			glPushMatrix();
+			// mexer no rosto + cabeca + olhos
+			glTranslatef(0, -0.2, 0);
+			glScaled(1.1, 1.1, 1.1);
+			
+			//Cabe?a
+			glPushMatrix();
+			glTranslatef(0.0f, 1.2f, 0.0f);
+			drawSphere(0.5f, r_capuz, g_capuz, b_capuz); // Cabe?a branca
+			glPopMatrix();
+	
+			// rosto
+			glPushMatrix();
+			glTranslatef(0.0f, 1.21f, 0.08);
+			 e = 0.9;
+			glScaled(e, e, e);
+			drawSphere(0.5, 0.961, 0.741, 0.569); // rosto
+			glPopMatrix();
+	
+			// olhos
+			glPushMatrix();
+			glTranslatef(-0.15, 1.21f, 0.32);
+			e = 0.6;
+			glScaled(0.2, 1, 1);
+			drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+			glPopMatrix();
+	
+			glPushMatrix();
+			glTranslatef(0.15, 1.21f, 0.32);
+			e = 0.6;
+			glScaled(0.2, 1, 1);
+			drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+			glPopMatrix();
+			glPopMatrix();
+			
+			// Corpo
+			glPushMatrix();
+			glTranslatef(0.0f, 0.3, 0.0f);
+			glScaled(1, 1, 1);
+			drawCube(0.7f, r_corpo,g_corpo, b_corpo); // Corpo azul
+			glPopMatrix();
+		
+			// fundo do cinto
+			glPushMatrix();
+			glTranslatef(0.0f, 0.1, 0.35f);
+			e = 0.6;
+			glScaled(1.8, 0.3, 0.1);
+			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
+			glPopMatrix();
+		
+			// parte dourada do cinto cireita
+			glPushMatrix();
+			glTranslatef(0.1, 0.1, 0.38f);
+			e = 0.2;
+			glScaled(0.05, 0.2, e);
+			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+			glPopMatrix();
+		
+			// parte dourada do cinto esquerda
+			glPushMatrix();
+			glTranslatef(-0.1, 0.1, 0.38f);
+			e = 0.2;
+			glScaled(0.05, 0.2, e);
+			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+			glPopMatrix();
+		
+			// parte dourada do cinto cima
+			glPushMatrix();
+			glTranslatef(0, 0.13, 0.38f);
+			e = 0.2;
+			glScaled(0.45, 0.05, e);
+			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+			glPopMatrix();
+		
+			// parte dourada do cinto cima
+			glPushMatrix();
+			glTranslatef(0, 0.07, 0.38f);
+			e = 0.2;
+			glScaled(0.45, 0.05, e);
+			drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+			glPopMatrix();
+	
+			// anteperna esquerda
+			glPushMatrix();
+			glTranslatef(-0.2, -0.2, 0.0f);
+			e = 0.9;
+			glScaled(e, 1.25, e);
+			glRotated(45,-1,0,0);
+			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+			glPopMatrix();
+			
+			// Perna  esquerda
+			glPushMatrix();
+			glTranslatef(-0.2f, -0.4, -t);
+			glRotated(45,-1,0,0);
+			e = 0.9;
+			glScaled(e, e, e);
+			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
+			glPopMatrix();
+		
+			// anteperna direita
+			glPushMatrix();
+			glTranslatef(0.2, -0.2, 0.0f);
+			e = 0.9;
+			glScaled(e, 1.25, e);
+			glRotated(45,-1,0,0);
+			drawCube(0.3f,r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+			glPopMatrix();
+			
+			// Perna  direita
+			glPushMatrix();
+			glTranslatef(0.2f, -0.4, t);
+			glRotated(45,-1,0,0);
+			glScaled(e, e, e);
+			drawCube(0.4f, r_sec,g_sec,b_sec); // Perna esquerda vermelha
+			glPopMatrix();
+	
+			// mexer nos bra?os
+	glPushMatrix();
+			glTranslatef(0.0f, -0.34, 0.0f);
+	
+			// antebra?o esquerdo
+	
+			glPushMatrix();
+			
+		
+			glTranslatef(-0.5f, 0.8f, 0.0f);
+			e = 0.9;
+			glRotated(45, -1, 0, 0);      
+			glScaled(e, e, e);
+			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+			glPopMatrix();
+		
+			// Bra?o esquerdo
+			glPushMatrix();
+			glTranslatef(-0.5, 0.63, t);
+			glRotated(45, -1, 0, 0);        
+			drawCube(0.3f, r_sec,g_sec,b_sec); // Bra?o esquerdo amarelo
+			glPopMatrix();
+	
+			// antebra?o direito
+			glPushMatrix();
+			glTranslatef(0.5f, 0.8f, 0.0f);
+			e = 0.9;
+			glRotated(45, -1, 0, 0);  
+			glScaled(e, e, e);
+			drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+			glPopMatrix();
+		
+			// Bra?o direito
+			glPushMatrix();
+			glTranslatef(0.5, 0.63, -t);
+			glRotated(45, -1, 0, 0);  
+			drawCube(0.3f, r_sec,g_sec,b_sec); // Bra?o esquerdo amarelo
+			glPopMatrix();
+	glPopMatrix();
+			// Antena
+			glPushMatrix();
+			glTranslatef(0.0f, 1.8f, 0.0f);
+			drawSphere(0.1f, r_sec,g_sec,b_sec); // Bolinha vermelha na antena
+			glPopMatrix();
+		
+			glPushMatrix();
+			glTranslatef(0.0f, 1.5f, 0.0f);
+			glScalef(0.1f, 0.5f, 0.1f);
+			drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
+			glPopMatrix();
+	glPopMatrix();
+	}
+
+	void andarCima(){
+		
+
+		
+			
+			addZ -= movimento;
+			printf("%f",addZ);
+			anguloRotacao= 180;
+			
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+			
+			if (flag)
+				k++;	
+            else
+				k--;
+	
+		
+	}
+	
+	void andarDireita(){
+	
+		
+					
+		
+			addX += movimento;
+			printf("%f\n",addX);
+		
+			anguloRotacao  = 90.0f;
+			
+		
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+		
+			if (flag)
+				k++;	
+            else
+				k--;
+			
+		
+			
+	}	
+
+	void andarEsquerda(){
+		
+
+			addX += movimento;
+			anguloRotacao = 270.0f;
+	
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			
+			t = v[k];
+			
+	
+			if (flag)
+				k++;	
+            else
+				k--;
+		
+			
+			
+		
+		
+	}
+	
+	void andarBaixo(){
+	
+			
+			addZ += movimento;
+			anguloRotacao = 0.0f;
+			
+	
+			if (k >= v.size())
+				flag = false;
+			if (k <= 0)
+				flag = true;
+			t = v[k];
+
+			if (flag)
+				k++;	
+            else
+				k--;
+			
+		
+
+						 
+		
+	}
+	
+	// Funcao booleanda
+bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
+	// Para cada coordenada do conjunto	
+    for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
+        if (it->first == x && it->second == y) {
+        	printf("\nTEM COLISAO\n");
+            return true;
+            
+        }
+    }
+     printf("\n NAO TEM COLISAO\n");
+    return false;
+   
+}
+	
+	
+};
+
+Jogador player;
+enum direcoes{cima = 1, direita, baixo, esquerda};
+float dir = 1;
+Jogador bot1 = {0,0};
+Jogador bot2 = {0,0};
+Jogador bot3 = {0,0};
+
+
+	
 void spawnarbots(){
 	// cores: capuz, cor secundaria e corpo
-	Jogador bot1;
-	bot1.x = 24;
+	
+	dir = numeroAleatorio(1,50);
+;
+	bot1.x = -28;
+
 	bot1.z = 8;
+
+	bot1.movimento = 0.5;
+	
 	float r1,g1,b1,r2,g2,b2,r3,g3,b3;
 	mudarPais(argentina, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	drawBomberman(bot1.x,bot1.z,personagemX,personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	//bot1.andarBomberman(personagemX,personagemZ
+	
+	if (dir == cima){
+		
+			bot1.andarCima();
+		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	
+	}else if (dir == direita){
+
+			bot1.andarDireita();
+		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == esquerda){
+		bot1.andarEsquerda();
+		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == baixo){
+		bot1.andarBaixo();
+		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}else{
+		drawBomberman(bot1.anguloRotacao,bot1.x,bot1.z, bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}
 	
 	
+	dir = numeroAleatorio(1,50);
+;
+	bot2.x = 24;
+
+	bot2.z = -10;
+
+	bot2.movimento = 0.5;
+	
+	 
 	mudarPais(portugal, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	drawBomberman(24,-10,personagemX,personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	drawBomberman(-28,-15,personagemX,personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	
+	if (dir == cima){
+		
+			bot2.andarCima();
+		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	
+	}else if (dir == direita){
+
+			bot2.andarDireita();
+		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == esquerda){
+		bot2.andarEsquerda();
+		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == baixo){
+		bot2.andarBaixo();
+		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}else{
+		drawBomberman(bot2.anguloRotacao,bot2.x,bot2.z, bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}
+	
+		dir = numeroAleatorio(1,50);
+;
+	bot3.x = -28;
+
+	bot3.z = -15;
+
+	bot3.movimento = 0.5;
+	
+	 
+		mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
+	
+	if (dir == cima){
+		
+			bot3.andarCima();
+		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	
+	}else if (dir == direita){
+
+			bot3.andarDireita();
+		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == esquerda){
+		bot3.andarEsquerda();
+		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+		
+	}else if (dir == baixo){
+		bot3.andarBaixo();
+		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}else{
+		drawBomberman(bot3.anguloRotacao,bot3.x,bot3.z, bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	}
+	
+	
+
 	
 }
 // ------------------- Configuracoes do GLUT -------------------
@@ -770,7 +1007,7 @@ void display()
 	else{
 		float r1,g1,b1,r2,g2,b2,r3,g3,b3;
 		mudarPais(brasil, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-		drawBomberman(player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
+		drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
 	}
 	
 	spawnarbots();
@@ -787,7 +1024,7 @@ void display()
 // Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y)
 {	
-	const float movimento = 0.4; // Define a quantidade de movimento
+	float movimento =0.4; // Define a quantidade de movimento
 	switch (key)
 	{
 	case '1':
@@ -832,14 +1069,14 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX, personagemZ - 1, muro) && !temColisao(personagemX, personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
+		if (!temColisao(personagemX,personagemZ, muro) && !temColisao(personagemX, player.z +  personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
 		
 				
 			centerZ -= movimento;
 			eyeZ-=movimento;
 			personagemZ -= movimento;
 		
-			player.anguloRotacao = anguloRotacao= 180;
+			player.anguloRotacao= 180;
 			
 			andando = true;
 			if (k >= v.size())
@@ -868,7 +1105,7 @@ void teclado(unsigned char key, int x, int y)
 			centerZ += movimento;
 			eyeZ+=movimento;
 			personagemZ += movimento;
-			player.anguloRotacao = anguloRotacao= 0.0f;
+			player.anguloRotacao = 0.0f;
 			
 			andando = true;
 			if (k >= v.size())
@@ -893,7 +1130,7 @@ void teclado(unsigned char key, int x, int y)
 			eyeX -= movimento;
 			centerX -= movimento;
 			personagemX -= movimento;
-			player.anguloRotacao= anguloRotacao = 270.0f;
+			player.anguloRotacao = 270.0f;
 			andando = true;
 			if (k >= v.size())
 				flag = false;
@@ -914,11 +1151,11 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
+	if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
 			eyeX += movimento;
 			centerX += movimento;
 			personagemX += movimento;
-			player.anguloRotacao  = anguloRotacao= 90.0f;
+			player.anguloRotacao  = 90.0f;
 			
 			andando = true;
 			if (k >= v.size())
@@ -1057,7 +1294,9 @@ void mousePassiveMotion(int x, int y)
 int main(int argc, char** argv)
 {
 	preencherVetor(v);
-	
+	bot1.preencherVetor();
+	bot2.preencherVetor();
+	bot3.preencherVetor();
 	player.x = -28;
 	player.z = 0;
 	glutInit(&argc, argv);
