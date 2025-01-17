@@ -274,8 +274,8 @@ void desenharExplosao(float x, float z) {
 }
 
 void removerCaixote(int posX, int posZ) {
-    for (int i = -2; i <= 2; ++i) {
-        for (int j = -2; j <= 2; ++j) {
+    for (int i = 0; i <= 2; ++i) {
+        for (int j = 0; j <= 2; ++j) {
             int newX = posX + i;
             int newZ = posZ + j;
             
@@ -1622,8 +1622,6 @@ void mousePassiveMotion(int x, int y)
 
 int main(int argc, char** argv)
 {
-
-
 	player.x = -28;
 	player.z = 0;
 	glutInit(&argc, argv);
@@ -1646,12 +1644,6 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-
-
-
-
-        
-		
 
 	// Funcoes de animacao
 	glutTimerFunc(500, atualizarCor, 0);
