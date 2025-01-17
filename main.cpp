@@ -525,7 +525,7 @@ void mudarPais(float pais ,float*Rcapuz,float*Gcapuz,float*Bcapuz, float*Rsec, f
 #include <cstdlib>
 #include <ctime>
 
-// FunÁ„o para gerar um n˙mero aleatÛrio dentro de um intervalo
+// Fun√ß√£o para gerar um n√∫mero aleat√≥rio dentro de um intervalo
 int numeroAleatorio(int minimo, int maximo) {
     return minimo + rand() % ((maximo - minimo) + 1);
 }
@@ -547,7 +547,7 @@ void preencherVetor() {
     }
 }
 	
-	// FunÁ„o para desenhar o personagem Bomberman
+	// Fun√ß√£o para desenhar o personagem Bomberman
 	void andarBomberman(float x2, float z2, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo) {
 
 		
@@ -987,7 +987,7 @@ void display()
 	// Limpar os buffers de cor e profundidade
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Configurar a c‚mera
+	// Configurar a c√¢mera
 	glLoadIdentity();
 	gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
 
@@ -1018,10 +1018,10 @@ void display()
 	
 	spawnarbots();
 	
-	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necess·rio
+	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necess√°rio
 	glPopMatrix();
 
-	// Finalizar a renderizaÁ„o
+	// Finalizar a renderiza√ß√£o
 	glFlush();
 	glutSwapBuffers();
 }
