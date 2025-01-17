@@ -78,12 +78,12 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
         if (it->first == x && it->second == y) {
-        	printf("\nTEM COLISAO\n");
+        	//printf("\nTEM COLISAO\n");
             return true;
             
         }
     }
-     printf("\n NAO TEM COLISAO\n");
+     //printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -110,10 +110,10 @@ void colisoesMatriz(){
                 int posX = inicioX + x * 4;
                 int posZ = inicioZ + z * 4;
                 caixa.insert(std::make_pair(posX, posZ));     
-				}
 			}
-        }
-    }
+		}
+	}
+}
 
 // ------------------- Configuracoes da Bomba -------------------
 // Estrutura
@@ -839,12 +839,12 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
         if (it->first == x && it->second == y) {
-        	printf("\nTEM COLISAO\n");
+        	//printf("\nTEM COLISAO\n");
             return true;
             
         }
     }
-     printf("\n NAO TEM COLISAO\n");
+     //printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -866,20 +866,32 @@ void spawnarBots(){
 	if(!spawnBot){
 		bot1.x = 18;
 		bot1.z = 15;
-		bot1.movimento = 0.2;
+		bot1.movimento = 0.5;
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
-	   	bot2.movimento = 0.2;
+	   	bot2.movimento = 0.5;
 	   	
 		bot3.x = -28;
 		bot3.z = -15;
-	   	bot3.movimento = 0.2;
+	   	bot3.movimento = 0.5;
 	   	
 	   	spawnBot = true;
 	}
 	
 }
+
+bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
+    // Direções opostas não são consideradas perpendiculares
+    if ((ultimaDirecao == cima && novaDirecao == baixo) || 
+        (ultimaDirecao == baixo && novaDirecao == cima) || 
+        (ultimaDirecao == direita && novaDirecao == esquerda) || 
+        (ultimaDirecao == esquerda && novaDirecao == direita)) {
+        return false;
+    }
+    return true;
+}
+
 
 void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
     mudarPais(pais, &r1, &g1, &b1, &r2, &g2, &b2, &r3, &g3, &b3);
@@ -887,25 +899,26 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
     bool mudouDirecao = false;
 
     // Tenta continuar na última direção
-    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z, muro)) {
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
         bot.z -= bot.movimento;
-        bot.anguloRotacao = 0; // Cima
+        bot.anguloRotacao = 180; // Cima
     } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
         bot.x += bot.movimento;
         bot.anguloRotacao = 90; // Direita
     } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 28, bot.z, muro)) {
         bot.x -= bot.movimento;
         bot.anguloRotacao = -90; // Esquerda
-    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 28, bot.z + 4, muro)) {
+    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro)) {
         bot.z += bot.movimento;
-        bot.anguloRotacao = 180; // Baixo
+        bot.anguloRotacao = 0; // Baixo
     } else {
         // Sorteia uma nova direção que seja diferente da última
         mudouDirecao = true;
         int novaDirecao;
         do {
-            novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-        } while (novaDirecao == bot.ultimaDirecao); // Garante que a direção seja diferente
+		    novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
+		} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
+
 
         bot.ultimaDirecao = novaDirecao;
     }
