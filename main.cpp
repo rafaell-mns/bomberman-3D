@@ -861,139 +861,73 @@ Jogador bot3 = {0,0};
 
 
 bool spawnBot = false;	
-void spawnarbots(){
-	// cores: capuz, cor secundaria e corpo
-	float r1,g1,b1,r2,g2,b2,r3,g3,b3;
-	
+void spawnarBots(){
 	// spawna bot sÃ³ no comeÃ§o
 	if(!spawnBot){
-		bot1.x = 18 ;
+		bot1.x = 18;
 		bot1.z = 15;
-		bot1.movimento = 0.15;
+		bot1.movimento = 0.2;
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
-	   	bot2.movimento = 0.15;
+	   	bot2.movimento = 0.2;
 	   	
 		bot3.x = -28;
 		bot3.z = -15;
-	   	bot3.movimento = 0.15;
+	   	bot3.movimento = 0.2;
 	   	
 	   	spawnBot = true;
 	}
 	
-	// Bot 1
-	dir = numeroAleatorio(1,90);
-	mudarPais(argentina, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	
-	bool mudouDirecao = false;
+}
+
+void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
+    mudarPais(pais, &r1, &g1, &b1, &r2, &g2, &b2, &r3, &g3, &b3);
+
+    bool mudouDirecao = false;
 
     // Tenta continuar na última direção
-    if (bot1.ultimaDirecao == cima && !temColisao(bot1.x + 28, bot1.z, muro)) {
-        bot1.z -= bot1.movimento;
-        bot1.anguloRotacao = 0; // Ajusta o ângulo para cima
-    } else if (bot1.ultimaDirecao == direita && !temColisao(bot1.x + 24, bot1.z, muro)) {
-        bot1.x += bot1.movimento;
-        bot1.anguloRotacao = 90; // Ajusta o ângulo para direita
-    } else if (bot1.ultimaDirecao == esquerda && !temColisao(bot1.x + 27, bot1.z, muro)) {
-        bot1.x -= bot1.movimento;
-        bot1.anguloRotacao = -90; // Ajusta o ângulo para esquerda
-    } else if (bot1.ultimaDirecao == baixo && !temColisao(bot1.x + 28, bot1.z + 4, muro)) {
-        bot1.z += bot1.movimento;
-        bot1.anguloRotacao = 180; // Ajusta o ângulo para baixo
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z, muro)) {
+        bot.z -= bot.movimento;
+        bot.anguloRotacao = 0; // Cima
+    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
+        bot.x += bot.movimento;
+        bot.anguloRotacao = 90; // Direita
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 28, bot.z, muro)) {
+        bot.x -= bot.movimento;
+        bot.anguloRotacao = -90; // Esquerda
+    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 28, bot.z + 4, muro)) {
+        bot.z += bot.movimento;
+        bot.anguloRotacao = 180; // Baixo
     } else {
-        // Caso encontre colisão, sorteia uma nova direção
+        // Sorteia uma nova direção que seja diferente da última
         mudouDirecao = true;
         int novaDirecao;
         do {
             novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-        } while (novaDirecao == bot1.ultimaDirecao); // Evita repetir a última direção
-        
-        bot1.ultimaDirecao = novaDirecao;
+        } while (novaDirecao == bot.ultimaDirecao); // Garante que a direção seja diferente
+
+        bot.ultimaDirecao = novaDirecao;
     }
 
-    // Renderiza o bot1
+    // Renderiza o bot
     if (!mudouDirecao) {
-        bot1.andarBomberman(bot1.addX, bot1.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+        bot.andarBomberman(bot.addX, bot.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     } else {
-        drawBomberman(bot1.anguloRotacao, bot1.x, bot1.z, bot1.addX, bot1.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    }
-	
-	// Bot 2
-	dir = numeroAleatorio(1,90);
-	mudarPais(portugal, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	
-	bool mudouDirecao2 = false;
-
-    // Tenta continuar na última direção
-    if (bot2.ultimaDirecao == cima && !temColisao(bot2.x + 28, bot2.z, muro)) {
-        bot2.z -= bot2.movimento;
-        bot2.anguloRotacao = 0; // Ajusta o ângulo para cima
-    } else if (bot2.ultimaDirecao == direita && !temColisao(bot2.x + 24, bot2.z, muro)) {
-        bot2.x += bot2.movimento;
-        bot2.anguloRotacao = 90; // Ajusta o ângulo para direita
-    } else if (bot2.ultimaDirecao == esquerda && !temColisao(bot2.x + 27, bot2.z, muro)) {
-        bot2.x -= bot2.movimento;
-        bot2.anguloRotacao = -90; // Ajusta o ângulo para esquerda
-    } else if (bot2.ultimaDirecao == baixo && !temColisao(bot2.x + 28, bot2.z + 4, muro)) {
-        bot2.z += bot2.movimento;
-        bot2.anguloRotacao = 180; // Ajusta o ângulo para baixo
-    } else {
-        // Caso encontre colisão, sorteia uma nova direção
-        mudouDirecao2 = true;
-        int novaDirecao;
-        do {
-            novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-        } while (novaDirecao == bot2.ultimaDirecao); // Evita repetir a última direção
-
-        bot2.ultimaDirecao = novaDirecao;
-    }
-
-    // Renderiza o bot2
-    if (!mudouDirecao2) {
-        bot2.andarBomberman(bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    } else {
-        drawBomberman(bot2.anguloRotacao, bot2.x, bot2.z, bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    }
-
-	
-	// Bot 3
-	dir = numeroAleatorio(1,90);
-	mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	
-	bool mudouDirecao3 = false;
-
-    // Tenta continuar na última direção
-    if (bot3.ultimaDirecao == cima && !temColisao(bot3.x + 28, bot3.z, muro)) {
-        bot3.z -= bot3.movimento;
-        bot3.anguloRotacao = 0; // Ajusta o ângulo para cima
-    } else if (bot3.ultimaDirecao == direita && !temColisao(bot3.x + 24, bot3.z, muro)) {
-        bot3.x += bot3.movimento;
-        bot3.anguloRotacao = 90; // Ajusta o ângulo para direita
-    } else if (bot3.ultimaDirecao == esquerda && !temColisao(bot3.x + 27, bot3.z, muro)) {
-        bot3.x -= bot3.movimento;
-        bot3.anguloRotacao = -90; // Ajusta o ângulo para esquerda
-    } else if (bot3.ultimaDirecao == baixo && !temColisao(bot3.x + 28, bot3.z + 4, muro)) {
-        bot3.z += bot3.movimento;
-        bot3.anguloRotacao = 180; // Ajusta o ângulo para baixo
-    } else {
-        // Caso encontre colisão, sorteia uma nova direção
-        mudouDirecao3 = true;
-        int novaDirecao;
-        do {
-            novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-        } while (novaDirecao == bot3.ultimaDirecao); // Evita repetir a última direção
-
-        bot3.ultimaDirecao = novaDirecao;
-    }
-
-    // Renderiza o bot3
-    if (!mudouDirecao3) {
-        bot3.andarBomberman(bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    } else {
-        drawBomberman(bot3.anguloRotacao, bot3.x, bot3.z, bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+        drawBomberman(bot.anguloRotacao, bot.x, bot.z, bot.addX, bot.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
     }
 }
+
+void atualizarBots() {
+	// cores: capuz, cor secundaria e corpo
+    float r1, g1, b1, r2, g2, b2, r3, g3, b3;
+
+    moverBot(bot1, argentina, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    moverBot(bot2, portugal, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    moverBot(bot3, japao, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+}
+
+
 
 
 
@@ -1078,7 +1012,8 @@ void display()
 		drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
 	}
 	
-	spawnarbots();
+	spawnarBots();
+	atualizarBots();
 	
 	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necessÃ¡rio
 	glPopMatrix();
