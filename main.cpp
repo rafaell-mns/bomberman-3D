@@ -1,3 +1,4 @@
+#include <map>
 #include <set>
 #include <math.h>
 #include <cstdio>
@@ -29,10 +30,13 @@ enum paises{brasil = 1, argentina, portugal, japao};
 int ultima_cam = um;
 std::vector<float> v;
 int mudar_musica = 1;
-
+bool mostrarTexto = true;
+int tempoInicial = 0;
+int tempoFinal = 0;
 // Largura e altura da janela
 int width = 800, height = 500;
 float flag = true;
+int vidas = 3;
 
 void drawCube(float size, float r, float g, float b)
 {
@@ -51,27 +55,89 @@ int m_x, m_y;
 
 // ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-    {M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
-    {N, 0, 0, 0, N, 0, C, 0, 0, 0, N, 0, C, 0, 0, N},
-    {M, C, M, 0, M, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-    {N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
-    {M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, M, M},
-    {N, 0, M, N, M, N, M, 0, 0, 0, M, C, N, N, C, N},
-    {M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
-    {N, 0, C, 0, M, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
-    {M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
-    {M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
-    {N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
+	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
+	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
+	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
+	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
+	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
+	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
+	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
+	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
+	{M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
 
+void drawCaixaDestruida() {
+    glPushMatrix();
+   int e = 2.8;
+	glTranslatef(-28, 5, 6);
+	 glScalef(e,e,e);
+    // Base da caixa
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5f, 0.0f);
+    glScalef(1.0f, 0.5f, 1.0f);
 
+   drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Lado esquerdo
+    glPushMatrix();
+    glTranslatef(-0.45f, -0.3, 0.0f);
+    glRotatef(-30, 0.0f, 0.0f, 1.0f);
+    glScalef(0.1f, 1.0f, 1.0f);
+    drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Lado direito
+    glPushMatrix();
+    glTranslatef(0.45f, 0.0f, 0.0f);
+    glRotatef(30.0f, 0.0f, 0.0f, 1.0f);
+    glScalef(0.1f, 1.0f, 1.0f);
+     drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Painel traseiro
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5, -0.45f);
+    glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(1.0f, 1.0f, 0.1f);
+     drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Painel frontal
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5, 0.45f);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(1.0f, 1.0f, 0.1f);
+    drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Detalhes quebrados
+    glPushMatrix();
+    glTranslatef(-0.2f, 0.3f, 0.2f);
+    glRotatef(25.0f, 0.0f, 1.0f, 0.0f);
+    glScalef(0.05f, 0.5f, 0.2f);
+    drawCube(1.0f, 0.5f, 0.25f, 0.1f);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.3f, -0.2f, -0.2f);
+    glRotatef(-30.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(0.1f, 0.3f, 0.3f);
+    drawCube(1.0f, 0.5f, 0.25f, 0.1f);
+    glPopMatrix();
+
+    glPopMatrix();
+}
 
 
 
 // Conjunto para armazenar coordenadas de colisoes
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
+std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
 
 // Funcao booleanda
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
@@ -111,13 +177,25 @@ void colisoesMatriz(){
                     for (int j = 0; j < 4; ++j) {
                         int posX = inicioX + x * 4 + i;
                         int posZ = inicioZ + z * 4 + j;
-						//printf("caixa em %d %d\n", posX, posZ);
+                        
+                        // coordenadas que geram colisao
                         caixa.insert(std::make_pair(posX, posZ));
+                        
+                        // correspondencia entre a coordenada e o indice da matriz
+                        caixaMatriz[std::make_pair(posX, posZ)] = std::make_pair(x, z);
                     }
-                }  
+                }
 			}
 		}
 	}
+}
+
+std::pair<int, int> obterIndiceCaixa(int posX, int posZ) {
+    std::map<std::pair<int, int>, std::pair<int, int> >::iterator it = caixaMatriz.find(std::make_pair(posX, posZ));
+    if (it != caixaMatriz.end()) {
+        return it->second; // Retorna o índice
+    }
+    return std::make_pair(-1, -1); // Retorna um valor inválido se não encontrar
 }
 
 // ------------------- Configuracoes da Bomba -------------------
@@ -128,6 +206,9 @@ struct Bomba {
     bool imunidade;      // Flag para imunidade de colis?o
     int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
+
+
+
 
 
 // controla detalhes da animacao
@@ -174,6 +255,7 @@ void desenhaBombas() {
     }
 }
 
+std::vector<std::pair<int, int> > posicoesExplosoes;
 
 void desenharExplosao(float x, float z) {
     glPushMatrix();  // Salva o estado atual da matriz
@@ -192,26 +274,33 @@ void desenharExplosao(float x, float z) {
 }
 
 void removerCaixote(int posX, int posZ) {
-    for (int i = -8; i <= 8; ++i) {
-        for (int j = -8; j <= 8; ++j) {
+    for (int i = -2; i <= 2; ++i) {
+        for (int j = -2; j <= 2; ++j) {
             int newX = posX + i;
             int newZ = posZ + j;
-            // Declaração explícita do tipo do iterador
+            
+            // iterador
             std::set<std::pair<int, int> >::iterator it = caixa.find(std::make_pair(newX, newZ));
             if (it != caixa.end()) {
+            	// remover colisoes do bloco
                 caixa.erase(it);
-                std::cout << "Removido: (" << newX << ", " << newZ << ")\n";
+                
+                // remover da matriz que o desenha no mapa
+                std::pair<int, int> indices = obterIndiceCaixa(newX, newZ);
+
+				int yMatriz = indices.first;
+				int xMatriz = indices.second;
+				
+				matrizMapa[xMatriz][yMatriz] = 0;				
             }
         }
     }
 }
 
-
-
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
 	
-    // Vetores para definir as dire??es (cima, baixo, esquerda, direita)
+    // Vetores para definir as direcoes (cima, baixo, esquerda, direita)
     int direcoes[4][2] = {
         {0, 4},  // Para cima (Z+)
         {0, -4}, // Para baixo (Z-)
@@ -219,28 +308,25 @@ void rastroExplosao(int bombaX, int bombaZ) {
         {4, 0}   // Para direita (X+)
     };
 
-    // Percorre cada dire??o
+    // Percorre cada direcao
     for (int i = 0; i < 4; i++) {
         int dx = direcoes[i][0];
         int dz = direcoes[i][1];
 
-        // Explode at? 2 coordenadas nessa dire??o
+        // Explode ate 2 coordenadas nessa direcao
         for (int passo = 1; passo <= 2; passo++) {
             int novoX = bombaX + dx * passo;
             int novoZ = bombaZ + dz * passo;
 
-            // Verifica se h? um muro, se sim, interrompe a explos?o nessa dire??o
-            if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) {
-                break;
-            }
+			printf("Explosao em (%d, %d)\n", novoX, novoZ);
+			
+			// se encontrar um muro, interrompe a explosao naquela direcao
+			if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) break;
+            
+            
+            removerCaixote(novoX, novoZ);
+               
 
-            // Verifica se h? uma caixa, remove a caixa e interrompe a explos?o
-            if (caixa.find(std::make_pair(novoX, novoZ)) != caixa.end()) {
-            	removerCaixote(novoX, novoZ);
-                break;
-            }
-
-            // Marca a explos?o na posi??o atual (aqui voc? pode desenhar, registrar, etc.)
             desenharExplosao(novoX, novoZ);
             glutPostRedisplay();
         }
@@ -537,7 +623,7 @@ void mudarPais(float pais ,float*Rcapuz,float*Gcapuz,float*Bcapuz, float*Rsec, f
 #include <cstdlib>
 #include <ctime>
 
-// FunÃ§Ã£o para gerar um nÃºmero aleatÃ³rio dentro de um intervalo
+// Função para gerar um número aleatório dentro de um intervalo
 int numeroAleatorio(int minimo, int maximo) {
     return minimo + rand() % ((maximo - minimo) + 1);
 }
@@ -560,7 +646,7 @@ void preencherVetor() {
     }
 }
 	
-	// FunÃ§Ã£o para desenhar o personagem Bomberman
+	// Função para desenhar o personagem Bomberman
 	void andarBomberman(float x2, float z2, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo) {
 
 		
@@ -867,10 +953,10 @@ Jogador bot1 = {0,0};
 Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
-float movimentoBot = 0.2;
+float movimentoBot = 0.08;
 bool spawnBot = false;	
 void spawnarBots(){
-	// spawna bot sÃ³ no comeÃ§o
+	// spawna bot só no começo
 	if(!spawnBot){
 		bot1.x = 18;
 		bot1.z = 15;
@@ -890,7 +976,7 @@ void spawnarBots(){
 }
 
 bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
-    // Direções opostas não são consideradas perpendiculares
+    // Dire??es opostas n?o s?o consideradas perpendiculares
     if ((ultimaDirecao == cima && novaDirecao == baixo) || 
         (ultimaDirecao == baixo && novaDirecao == cima) || 
         (ultimaDirecao == direita && novaDirecao == esquerda) || 
@@ -906,26 +992,62 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 
     bool mudouDirecao = false;
 
-    // Tenta continuar na última direção
+    // Tenta continuar na ?ltima dire??o
     if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
         bot.z -= bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 180; // Cima
     } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
         bot.x += bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 90; // Direita
     } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro)) {
         bot.x -= bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = -90; // Esquerda
     } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro)) {
         bot.z += bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 0; // Baixo
     } else {
-        // Sorteia uma nova direção que seja diferente da última
+        // Sorteia uma nova dire??o que seja diferente da ?ltima
         mudouDirecao = true;
         int novaDirecao;
-        do {
+       // do {
 		    novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-		} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
+		//} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
 
 
         bot.ultimaDirecao = novaDirecao;
@@ -977,24 +1099,70 @@ void redimensiona(int w, int h)
 const char* ultima_tocada = "bomb";
 
 
-
-
-
-
-
 void tocarmusica(const char* caminho) {
-    char audio1[256]; // VariÃ¡vel para armazenar o caminho completo
-    snprintf(audio1, sizeof(audio1), "audios/%s.wav", caminho); // ConstrÃ³i o caminho completo do arquivo
+    char audio1[256]; // Variável para armazenar o caminho completo
+    snprintf(audio1, sizeof(audio1), "audios/%s.wav", caminho); // Constrói o caminho completo do arquivo
 
-    // Abre o Ã¡udio usando o caminho
+    // Abre o áudio usando o caminho
     char comandoOpen[512];
     snprintf(comandoOpen, sizeof(comandoOpen), "open \"%s\" type waveaudio alias audio1", audio1);
     mciSendString(comandoOpen, NULL, 0, NULL);
 
-    // Toca o Ã¡udio uma vez
+    // Toca o áudio uma vez
     mciSendString("play audio1", NULL, 0, NULL);
 }
 
+// Função para desenhar texto com borda
+void desenharTexto(float x, float y, const char* texto, float escala) {
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glScalef(escala, escala, escala);
+    
+ 	 draw_text_stroke(-20, 20, to_string(texto), 0.01);
+    glPopMatrix();
+}
+
+#include <ctime> // Para usar a função time
+
+bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
+    return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
+}
+
+
+void verificarColisaoBots() {
+    // Armazena o tempo da última colisão
+    static time_t ultimoTempoColisao = 0;
+
+    // Obtém o tempo atual
+    time_t tempoAtual = time(NULL); 
+
+    // Verifica colisão com bot3
+    if (rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
+    	
+        // Verifica se já passou 3 segundos desde a última colisão
+        if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+    }  else if   (rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
+		        // Verifica se já passou 3 segundos desde a última colisão
+        if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+	} else  if (rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
+     	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+	}
+}
 
 
 
@@ -1004,7 +1172,7 @@ void display()
 	// Limpar os buffers de cor e profundidade
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Configurar a cÃ¢mera
+	// Configurar a câmera
 	glLoadIdentity();
 	gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
 
@@ -1016,9 +1184,23 @@ void display()
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto
-	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
 	
+	//glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+	//draw_text_stroke(-20, 20, to_string(ultima_tocada), 0.01);
+	
+	 if (mostrarTexto) {
+        glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+        draw_text_stroke(-20, 20, ultima_tocada, 0.01);
+    }
+	tempoFinal=glutGet(GLUT_ELAPSED_TIME);
+	if (tempoFinal - tempoInicial >=5000)// 5 segundos para exibir o nome da musica na tela
+		mostrarTexto = false;
+	
+	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+	draw_text_stroke(-28, 20, "vidas: "+to_string(vidas), 0.02);
+	
+	verificarColisaoBots();
+
 	
 	desenhaBombas(); 
 	
@@ -1036,45 +1218,47 @@ void display()
 	spawnarBots();
 	atualizarBots();
 	
-	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necessÃ¡rio
+	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necessário
 	glPopMatrix();
 
-	// Finalizar a renderizaÃ§Ã£o
+	// Finalizar a renderização
  	glFlush();
 	glutSwapBuffers();
 }
 
-bool somTocando = false; // VariÃ¡vel para rastrear o estado do som
+bool somTocando = false; // Variável para rastrear o estado do som
 
 const char* audio2;
 
 int quantbombas = 2;
 
 void somBomba() {
-    // Cria um alias Ãºnico para cada nova reproduÃ§Ã£o do som
+    // Cria um alias único para cada nova reprodução do som
     char audio[20];  // Array para armazenar o nome do alias
 
-    // Cria o alias Ãºnico usando sprintf
+    // Cria o alias único usando sprintf
     sprintf(audio, "audio%d", quantbombas);  // Gera um nome como "audio1", "audio2", etc.
 
-    // Fecha o alias se ele jÃ¡ estiver em uso (isso garante que nÃ£o haverÃ¡ conflitos)
+    // Fecha o alias se ele já estiver em uso (isso garante que não haverá conflitos)
     char closeCommand[50];
-    sprintf(closeCommand, "close %s", audio);  // Prepara o comando de fechamento com o alias Ãºnico
+    sprintf(closeCommand, "close %s", audio);  // Prepara o comando de fechamento com o alias único
     mciSendString(closeCommand, NULL, 0, NULL);  // Fecha o alias anterior
 
-    // Abre o Ã¡udio "bomba.wav" com o alias Ãºnico
+    // Abre o áudio "bomba.wav" com o alias único
     char openCommand[100];
-    sprintf(openCommand, "open \"audios/bomba.wav\" type waveaudio alias %s", audio);  // Prepara o comando de abertura com o alias Ãºnico
-    mciSendString(openCommand, NULL, 0, NULL);  // Abre o Ã¡udio com o alias
+    sprintf(openCommand, "open \"audios/bomba.wav\" type waveaudio alias %s", audio);  // Prepara o comando de abertura com o alias único
+    mciSendString(openCommand, NULL, 0, NULL);  // Abre o áudio com o alias
 
-    // Reproduz o Ã¡udio "bomba.wav"
+    // Reproduz o áudio "bomba.wav"
     char playCommand[50];
-    sprintf(playCommand, "play %s", audio);  // Prepara o comando de reproduÃ§Ã£o com o alias
-    mciSendString(playCommand, NULL, 0, NULL);  // Reproduz o Ã¡udio
+    sprintf(playCommand, "play %s", audio);  // Prepara o comando de reprodução com o alias
+    mciSendString(playCommand, NULL, 0, NULL);  // Reproduz o áudio
 
-    // Incrementa a variÃ¡vel para o prÃ³ximo alias
+    // Incrementa a variável para o próximo alias
     quantbombas++;
 }
+
+
 
 // Controle do teclado
 // Funcao para capturar entradas do teclado
@@ -1084,10 +1268,10 @@ void teclado(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case '1':
-		eyeX = personagemX-2;
+		eyeX = personagemX-2-28;
 		eyeY = 41;
 		eyeZ = personagemZ+47;
-		centerX = personagemX-2;
+		centerX = personagemX-2-28;
 		centerY = 0;
 		centerZ = personagemZ-2;
 		ultima_cam = quatro;
@@ -1128,8 +1312,8 @@ void teclado(unsigned char key, int x, int y)
 			break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
-			    // Defina os arquivos de Ã¡udio
+		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
+			    // Defina os arquivos de áudio
 
 		if (!somTocando) {
             PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
@@ -1293,27 +1477,36 @@ void teclado(unsigned char key, int x, int y)
 	case 'm':
 	case 'M':
 
-    // Alterna para a prÃ³xima mÃºsica
+    // Alterna para a próxima música
     mudar_musica += 1;
-    if (mudar_musica == 5)  // Se ultrapassar o nÃºmero de mÃºsicas, volta para a primeira
+    if (mudar_musica == 6)  // Se ultrapassar o número de músicas, volta para a primeira
         mudar_musica = 1;
 
-    // Para a mÃºsica atual e fecha, mas sem interromper o fluxo
+    // Para a música atual e fecha, mas sem interromper o fluxo
     mciSendString("close audio1", NULL, 0, NULL);
 
-    // Abrir e tocar a prÃ³xima mÃºsica
+    // Abrir e tocar a próxima música
     if (mudar_musica == 1) {
         tocarmusica("bomb");
-        ultima_tocada = "bomb";
+        ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
     } else if (mudar_musica == 2) {
         tocarmusica("bomb2");
-        ultima_tocada = "bomb2";
+        ultima_tocada = "Super Bomberman - Level 2 (ost snes)";
     } else if (mudar_musica == 3) {
         tocarmusica("metatron_OST");
-        ultima_tocada = "metatron_OST";
-    } else if (mudar_musica == 4) {
-        // NÃ£o hÃ¡ mÃºsica, mas o comando de stop nÃ£o Ã© necessÃ¡rio
+        ultima_tocada = "Undertale OST: 068 - Death by Glamour";
+    }else if (mudar_musica == 4){
+    	tocarmusica("HK_mantis_lord");
+        ultima_tocada = "Hollow Knight OST - Mantis Lords";
+	} 
+	else if (mudar_musica == 5) {
+        // Não há música, mas o comando de stop não é necessário
+        ultima_tocada = "nenhuma musica selecionada";
     }
+    
+
+    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
+    mostrarTexto = true; // Garante que o texto será exibido
     break;
 
 
@@ -1392,11 +1585,16 @@ void init()
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glGenTextures(QTD_TEXTURAS, texID);
+
+	//carregando vetores para animacao do player e dos bots	
+     preencherVetor(v);
+	bot1.preencherVetor();
+	bot2.preencherVetor();
+	bot3.preencherVetor();
 	
-	
-    
+    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
 	tocarmusica("bomb");
-	
+	ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
 	
 	
 	// Carrega as texturas no vetor
@@ -1424,10 +1622,8 @@ void mousePassiveMotion(int x, int y)
 
 int main(int argc, char** argv)
 {
-	preencherVetor(v);
-	bot1.preencherVetor();
-	bot2.preencherVetor();
-	bot3.preencherVetor();
+
+
 	player.x = -28;
 	player.z = 0;
 	glutInit(&argc, argv);
@@ -1450,7 +1646,6 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-	
 
 
 
