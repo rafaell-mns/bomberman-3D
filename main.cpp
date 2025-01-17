@@ -29,10 +29,13 @@ enum paises{brasil = 1, argentina, portugal, japao};
 int ultima_cam = um;
 std::vector<float> v;
 int mudar_musica = 1;
-
+bool mostrarTexto = true;
+int tempoInicial = 0;
+int tempoFinal = 0;
 // Largura e altura da janela
 int width = 800, height = 500;
 float flag = true;
+int vidas = 3;
 
 void drawCube(float size, float r, float g, float b)
 {
@@ -51,21 +54,82 @@ int m_x, m_y;
 
 // ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-    {M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
-    {N, 0, 0, 0, N, 0, C, 0, 0, 0, N, 0, C, 0, 0, N},
-    {M, C, M, 0, M, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-    {N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
-    {M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, M, M},
-    {N, 0, M, N, M, N, M, 0, 0, 0, M, C, N, N, C, N},
-    {M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
-    {N, 0, C, 0, M, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
-    {M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
-    {M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
-    {N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
+	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
+	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
+	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
+	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
+	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
+	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
+	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
+	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
+	{M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
 
+void drawCaixaDestruida() {
+    glPushMatrix();
+   int e = 2.8;
+	glTranslatef(-28, 5, 6);
+	 glScalef(e,e,e);
+    // Base da caixa
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5f, 0.0f);
+    glScalef(1.0f, 0.5f, 1.0f);
 
+   drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Lado esquerdo
+    glPushMatrix();
+    glTranslatef(-0.45f, -0.3, 0.0f);
+    glRotatef(-30, 0.0f, 0.0f, 1.0f);
+    glScalef(0.1f, 1.0f, 1.0f);
+    drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Lado direito
+    glPushMatrix();
+    glTranslatef(0.45f, 0.0f, 0.0f);
+    glRotatef(30.0f, 0.0f, 0.0f, 1.0f);
+    glScalef(0.1f, 1.0f, 1.0f);
+     drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Painel traseiro
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5, -0.45f);
+    glRotatef(30.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(1.0f, 1.0f, 0.1f);
+     drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Painel frontal
+    glPushMatrix();
+    glTranslatef(0.0f, -0.5, 0.45f);
+    glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(1.0f, 1.0f, 0.1f);
+    drawCube(1.0f, 0.5f, 0.2f, 0.1f);
+    glPopMatrix();
+
+    // Detalhes quebrados
+    glPushMatrix();
+    glTranslatef(-0.2f, 0.3f, 0.2f);
+    glRotatef(25.0f, 0.0f, 1.0f, 0.0f);
+    glScalef(0.05f, 0.5f, 0.2f);
+    drawCube(1.0f, 0.5f, 0.25f, 0.1f);
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(0.3f, -0.2f, -0.2f);
+    glRotatef(-30.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(0.1f, 0.3f, 0.3f);
+    drawCube(1.0f, 0.5f, 0.25f, 0.1f);
+    glPopMatrix();
+
+    glPopMatrix();
+}
 
 
 
@@ -107,14 +171,9 @@ void colisoesMatriz(){
                     }
                 }
             }else if(matrizMapa[z][x] == C){
-                for (int i = 0; i < 4; ++i) {
-                    for (int j = 0; j < 4; ++j) {
-                        int posX = inicioX + x * 4 + i;
-                        int posZ = inicioZ + z * 4 + j;
-						//printf("caixa em %d %d\n", posX, posZ);
-                        caixa.insert(std::make_pair(posX, posZ));
-                    }
-                }  
+                int posX = inicioX + x * 4;
+                int posZ = inicioZ + z * 4;
+                caixa.insert(std::make_pair(posX, posZ));     
 			}
 		}
 	}
@@ -128,6 +187,9 @@ struct Bomba {
     bool imunidade;      // Flag para imunidade de colis?o
     int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
+
+
+
 
 
 // controla detalhes da animacao
@@ -174,6 +236,7 @@ void desenhaBombas() {
     }
 }
 
+std::vector<std::pair<int, int> > posicoesExplosoes;
 
 void desenharExplosao(float x, float z) {
     glPushMatrix();  // Salva o estado atual da matriz
@@ -191,22 +254,15 @@ void desenharExplosao(float x, float z) {
     glPopMatrix();  // Restaura o estado da matriz
 }
 
-void removerCaixote(int posX, int posZ) {
-    for (int i = -8; i <= 8; ++i) {
-        for (int j = -8; j <= 8; ++j) {
-            int newX = posX + i;
-            int newZ = posZ + j;
-            // Declara��o expl�cita do tipo do iterador
-            std::set<std::pair<int, int> >::iterator it = caixa.find(std::make_pair(newX, newZ));
-            if (it != caixa.end()) {
-                caixa.erase(it);
-                std::cout << "Removido: (" << newX << ", " << newZ << ")\n";
-            }
-        }
-    }
+void removerCaixote(int posX, int posZ){
+	int xMatriz = posX + 2;
+	int zMatriz = posZ + 15;
+	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
+	caixa.erase(std::make_pair(posX, posZ)); // remover colis?o
+	int x = (posX - 2) / 4; // Calcula a posi??o na matriz
+    int z = (posZ - 15) / 4;
+    printf("caixote em (%d, %d)\n", x, z);
 }
-
-
 
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
@@ -867,7 +923,7 @@ Jogador bot1 = {0,0};
 Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
-float movimentoBot = 0.2;
+float movimentoBot = 0.08;
 bool spawnBot = false;	
 void spawnarBots(){
 	// spawna bot só no começo
@@ -890,7 +946,7 @@ void spawnarBots(){
 }
 
 bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
-    // Dire��es opostas n�o s�o consideradas perpendiculares
+    // Dire??es opostas n?o s?o consideradas perpendiculares
     if ((ultimaDirecao == cima && novaDirecao == baixo) || 
         (ultimaDirecao == baixo && novaDirecao == cima) || 
         (ultimaDirecao == direita && novaDirecao == esquerda) || 
@@ -906,26 +962,62 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 
     bool mudouDirecao = false;
 
-    // Tenta continuar na �ltima dire��o
+    // Tenta continuar na ?ltima dire??o
     if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
         bot.z -= bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 180; // Cima
     } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
         bot.x += bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 90; // Direita
     } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro)) {
         bot.x -= bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = -90; // Esquerda
     } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro)) {
         bot.z += bot.movimento;
+    		if (bot.k >= bot.v.size())
+				bot.flag = false;
+			if (bot.k <= 0)
+				bot.flag = true;
+			bot.t = bot.v[bot.k];
+			if (bot.flag)
+				bot.k++;	
+            else
+				bot.k--;
         bot.anguloRotacao = 0; // Baixo
     } else {
-        // Sorteia uma nova dire��o que seja diferente da �ltima
+        // Sorteia uma nova dire??o que seja diferente da ?ltima
         mudouDirecao = true;
         int novaDirecao;
-        do {
+       // do {
 		    novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
-		} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
+		//} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
 
 
         bot.ultimaDirecao = novaDirecao;
@@ -977,11 +1069,6 @@ void redimensiona(int w, int h)
 const char* ultima_tocada = "bomb";
 
 
-
-
-
-
-
 void tocarmusica(const char* caminho) {
     char audio1[256]; // Variável para armazenar o caminho completo
     snprintf(audio1, sizeof(audio1), "audios/%s.wav", caminho); // Constrói o caminho completo do arquivo
@@ -995,6 +1082,57 @@ void tocarmusica(const char* caminho) {
     mciSendString("play audio1", NULL, 0, NULL);
 }
 
+// Função para desenhar texto com borda
+void desenharTexto(float x, float y, const char* texto, float escala) {
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glScalef(escala, escala, escala);
+    
+ 	 draw_text_stroke(-20, 20, to_string(texto), 0.01);
+    glPopMatrix();
+}
+
+#include <ctime> // Para usar a função time
+
+bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
+    return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
+}
+
+
+void verificarColisaoBots() {
+    // Armazena o tempo da última colisão
+    static time_t ultimoTempoColisao = 0;
+
+    // Obtém o tempo atual
+    time_t tempoAtual = time(NULL); 
+
+    // Verifica colisão com bot3
+    if (rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
+    	
+        // Verifica se já passou 3 segundos desde a última colisão
+        if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+    }  else if   (rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
+		        // Verifica se já passou 3 segundos desde a última colisão
+        if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+	} else  if (rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
+     	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
+            printf("PERDEU UMA VIDA\n");
+            vidas--;
+            // Atualiza o tempo da última colisão
+            ultimoTempoColisao = tempoAtual;
+        }
+	}
+}
 
 
 
@@ -1016,9 +1154,23 @@ void display()
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
 	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto
-	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-	draw_text_stroke(-20, 20, "(" + to_string(m_x) + "," + to_string(m_y) + ")", 0.01);
 	
+	//glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+	//draw_text_stroke(-20, 20, to_string(ultima_tocada), 0.01);
+	
+	 if (mostrarTexto) {
+        glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+        draw_text_stroke(-20, 20, ultima_tocada, 0.01);
+    }
+	tempoFinal=glutGet(GLUT_ELAPSED_TIME);
+	if (tempoFinal - tempoInicial >=5000)// 5 segundos para exibir o nome da musica na tela
+		mostrarTexto = false;
+	
+	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
+	draw_text_stroke(-28, 20, "vidas: "+to_string(vidas), 0.02);
+	
+	verificarColisaoBots();
+
 	
 	desenhaBombas(); 
 	
@@ -1076,6 +1228,8 @@ void somBomba() {
     quantbombas++;
 }
 
+
+
 // Controle do teclado
 // Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y)
@@ -1084,10 +1238,10 @@ void teclado(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case '1':
-		eyeX = personagemX-2;
+		eyeX = personagemX-2-28;
 		eyeY = 41;
 		eyeZ = personagemZ+47;
-		centerX = personagemX-2;
+		centerX = personagemX-2-28;
 		centerY = 0;
 		centerZ = personagemZ-2;
 		ultima_cam = quatro;
@@ -1295,7 +1449,7 @@ void teclado(unsigned char key, int x, int y)
 
     // Alterna para a próxima música
     mudar_musica += 1;
-    if (mudar_musica == 5)  // Se ultrapassar o número de músicas, volta para a primeira
+    if (mudar_musica == 6)  // Se ultrapassar o número de músicas, volta para a primeira
         mudar_musica = 1;
 
     // Para a música atual e fecha, mas sem interromper o fluxo
@@ -1304,16 +1458,25 @@ void teclado(unsigned char key, int x, int y)
     // Abrir e tocar a próxima música
     if (mudar_musica == 1) {
         tocarmusica("bomb");
-        ultima_tocada = "bomb";
+        ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
     } else if (mudar_musica == 2) {
         tocarmusica("bomb2");
-        ultima_tocada = "bomb2";
+        ultima_tocada = "Super Bomberman - Level 2 (ost snes)";
     } else if (mudar_musica == 3) {
         tocarmusica("metatron_OST");
-        ultima_tocada = "metatron_OST";
-    } else if (mudar_musica == 4) {
+        ultima_tocada = "Undertale OST: 068 - Death by Glamour";
+    }else if (mudar_musica == 4){
+    	tocarmusica("HK_mantis_lord");
+        ultima_tocada = "Hollow Knight OST - Mantis Lords";
+	} 
+	else if (mudar_musica == 5) {
         // Não há música, mas o comando de stop não é necessário
+        ultima_tocada = "nenhuma musica selecionada";
     }
+    
+
+    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
+    mostrarTexto = true; // Garante que o texto será exibido
     break;
 
 
@@ -1392,11 +1555,16 @@ void init()
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glGenTextures(QTD_TEXTURAS, texID);
+
+	//carregando vetores para animacao do player e dos bots	
+     preencherVetor(v);
+	bot1.preencherVetor();
+	bot2.preencherVetor();
+	bot3.preencherVetor();
 	
-	
-    
+    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
 	tocarmusica("bomb");
-	
+	ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
 	
 	
 	// Carrega as texturas no vetor
@@ -1424,10 +1592,8 @@ void mousePassiveMotion(int x, int y)
 
 int main(int argc, char** argv)
 {
-	preencherVetor(v);
-	bot1.preencherVetor();
-	bot2.preencherVetor();
-	bot3.preencherVetor();
+
+
 	player.x = -28;
 	player.z = 0;
 	glutInit(&argc, argv);
@@ -1450,7 +1616,6 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-	
 
 
 
