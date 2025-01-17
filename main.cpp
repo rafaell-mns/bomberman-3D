@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <GL/glut.h>
-
+#include "MMSystem.h" // BIB de audio
 #define STB_IMAGE_IMPLEMENTATION
 #include "cenario.h"
 #include "stb_image.h"
@@ -26,6 +26,7 @@ enum cam{um = 1, dois, tres, quatro};
 enum paises{brasil = 1, argentina, portugal, japao};
 int ultima_cam = um;
 std::vector<float> v;
+int mudar_musica = 1;
 
 // Largura e altura da janela
 int width = 800, height = 500;
@@ -61,6 +62,11 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
+
+
+
+
+
 // Conjunto para armazenar coordenadas de colisoes
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
@@ -75,7 +81,7 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
             
         }
     }
-     //printf("\n NAO TEM COLISAO\n");
+     printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -184,7 +190,7 @@ void removerCaixote(int posX, int posZ){
 	int xMatriz = posX + 2;
 	int zMatriz = posZ + 15;
 	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
-	caixa.erase({posX, posZ}); // remover colis?o
+	caixa.erase(std::make_pair(posX, posZ)); // remover colis?o
 	int x = (posX - 2) / 4; // Calcula a posi??o na matriz
     int z = (posZ - 15) / 4;
     printf("caixote em (%d, %d)\n", x, z);
@@ -212,12 +218,12 @@ void rastroExplosao(int bombaX, int bombaZ) {
             int novoZ = bombaZ + dz * passo;
 
             // Verifica se h? um muro, se sim, interrompe a explos?o nessa dire??o
-            if (muro.find({novoX, novoZ}) != muro.end()) {
+            if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) {
                 break;
             }
 
             // Verifica se h? uma caixa, remove a caixa e interrompe a explos?o
-            if (caixa.find({novoX, novoZ}) != caixa.end()) {
+            if (caixa.find(std::make_pair(novoX, novoZ)) != caixa.end()) {
             	removerCaixote(novoX, novoZ);
                 break;
             }
@@ -731,7 +737,7 @@ void preencherVetor() {
 		
 			
 			addZ -= movimento;
-			//printf("%f",addZ);
+			printf("%f",addZ);
 			anguloRotacao= 180;
 			
 			if (k >= v.size())
@@ -754,7 +760,7 @@ void preencherVetor() {
 					
 		
 			addX += movimento;
-			//printf("%f\n",addX);
+			printf("%f\n",addX);
 		
 			anguloRotacao  = 90.0f;
 			
@@ -833,7 +839,7 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
             
         }
     }
-     //printf("\n NAO TEM COLISAO\n");
+     printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -865,26 +871,20 @@ void spawnarbots(){
 	mudarPais(argentina, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
 	
 	if (dir == cima){
-		bot1.z -= 1;
-		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
-		bot1.andarCima();
+		
+			bot1.andarCima();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 	
 	}else if (dir == direita){
-		bot1.x += 1;
-		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
-		bot1.andarDireita();
+
+			bot1.andarDireita();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 		
 	}else if (dir == esquerda){
-		bot1.x -= 1;
-		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
 		bot1.andarEsquerda();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 		
 	}else if (dir == baixo){
-		bot1.z += 1;
-		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
 		bot1.andarBaixo();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 	}else{
@@ -1077,7 +1077,7 @@ void teclado(unsigned char key, int x, int y)
 	case 'W': // Mover o personagem pra frente
 		if (!temColisao(personagemX,personagemZ, muro) && !temColisao(personagemX, player.z +  personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
 		
-				
+			//PlaySound(TEXT("passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);	
 			centerZ -= movimento;
 			eyeZ-=movimento;
 			personagemZ -= movimento;
@@ -1106,7 +1106,7 @@ void teclado(unsigned char key, int x, int y)
 	case 's':
 	case 'S': // Mover o personagem pra tras	anguloRotacao = 0;
 		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ + 3)){
-		
+			PlaySound(TEXT("passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 			
 			centerZ += movimento;
 			eyeZ+=movimento;
@@ -1133,6 +1133,7 @@ void teclado(unsigned char key, int x, int y)
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
 		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 3, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
+			PlaySound(TEXT("passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 			eyeX -= movimento;
 			centerX -= movimento;
 			personagemX -= movimento;
@@ -1158,6 +1159,8 @@ void teclado(unsigned char key, int x, int y)
 	case 'd':
 	case 'D': // Mover o personagem pra direita
 	if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
+			PlaySound(TEXT("passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+			PlaySound(TEXT("bomb.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 			eyeX += movimento;
 			centerX += movimento;
 			personagemX += movimento;
@@ -1220,7 +1223,18 @@ void teclado(unsigned char key, int x, int y)
 	case 'L': // Mover o ponto de foco para a direita
 		centerX += movimento;
 		break;
-
+	case 'm':
+	case 'M':
+		PlaySound(NULL, NULL, SND_ASYNC); 
+		mudar_musica +=1;
+		if (mudar_musica ==3)
+			mudar_musica = 1;
+		
+		if (mudar_musica == 1)
+		 	 PlaySound(TEXT("bomb.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+		else if (mudar_musica == 2)
+	 	 	 PlaySound(TEXT("bomb2.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+			
 	case 'p':
 	case 'P':
 		printf("Acabou");
@@ -1244,17 +1258,23 @@ void tecladoSolta(unsigned char key, int x, int y){
 	case 'w':
 	case 'W': // Mover o personagem pra frente
 		andando = false;
+		PlaySound(NULL, NULL, SND_ASYNC); 
+		PlaySound(TEXT("bomb.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+		
 
 	case 's':
 	case 'S': // Mover o personagem pra tras
 		andando = false;
+		PlaySound(NULL, NULL, SND_ASYNC); 
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
 		andando = false;
+		PlaySound(NULL, NULL, SND_ASYNC); 
 	case 'd':
 	case 'D': // Mover o personagem pra direita
 		andando = false;
+		PlaySound(NULL, NULL, SND_ASYNC); 
 
 	default:
 		
@@ -1277,7 +1297,7 @@ void init()
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glGenTextures(QTD_TEXTURAS, texID);
-
+	PlaySound(TEXT("bomb.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 	// Carrega as texturas no vetor
 	carregaTextura(texID[0], "grama_cima.jpg");     // Textura 0 = parte de cima da grama
 	carregaTextura(texID[1], "grama_lateral.jpg");  // Textura 1 = lateral da grama
@@ -1325,7 +1345,9 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
-	printf("SPACE BAR: Bomba\n\n");
+	
+		// carregando musica
+
 	// Funcoes de animacao
 	glutTimerFunc(500, atualizarCor, 0);
 	glutTimerFunc(50, atualizarEscala, 0);  
