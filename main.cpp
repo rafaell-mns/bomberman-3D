@@ -859,7 +859,7 @@ Jogador bot1 = {0,0};
 Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
-float movimentoBot = 0.2;
+float movimentoBot = 1.2;
 bool spawnBot = false;	
 void spawnarBots(){
 	// spawna bot só no começo
@@ -1120,7 +1120,7 @@ void teclado(unsigned char key, int x, int y)
 			break;
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX,personagemZ, muro) && !temColisao(personagemX, player.z +  personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
+		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
 			    // Defina os arquivos de áudio
 
 		if (!somTocando) {
