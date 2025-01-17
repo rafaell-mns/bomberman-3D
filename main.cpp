@@ -54,7 +54,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
 	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
 	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-	{N, C, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
 	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
 	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
@@ -859,22 +859,22 @@ Jogador bot1 = {0,0};
 Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
-
+float movimentoBot = 0.2;
 bool spawnBot = false;	
 void spawnarBots(){
 	// spawna bot sÃ³ no comeÃ§o
 	if(!spawnBot){
 		bot1.x = 18;
 		bot1.z = 15;
-		bot1.movimento = 0.5;
+		bot1.movimento = movimentoBot;    // trocar pra 0.2 (para os 3 bots)
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
-	   	bot2.movimento = 0.5;
+	   	bot2.movimento = movimentoBot;
 	   	
 		bot3.x = -28;
 		bot3.z = -15;
-	   	bot3.movimento = 0.5;
+	   	bot3.movimento = movimentoBot;
 	   	
 	   	spawnBot = true;
 	}
@@ -899,13 +899,13 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
     bool mudouDirecao = false;
 
     // Tenta continuar na última direção
-    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
         bot.z -= bot.movimento;
         bot.anguloRotacao = 180; // Cima
     } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
         bot.x += bot.movimento;
         bot.anguloRotacao = 90; // Direita
-    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 28, bot.z, muro)) {
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro)) {
         bot.x -= bot.movimento;
         bot.anguloRotacao = -90; // Esquerda
     } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro)) {
@@ -1072,7 +1072,7 @@ void somBomba() {
 // Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y)
 {	
-	float movimento =0.4; // Define a quantidade de movimento
+	float movimento =0.5; // Define a quantidade de movimento
 	switch (key)
 	{
 	case '1':
