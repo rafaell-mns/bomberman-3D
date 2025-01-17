@@ -18,7 +18,7 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
-#define QTD_TEXTURAS 5
+#define QTD_TEXTURAS 6
 
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
@@ -993,7 +993,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
     bool mudouDirecao = false;
 
     // Tenta continuar na ?ltima dire??o
-    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro)) { //  && !temColisao(bot.x + 28, bot.z - 5, caixa)
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro) && !temColisao(bot.x + 28, bot.z - 1, caixa)) {
         bot.z -= bot.movimento;
     		if (bot.k >= bot.v.size())
 				bot.flag = false;
@@ -1005,7 +1005,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
             else
 				bot.k--;
         bot.anguloRotacao = 180; // Cima
-    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro)) {
+    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa)) {
         bot.x += bot.movimento;
     		if (bot.k >= bot.v.size())
 				bot.flag = false;
@@ -1017,7 +1017,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
             else
 				bot.k--;
         bot.anguloRotacao = 90; // Direita
-    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro)) {
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa)) {
         bot.x -= bot.movimento;
     		if (bot.k >= bot.v.size())
 				bot.flag = false;
@@ -1029,7 +1029,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
             else
 				bot.k--;
         bot.anguloRotacao = -90; // Esquerda
-    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro)) {
+    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro) && !temColisao(bot.x + 29, bot.z + 4, caixa)) {
         bot.z += bot.movimento;
     		if (bot.k >= bot.v.size())
 				bot.flag = false;
@@ -1128,6 +1128,26 @@ bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
     return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
 }
 
+void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
+    // Dimensões da face
+    float d = tamanho / 2;
+
+    // Definindo os vértices da face
+    float v1[3] = {x - d, y + d, z};
+    float v2[3] = {x - d, y - d, z};
+    float v3[3] = {x + d, y - d, z};
+    float v4[3] = {x + d, y + d, z};
+
+    // Desenhando a face com a textura
+    glBindTexture(GL_TEXTURE_2D, texID);
+
+    glBegin(GL_QUADS);
+	glTexCoord2f(0, 1); glVertex3fv(v1);  // Coordenada de textura (1, 0) para o vértice superior esquerdo
+	glTexCoord2f(0, 0); glVertex3fv(v2);  // Coordenada de textura (1, 1) para o vértice inferior esquerdo
+	glTexCoord2f(1, 0); glVertex3fv(v3);  // Coordenada de textura (0, 1) para o vértice inferior direito
+	glTexCoord2f(1, 1); glVertex3fv(v4);  // Coordenada de textura (0, 0) para o vértice superior direito
+    glEnd();
+}
 
 void verificarColisaoBots() {
     // Armazena o tempo da última colisão
@@ -1165,7 +1185,6 @@ void verificarColisaoBots() {
 }
 
 
-
 void display()
 {
 	
@@ -1180,6 +1199,8 @@ void display()
 	glPushMatrix(); // Salvar o estado da matriz atual
 	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	glPopMatrix(); // Restaurar o estado da matriz
+	
+	desenhaIcone(-28, 21, 0.02, 4, texID[5]);
 
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
@@ -1197,7 +1218,8 @@ void display()
 		mostrarTexto = false;
 	
 	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-	draw_text_stroke(-28, 20, "vidas: "+to_string(vidas), 0.02);
+	draw_text_stroke(-28, 20, " "+to_string(vidas), 0.02);
+	
 	
 	verificarColisaoBots();
 
@@ -1601,8 +1623,9 @@ void init()
 	carregaTextura(texID[0], "grama_cima.jpg");     // Textura 0 = parte de cima da grama
 	carregaTextura(texID[1], "grama_lateral.jpg");  // Textura 1 = lateral da grama
 	carregaTextura(texID[2], "pedra.jpg");  		// Textura 2 = muro normal
-	carregaTextura(texID[3], "pedra_musgo.png");  	// Textura 2 = muro com musgo
-	carregaTextura(texID[4], "caixa.jpg");  		// Textura 3 = caixa
+	carregaTextura(texID[3], "pedra_musgo.png");  	// Textura 3 = muro com musgo
+	carregaTextura(texID[4], "caixa.jpg");  		// Textura 4 = caixa
+	carregaTextura(texID[5], "vidas.png");  // Textura 5 = caixa
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
