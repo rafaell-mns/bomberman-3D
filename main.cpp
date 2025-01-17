@@ -71,7 +71,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 
-// Funcao booleanda
+// Funcao booleana
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
@@ -732,119 +732,89 @@ void preencherVetor() {
 	}
 
 	void andarCima(){
+		addZ -= movimento;
+		//printf("%f",addZ);
+		anguloRotacao= 180;
 		
-
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
 		
-			
-			addZ -= movimento;
-			//printf("%f",addZ);
-			anguloRotacao= 180;
-			
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-			
-			if (flag)
-				k++;	
-            else
-				k--;
-	
-		
+		if (flag)
+			k++;	
+        else
+			k--;	
 	}
 	
 	void andarDireita(){
+		addX += movimento;
+		//printf("%f\n",addX);
 	
+		anguloRotacao  = 90.0f;
 		
-					
-		
-			addX += movimento;
-			//printf("%f\n",addX);
-		
-			anguloRotacao  = 90.0f;
-			
-		
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-		
-			if (flag)
-				k++;	
-            else
-				k--;
-			
-		
-			
+	
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
+	
+		if (flag)
+			k++;	
+        else
+			k--;
 	}	
 
 	void andarEsquerda(){
+		addX += movimento;
+		anguloRotacao = 270.0f;
+
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		
+		t = v[k];
 		
 
-			addX += movimento;
-			anguloRotacao = 270.0f;
-	
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			
-			t = v[k];
-			
-	
-			if (flag)
-				k++;	
-            else
-				k--;
-		
-			
-			
-		
-		
+		if (flag)
+			k++;	
+        else
+			k--;
 	}
 	
-	void andarBaixo(){
-	
-			
-			addZ += movimento;
-			anguloRotacao = 0.0f;
-			
-	
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-
-			if (flag)
-				k++;	
-            else
-				k--;
-			
+	void andarBaixo(){	
+		addZ += movimento;
+		anguloRotacao = 0.0f;
 		
 
-						 
-		
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
+
+		if (flag)
+			k++;	
+        else
+			k--;		
 	}
 	
-	// Funcao booleanda
-bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
-	// Para cada coordenada do conjunto	
-    for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
-        if (it->first == x && it->second == y) {
-        	//printf("\nTEM COLISAO\n");
-            return true;
-            
-        }
-    }
-	//printf("\n NAO TEM COLISAO\n");
-    return false;
-   
-}
-	
-	
+	// Funcao booleana
+	bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
+		// Para cada coordenada do conjunto	
+	    for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
+	        if (it->first == x && it->second == y) {
+	        	//printf("\nTEM COLISAO\n");
+	            return true;
+	            
+	        }
+	    }
+		//printf("\n NAO TEM COLISAO\n");
+	    return false;
+	  }	
 };
 
 Jogador player;
@@ -859,9 +829,9 @@ bool spawnBot = false;
 
 void spawnarbots(){
 	// cores: capuz, cor secundaria e corpo
+	float r1,g1,b1,r2,g2,b2,r3,g3,b3;
 	
-	dir = numeroAleatorio(1,50);
-
+	// spawna bot só no começo
 	if(!spawnBot){
 		bot1.x = -28;
 		bot1.z = 8;
@@ -878,25 +848,23 @@ void spawnarbots(){
 	   	spawnBot = true;
 	}
 	
-	
-	float r1,g1,b1,r2,g2,b2,r3,g3,b3;
+	// Bot 1
+	dir = numeroAleatorio(1,50);
 	mudarPais(argentina, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
 	
-	if (dir == cima){
+	if (dir == cima && !temColisao(bot1.x + 28, bot1.z, muro)){
 		bot1.z -= 1;
-		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
 		bot1.andarCima();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}else if (dir == direita){
+	}else if (dir == direita && !temColisao(bot1.x + 24, bot1.z, muro)){
 		bot1.x += 1;
 		bot1.andarDireita();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}else if (dir == esquerda){
+	}else if (dir == esquerda && !temColisao(bot1.x + 27, bot1.z, muro)){
 		bot1.x -= 1;
 		bot1.andarEsquerda();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
-	}else if (dir == baixo){
+	}else if (dir == baixo && !temColisao(bot1.x + 28, bot1.z + 4, muro)){
 		bot1.z += 1;
 		bot1.andarBaixo();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
@@ -904,66 +872,53 @@ void spawnarbots(){
 		drawBomberman(bot1.anguloRotacao,bot1.x,bot1.z, bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 	}
 	
-	
+	// Bot 2
 	dir = numeroAleatorio(1,50);
-
-	
-	
-	 
 	mudarPais(portugal, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
 	
-	if (dir == cima){
-		
-			bot2.andarCima();
-		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+	if (dir == cima && !temColisao(bot2.x + 28, bot2.z, muro)){
+        bot2.z -= 1;
+        bot2.andarCima();
+        bot2.andarBomberman(bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == direita && !temColisao(bot2.x + 24, bot2.z, muro)){
+        bot2.x += 1;
+        bot2.andarDireita();
+        bot2.andarBomberman(bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == esquerda && !temColisao(bot2.x + 27, bot2.z, muro)){
+        bot2.x -= 1;
+        bot2.andarEsquerda();
+        bot2.andarBomberman(bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == baixo && !temColisao(bot2.x + 28, bot2.z + 4, muro)){
+        bot2.z += 1;
+        bot2.andarBaixo();
+        bot2.andarBomberman(bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else {
+        drawBomberman(bot2.anguloRotacao, bot2.x, bot2.z, bot2.addX, bot2.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    }
 	
-	}else if (dir == direita){
-
-			bot2.andarDireita();
-		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
-	}else if (dir == esquerda){
-		bot2.andarEsquerda();
-		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
-	}else if (dir == baixo){
-		bot2.andarBaixo();
-		bot2.andarBomberman(bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}else{
-		drawBomberman(bot2.anguloRotacao,bot2.x,bot2.z, bot2.addX,bot2.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}
+	// Bot 3
+	dir = numeroAleatorio(1,50);
+	mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
 	
-		dir = numeroAleatorio(1,50);
-
-
-	
-	 
-		mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	
-	if (dir == cima){
-		
-			bot3.andarCima();
-		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	
-	}else if (dir == direita){
-
-			bot3.andarDireita();
-		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
-	}else if (dir == esquerda){
-		bot3.andarEsquerda();
-		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
-	}else if (dir == baixo){
-		bot3.andarBaixo();
-		bot3.andarBomberman(bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}else{
-		drawBomberman(bot3.anguloRotacao,bot3.x,bot3.z, bot3.addX,bot3.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	}
-	
-	
-
-	
+	if (dir == cima && !temColisao(bot3.x + 28, bot3.z, muro)){
+        bot3.z -= 1;
+        bot3.andarCima();
+        bot3.andarBomberman(bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == direita && !temColisao(bot3.x + 24, bot3.z, muro)){
+        bot3.x += 1;
+        bot3.andarDireita();
+        bot3.andarBomberman(bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == esquerda && !temColisao(bot3.x + 27, bot3.z, muro)){
+        bot3.x -= 1;
+        bot3.andarEsquerda();
+        bot3.andarBomberman(bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else if (dir == baixo && !temColisao(bot3.x + 28, bot3.z + 4, muro)){
+        bot3.z += 1;
+        bot3.andarBaixo();
+        bot3.andarBomberman(bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    } else {
+        drawBomberman(bot3.anguloRotacao, bot3.x, bot3.z, bot3.addX, bot3.addZ, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    }
 }
 // ------------------- Configuracoes do GLUT -------------------
 // Variaveis para controlar a camera
