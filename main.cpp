@@ -51,17 +51,17 @@ int m_x, m_y;
 
 // ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
-	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
-	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
-	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
-	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
-	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
-	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
-	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
-	{M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
-	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
+    {M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
+    {N, 0, 0, 0, N, 0, C, 0, 0, 0, N, 0, C, 0, 0, N},
+    {M, C, M, 0, M, 0, M, 0, 0, 0, N, C, N, M, 0, M},
+    {N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
+    {M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, M, M},
+    {N, 0, M, N, M, N, M, 0, 0, 0, M, C, N, N, C, N},
+    {M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
+    {N, 0, C, 0, M, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
+    {M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
+    {M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+    {N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
 
@@ -107,9 +107,14 @@ void colisoesMatriz(){
                     }
                 }
             }else if(matrizMapa[z][x] == C){
-                int posX = inicioX + x * 4;
-                int posZ = inicioZ + z * 4;
-                caixa.insert(std::make_pair(posX, posZ));     
+                for (int i = 0; i < 4; ++i) {
+                    for (int j = 0; j < 4; ++j) {
+                        int posX = inicioX + x * 4 + i;
+                        int posZ = inicioZ + z * 4 + j;
+						//printf("caixa em %d %d\n", posX, posZ);
+                        caixa.insert(std::make_pair(posX, posZ));
+                    }
+                }  
 			}
 		}
 	}
@@ -123,9 +128,6 @@ struct Bomba {
     bool imunidade;      // Flag para imunidade de colis?o
     int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
-
-
-
 
 
 // controla detalhes da animacao
@@ -172,7 +174,6 @@ void desenhaBombas() {
     }
 }
 
-std::vector<std::pair<int, int> > posicoesExplosoes;
 
 void desenharExplosao(float x, float z) {
     glPushMatrix();  // Salva o estado atual da matriz
@@ -190,15 +191,22 @@ void desenharExplosao(float x, float z) {
     glPopMatrix();  // Restaura o estado da matriz
 }
 
-void removerCaixote(int posX, int posZ){
-	int xMatriz = posX + 2;
-	int zMatriz = posZ + 15;
-	printf("na matriz: (%d, %d)\n", xMatriz, zMatriz);
-	caixa.erase(std::make_pair(posX, posZ)); // remover colis?o
-	int x = (posX - 2) / 4; // Calcula a posi??o na matriz
-    int z = (posZ - 15) / 4;
-    printf("caixote em (%d, %d)\n", x, z);
+void removerCaixote(int posX, int posZ) {
+    for (int i = -8; i <= 8; ++i) {
+        for (int j = -8; j <= 8; ++j) {
+            int newX = posX + i;
+            int newZ = posZ + j;
+            // Declaração explícita do tipo do iterador
+            std::set<std::pair<int, int> >::iterator it = caixa.find(std::make_pair(newX, newZ));
+            if (it != caixa.end()) {
+                caixa.erase(it);
+                std::cout << "Removido: (" << newX << ", " << newZ << ")\n";
+            }
+        }
+    }
 }
+
+
 
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
@@ -859,7 +867,7 @@ Jogador bot1 = {0,0};
 Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
-float movimentoBot = 1.2;
+float movimentoBot = 0.2;
 bool spawnBot = false;	
 void spawnarBots(){
 	// spawna bot sÃ³ no comeÃ§o
