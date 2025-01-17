@@ -193,9 +193,9 @@ void colisoesMatriz(){
 std::pair<int, int> obterIndiceCaixa(int posX, int posZ) {
     std::map<std::pair<int, int>, std::pair<int, int> >::iterator it = caixaMatriz.find(std::make_pair(posX, posZ));
     if (it != caixaMatriz.end()) {
-        return it->second; // Retorna o índice
+        return it->second; // Retorna o ?ndice
     }
-    return std::make_pair(-1, -1); // Retorna um valor inválido se não encontrar
+    return std::make_pair(-1, -1); // Retorna um valor inv?lido se n?o encontrar
 }
 
 // ------------------- Configuracoes da Bomba -------------------
@@ -623,7 +623,7 @@ void mudarPais(float pais ,float*Rcapuz,float*Gcapuz,float*Bcapuz, float*Rsec, f
 #include <cstdlib>
 #include <ctime>
 
-// Função para gerar um número aleatório dentro de um intervalo
+// Fun??o para gerar um n?mero aleat?rio dentro de um intervalo
 int numeroAleatorio(int minimo, int maximo) {
     return minimo + rand() % ((maximo - minimo) + 1);
 }
@@ -646,7 +646,7 @@ void preencherVetor() {
     }
 }
 	
-	// Função para desenhar o personagem Bomberman
+	// Fun??o para desenhar o personagem Bomberman
 	void andarBomberman(float x2, float z2, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo) {
 
 		
@@ -956,7 +956,7 @@ Jogador bot3 = {0,0};
 float movimentoBot = 0.08;
 bool spawnBot = false;	
 void spawnarBots(){
-	// spawna bot só no começo
+	// spawna bot s? no come?o
 	if(!spawnBot){
 		bot1.x = 18;
 		bot1.z = 15;
@@ -1100,39 +1100,31 @@ const char* ultima_tocada = "bomb";
 
 
 void tocarmusica(const char* caminho) {
-    char audio1[256]; // Variável para armazenar o caminho completo
-    snprintf(audio1, sizeof(audio1), "audios/%s.wav", caminho); // Constrói o caminho completo do arquivo
+    char audio1[256]; // Vari?vel para armazenar o caminho completo
+    snprintf(audio1, sizeof(audio1), "audios/%s.wav", caminho); // Constr?i o caminho completo do arquivo
 
-    // Abre o áudio usando o caminho
+    // Abre o ?udio usando o caminho
     char comandoOpen[512];
     snprintf(comandoOpen, sizeof(comandoOpen), "open \"%s\" type waveaudio alias audio1", audio1);
     mciSendString(comandoOpen, NULL, 0, NULL);
 
-    // Toca o áudio uma vez
+    // Toca o ?udio uma vez
     mciSendString("play audio1", NULL, 0, NULL);
 }
 
-// Função para desenhar texto com borda
-void desenharTexto(float x, float y, const char* texto, float escala) {
-    glPushMatrix();
-    glTranslatef(x, y, 0);
-    glScalef(escala, escala, escala);
-    
- 	 draw_text_stroke(-20, 20, to_string(texto), 0.01);
-    glPopMatrix();
-}
 
-#include <ctime> // Para usar a função time
+
+#include <ctime> // Para usar a fun??o time
 
 bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
     return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
 }
 
 void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
-    // Dimensões da face
+    // Dimens?es da face
     float d = tamanho / 2;
 
-    // Definindo os vértices da face
+    // Definindo os v?rtices da face
     float v1[3] = {x - d, y + d, z};
     float v2[3] = {x - d, y - d, z};
     float v3[3] = {x + d, y - d, z};
@@ -1142,48 +1134,59 @@ void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
     glBindTexture(GL_TEXTURE_2D, texID);
 
     glBegin(GL_QUADS);
-	glTexCoord2f(0, 1); glVertex3fv(v1);  // Coordenada de textura (1, 0) para o vértice superior esquerdo
-	glTexCoord2f(0, 0); glVertex3fv(v2);  // Coordenada de textura (1, 1) para o vértice inferior esquerdo
-	glTexCoord2f(1, 0); glVertex3fv(v3);  // Coordenada de textura (0, 1) para o vértice inferior direito
-	glTexCoord2f(1, 1); glVertex3fv(v4);  // Coordenada de textura (0, 0) para o vértice superior direito
+	glTexCoord2f(0, 1); glVertex3fv(v1);  // Coordenada de textura (1, 0) para o v?rtice superior esquerdo
+	glTexCoord2f(0, 0); glVertex3fv(v2);  // Coordenada de textura (1, 1) para o v?rtice inferior esquerdo
+	glTexCoord2f(1, 0); glVertex3fv(v3);  // Coordenada de textura (0, 1) para o v?rtice inferior direito
+	glTexCoord2f(1, 1); glVertex3fv(v4);  // Coordenada de textura (0, 0) para o v?rtice superior direito
     glEnd();
 }
 
 void verificarColisaoBots() {
-    // Armazena o tempo da última colisão
+    // Armazena o tempo da ?ltima colis?o
     static time_t ultimoTempoColisao = 0;
 
-    // Obtém o tempo atual
+    // Obt?m o tempo atual
     time_t tempoAtual = time(NULL); 
 
-    // Verifica colisão com bot3
+    // Verifica colis?o com bot3
     if (rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
     	
-        // Verifica se já passou 3 segundos desde a última colisão
+        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             vidas--;
-            // Atualiza o tempo da última colisão
+            // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
     }  else if   (rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
-		        // Verifica se já passou 3 segundos desde a última colisão
+		        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             vidas--;
-            // Atualiza o tempo da última colisão
+            // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
 	} else  if (rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             vidas--;
-            // Atualiza o tempo da última colisão
+            // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
 	}
 }
 
+template <typename T>
+void desenharTexto(float x, float y, const T& value, float scale, float r, float g, float b) {
+    // Converter o valor para string
+    std::ostringstream oss;
+    oss << value;
+    std::string text = oss.str();
+
+    // Texto principal
+    glColor3f(r, g, b); // Cor do texto principal
+    draw_text_stroke(x, y, text, scale, 0.5);
+}
 
 void display()
 {
@@ -1191,7 +1194,7 @@ void display()
 	// Limpar os buffers de cor e profundidade
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Configurar a câmera
+	// Configurar a c?mera
 	glLoadIdentity();
 	gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
 
@@ -1199,28 +1202,79 @@ void display()
 	glPushMatrix(); // Salvar o estado da matriz atual
 	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	glPopMatrix(); // Restaurar o estado da matriz
-	
-	desenhaIcone(-28, 21, 0.02, 4, texID[5]);
-
+	if (ultima_cam == 1)
+		desenhaIcone(centerX-23, centerY+21, centerZ, 4, texID[5]);
+	else if (ultima_cam == 3){
+			glPushMatrix();
+			glTranslated(centerX-10,centerY+12,centerZ+10);
+			//	glRotated(-90,1,0,0);
+		desenhaIcone(0, 0, 0, 4, texID[5]);
+			glPopMatrix();
+	}else if (ultima_cam == 2){
+		glPushMatrix();
+			glTranslated(centerX-10,centerY+20,centerZ-11);
+			glRotated(-90,1,0,0);
+		desenhaIcone(0, 0, 0, 4, texID[5]);
+			glPopMatrix();
+		
+	}
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
-	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto
+	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto, nao colocar nada que envolva textura depois daqui
 	
 	//glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
 	//draw_text_stroke(-20, 20, to_string(ultima_tocada), 0.01);
 	
 	 if (mostrarTexto) {
-        glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-        draw_text_stroke(-20, 20, ultima_tocada, 0.01);
+	 	if (ultima_cam == 1){
+		glPushMatrix();
+				glTranslated(centerX-5,centerY-2,centerZ);
+        		desenharTexto(-20, 20, ultima_tocada, 0.01, 0,0,0.545);
+  		glPopMatrix();
+		 }else if (ultima_cam == 2){
+		glPushMatrix();
+				glTranslated(centerX,centerY+20,centerZ+13);
+				glRotated(-90,1,0,0);
+				
+        		desenharTexto(-20, 20, ultima_tocada, 0.01, 0,0,0.545);
+  		glPopMatrix();
+		 }else if (ultima_cam == 3){
+		 	glPushMatrix();
+		 	
+					glTranslated(centerX+6,centerY,centerZ+10);
+						glScaled(0.6,0.6,0.6);
+        		desenharTexto(-20, 20, ultima_tocada, 0.01, 0,0,0.545);
+  		glPopMatrix();
+			 
+		 }
+	
+  	
     }
 	tempoFinal=glutGet(GLUT_ELAPSED_TIME);
 	if (tempoFinal - tempoInicial >=5000)// 5 segundos para exibir o nome da musica na tela
 		mostrarTexto = false;
 	
-	glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-	draw_text_stroke(-28, 20, " "+to_string(vidas), 0.02);
-	
-	
+	if (ultima_cam == 1){
+		
+		glPushMatrix();	
+			glTranslated(centerX,centerY,centerZ);
+			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+		glPopMatrix();
+	}else if (ultima_cam == 3){
+		glPushMatrix();	
+			glTranslated(centerX+12,centerY-9,centerZ+10);
+			//glRotated(-90,1,0,0);
+			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+		glPopMatrix();
+		
+	} else if (ultima_cam == 2){
+	glPushMatrix();	
+			glTranslated(centerX+12,centerY+20,centerZ+10);
+			glRotated(-90,1,0,0);
+			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+		glPopMatrix();
+	}
+
 	verificarColisaoBots();
 
 	
@@ -1240,43 +1294,43 @@ void display()
 	spawnarBots();
 	atualizarBots();
 	
-	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necessário
+	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necess?rio
 	glPopMatrix();
 
-	// Finalizar a renderização
+	// Finalizar a renderiza??o
  	glFlush();
 	glutSwapBuffers();
 }
 
-bool somTocando = false; // Variável para rastrear o estado do som
+bool somTocando = false; // Vari?vel para rastrear o estado do som
 
 const char* audio2;
 
 int quantbombas = 2;
 
 void somBomba() {
-    // Cria um alias único para cada nova reprodução do som
+    // Cria um alias ?nico para cada nova reprodu??o do som
     char audio[20];  // Array para armazenar o nome do alias
 
-    // Cria o alias único usando sprintf
+    // Cria o alias ?nico usando sprintf
     sprintf(audio, "audio%d", quantbombas);  // Gera um nome como "audio1", "audio2", etc.
 
-    // Fecha o alias se ele já estiver em uso (isso garante que não haverá conflitos)
+    // Fecha o alias se ele j? estiver em uso (isso garante que n?o haver? conflitos)
     char closeCommand[50];
-    sprintf(closeCommand, "close %s", audio);  // Prepara o comando de fechamento com o alias único
+    sprintf(closeCommand, "close %s", audio);  // Prepara o comando de fechamento com o alias ?nico
     mciSendString(closeCommand, NULL, 0, NULL);  // Fecha o alias anterior
 
-    // Abre o áudio "bomba.wav" com o alias único
+    // Abre o ?udio "bomba.wav" com o alias ?nico
     char openCommand[100];
-    sprintf(openCommand, "open \"audios/bomba.wav\" type waveaudio alias %s", audio);  // Prepara o comando de abertura com o alias único
-    mciSendString(openCommand, NULL, 0, NULL);  // Abre o áudio com o alias
+    sprintf(openCommand, "open \"audios/bomba.wav\" type waveaudio alias %s", audio);  // Prepara o comando de abertura com o alias ?nico
+    mciSendString(openCommand, NULL, 0, NULL);  // Abre o ?udio com o alias
 
-    // Reproduz o áudio "bomba.wav"
+    // Reproduz o ?udio "bomba.wav"
     char playCommand[50];
-    sprintf(playCommand, "play %s", audio);  // Prepara o comando de reprodução com o alias
-    mciSendString(playCommand, NULL, 0, NULL);  // Reproduz o áudio
+    sprintf(playCommand, "play %s", audio);  // Prepara o comando de reprodu??o com o alias
+    mciSendString(playCommand, NULL, 0, NULL);  // Reproduz o ?udio
 
-    // Incrementa a variável para o próximo alias
+    // Incrementa a vari?vel para o pr?ximo alias
     quantbombas++;
 }
 
@@ -1296,7 +1350,7 @@ void teclado(unsigned char key, int x, int y)
 		centerX = personagemX-2-28;
 		centerY = 0;
 		centerZ = personagemZ-2;
-		ultima_cam = quatro;
+		ultima_cam = 1;
 		break ;
 	case '2':
 		eyeZ = personagemZ+0;
@@ -1335,7 +1389,7 @@ void teclado(unsigned char key, int x, int y)
 	case 'w':
 	case 'W': // Mover o personagem pra frente
 		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
-			    // Defina os arquivos de áudio
+			    // Defina os arquivos de ?udio
 
 		if (!somTocando) {
             PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
@@ -1499,15 +1553,15 @@ void teclado(unsigned char key, int x, int y)
 	case 'm':
 	case 'M':
 
-    // Alterna para a próxima música
+    // Alterna para a pr?xima m?sica
     mudar_musica += 1;
-    if (mudar_musica == 6)  // Se ultrapassar o número de músicas, volta para a primeira
+    if (mudar_musica == 6)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
         mudar_musica = 1;
 
-    // Para a música atual e fecha, mas sem interromper o fluxo
+    // Para a m?sica atual e fecha, mas sem interromper o fluxo
     mciSendString("close audio1", NULL, 0, NULL);
 
-    // Abrir e tocar a próxima música
+    // Abrir e tocar a pr?xima m?sica
     if (mudar_musica == 1) {
         tocarmusica("bomb");
         ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
@@ -1522,13 +1576,13 @@ void teclado(unsigned char key, int x, int y)
         ultima_tocada = "Hollow Knight OST - Mantis Lords";
 	} 
 	else if (mudar_musica == 5) {
-        // Não há música, mas o comando de stop não é necessário
+        // N?o h? m?sica, mas o comando de stop n?o ? necess?rio
         ultima_tocada = "nenhuma musica selecionada";
     }
     
 
     tempoInicial = glutGet(GLUT_ELAPSED_TIME);
-    mostrarTexto = true; // Garante que o texto será exibido
+    mostrarTexto = true; // Garante que o texto ser? exibido
     break;
 
 
@@ -1624,8 +1678,10 @@ void init()
 	carregaTextura(texID[1], "grama_lateral.jpg");  // Textura 1 = lateral da grama
 	carregaTextura(texID[2], "pedra.jpg");  		// Textura 2 = muro normal
 	carregaTextura(texID[3], "pedra_musgo.png");  	// Textura 3 = muro com musgo
-	carregaTextura(texID[4], "caixa.jpg");  		// Textura 4 = caixa
+	carregaTextura(texID[4], "caixa.jpg");  
+
 	carregaTextura(texID[5], "vidas.png");  // Textura 5 = caixa
+	// Textura 5 = caixa
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
