@@ -76,12 +76,12 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
         if (it->first == x && it->second == y) {
-        	printf("\nTEM COLISAO\n");
+        	//printf("\nTEM COLISAO\n");
             return true;
             
         }
     }
-     printf("\n NAO TEM COLISAO\n");
+     //printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -737,7 +737,7 @@ void preencherVetor() {
 		
 			
 			addZ -= movimento;
-			printf("%f",addZ);
+			//printf("%f",addZ);
 			anguloRotacao= 180;
 			
 			if (k >= v.size())
@@ -760,7 +760,7 @@ void preencherVetor() {
 					
 		
 			addX += movimento;
-			printf("%f\n",addX);
+			//printf("%f\n",addX);
 		
 			anguloRotacao  = 90.0f;
 			
@@ -834,12 +834,12 @@ bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
         if (it->first == x && it->second == y) {
-        	printf("\nTEM COLISAO\n");
+        	//printf("\nTEM COLISAO\n");
             return true;
             
         }
     }
-     printf("\n NAO TEM COLISAO\n");
+	//printf("\n NAO TEM COLISAO\n");
     return false;
    
 }
@@ -855,36 +855,49 @@ Jogador bot2 = {0,0};
 Jogador bot3 = {0,0};
 
 
-	
+bool spawnBot = false;
+
 void spawnarbots(){
 	// cores: capuz, cor secundaria e corpo
 	
 	dir = numeroAleatorio(1,50);
-;
-	bot1.x = -28;
 
-	bot1.z = 8;
-
-	bot1.movimento = 0.5;
+	if(!spawnBot){
+		bot1.x = -28;
+		bot1.z = 8;
+		bot1.movimento = 0.5;
+		
+		bot2.x = 24;
+	   	bot2.z = -10;
+	   	bot2.movimento = 0.5;
+	   	
+		bot3.x = -28;
+		bot3.z = -15;
+	   	bot3.movimento = 0.5;
+	   	
+	   	spawnBot = true;
+	}
+	
 	
 	float r1,g1,b1,r2,g2,b2,r3,g3,b3;
 	mudarPais(argentina, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
 	
 	if (dir == cima){
-		
-			bot1.andarCima();
+		bot1.z -= 1;
+		printf("bot 1: (%f %f)\n", bot1.x, bot1.z);
+		bot1.andarCima();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-	
 	}else if (dir == direita){
-
-			bot1.andarDireita();
+		bot1.x += 1;
+		bot1.andarDireita();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
-		
 	}else if (dir == esquerda){
+		bot1.x -= 1;
 		bot1.andarEsquerda();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 		
 	}else if (dir == baixo){
+		bot1.z += 1;
 		bot1.andarBaixo();
 		bot1.andarBomberman(bot1.addX,bot1.addZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
 	}else{
@@ -893,12 +906,8 @@ void spawnarbots(){
 	
 	
 	dir = numeroAleatorio(1,50);
-;
-	bot2.x = 24;
 
-	bot2.z = -10;
-
-	bot2.movimento = 0.5;
+	
 	
 	 
 	mudarPais(portugal, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
@@ -925,12 +934,8 @@ void spawnarbots(){
 	}
 	
 		dir = numeroAleatorio(1,50);
-;
-	bot3.x = -28;
 
-	bot3.z = -15;
 
-	bot3.movimento = 0.5;
 	
 	 
 		mudarPais(japao, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
@@ -1345,6 +1350,7 @@ int main(int argc, char** argv)
 	printf("K/k: Mover o ponto de foco para tras\n");
 	printf("J/j: Mover o ponto de foco para a esquerda\n");
 	printf("L/l: Mover o ponto de foco para a direita\n");
+	printf("SPACE BAR - BOMBA\n\n");
 	
 		// carregando musica
 
