@@ -274,9 +274,10 @@ void removerCaixote(int posX, int posZ) {
 }
 
 
-
+bool playerPerdeuVida;
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
+	playerPerdeuVida = false;
 	
     // Vetores para definir as direcoes (cima, baixo, esquerda, direita)
     int direcoes[4][2] = {
@@ -927,10 +928,11 @@ void danoExplosao() {
         } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
             bot3.vivo = false;
             printf("Bot 3 morreu.\n");
-        } if (explosaoBots(player.x, player.z, bomba.x, bomba.z)) {
+        } if (explosaoBots(player.x, player.z, bomba.x, bomba.z) && !playerPerdeuVida) {
             quantVidas -= 1;
             printf("Player perdeu 1 vida.\n");
-		}
+            playerPerdeuVida = true;
+        }
         
         if(!bot1.vivo && !bot2.vivo && !bot3.vivo) printf("ACABOU\n\n");
     }
@@ -994,7 +996,6 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
        // do {
 		    novaDirecao = numeroAleatorio(1, 4); // 1 = cima, 2 = direita, 3 = esquerda, 4 = baixo
 		//} while (novaDirecao == bot.ultimaDirecao || !direcaoEhPerpendicular(bot.ultimaDirecao, novaDirecao));
-
 
         bot.ultimaDirecao = novaDirecao;
     }
