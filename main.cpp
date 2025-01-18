@@ -19,7 +19,7 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
-#define QTD_TEXTURAS 8
+#define QTD_TEXTURAS 9
 
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
@@ -70,8 +70,8 @@ int m_x, m_y;
 
 // ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-    {M, M, N, M, N, N, M, M, M, N, M, M, N, M, N, M},
-    {M, 0, C, 0, M, 0, 0, 0, M, 0, 0, 0, 0, 0, 0, M},
+    {M, M, N, M, N, N, M, N, M, N, M, M, N, M, N, M},
+    {M, 0, C, 0, M, 0, 0, 0, N, 0, 0, 0, 0, 0, 0, M},
     {N, 0, M, 0, N, 0, M, 0, N, 0, M, N, C, M, 0, N},
     {N, 0, 0, 0, M, C, M, 0, N, 0, 0, 0, 0, 0, 0, M},
     {M, 0, M, 0, 0, 0, C, 0, M, N, M, M, N, 0, 0, M},
@@ -1084,40 +1084,24 @@ void resultado(){
 			glPopMatrix();
 		}
 	}
-	
-	/*
-	lse if (ultima_cam == 3){
-		glPushMatrix();
+	if(perdeuTudo){
+		if (ultima_cam == 1){
+			desenhaIcone(centerX, centerY + 16, centerZ + 12, 21, texID[8]);
+		}else if (ultima_cam == 2){
+			glPushMatrix();
+			glTranslated(centerX-10,centerY+20,centerZ-11);
+			glRotated(-90,1,0,0);
+			desenhaIcone(17, -12, 0, 21, texID[8]);
+			glPopMatrix();	
+		}else if (ultima_cam == 3){
+			glPushMatrix();
 			glTranslated(centerX-10,centerY+12,centerZ+10);
 			//	glRotated(-90,1,0,0);
-			desenhaIcone(0, 0, 0, 4, texID[5]);
-			desenhaIcone(7, 0, 0, 4, texID[6]);
-		glPopMatrix();
-	}else if (ultima_cam == 2){
-		glPushMatrix();
-		glTranslated(centerX-10,centerY+20,centerZ-11);
-		glRotated(-90,1,0,0);
-		desenhaIcone(0, 0, 0, 4, texID[5]);
-		desenhaIcone(0, -7, 0, 4, texID[6]);
-		glPopMatrix();	
+			desenhaIcone(10, 0, 10, 7, texID[8]);
+			glPopMatrix();
+		}
 	}
-	
-	*/
 }
-
-/*
-bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
-    // Dire??es opostas n?o s?o consideradas perpendiculares
-    if ((ultimaDirecao == cima && novaDirecao == baixo) || 
-        (ultimaDirecao == baixo && novaDirecao == cima) || 
-        (ultimaDirecao == direita && novaDirecao == esquerda) || 
-        (ultimaDirecao == esquerda && novaDirecao == direita)) {
-        return false;
-    }
-    return true;
-}
-*/
-
 
 void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
     mudarPais(pais, &r1, &g1, &b1, &r2, &g2, &b2, &r3, &g3, &b3);
@@ -1836,7 +1820,8 @@ void init()
 
 	carregaTextura(texID[5], "vidas.png");  		// Textura 5 = coracao que indica as quantVidas
 	carregaTextura(texID[6], "bomba.png");  		// Textura 6 = maximo de bombas
-	carregaTextura(texID[7], "vitoria.png");  		// Textura 6 = maximo de bombas
+	carregaTextura(texID[7], "vitoria.png");  		// Textura 7 = player ganhou
+	carregaTextura(texID[8], "derrota.png");  		// Textura 8 = player perdeu
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
