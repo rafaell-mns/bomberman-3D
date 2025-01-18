@@ -1223,7 +1223,7 @@ void verificarColisaoBots() {
     time_t tempoAtual = time(NULL); 
 
     // Verifica colis?o com bot3
-    if (bot3.vivo &&((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
+    if (bot3.vivo && rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
     	
         // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
@@ -1669,6 +1669,9 @@ void teclado(unsigned char key, int x, int y)
     	
     	perdeuTudo = false;
 		 	quantVidas = 3;
+		 bot1.vivo = true;
+		 	bot2.vivo = true;
+		 	bot3.vivo = true;
   	 	 mciSendString("close audio914", NULL, 0, NULL); 
   	 	 mciSendString("close audio1", NULL, 0, NULL);
   	 	   
