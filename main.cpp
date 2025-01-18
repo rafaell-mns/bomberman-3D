@@ -24,7 +24,7 @@
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
 
-void botMorreu(); // declaracao
+void danoExplosao(); // declaracao
 
 float personagemX = 0.0f, personagemZ = 0.0f;
 enum cam{um = 1, dois, tres, quatro};
@@ -59,19 +59,18 @@ int m_x, m_y;
 
 // ------------------- Mapa e colisoes --------------------
 int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
-	{M, N, M, N, M, N, M, N, M, N, M, N, M, N, M, N},
-	{N, 0, 0, 0, N, 0, C, 0, 0, C, C, 0, C, C, 0, N},
-	{M, 0, M, 0, 0, 0, M, 0, 0, 0, N, C, N, M, 0, M},
-	{N, 0, M, 0, M, C, N, C, N, 0, M, 0, N, 0, 0, N},
-	{M, 0, M, 0, 0, 0, N, 0, N, C, C, 0, C, 0, C, M},
-	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
-	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
-	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
-	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, M, M},
-	{M, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, M},
-	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
+    {M, M, N, M, N, N, M, M, M, N, M, M, N, M, N, M},
+    {M, 0, C, 0, M, 0, 0, 0, M, 0, 0, 0, 0, 0, 0, M},
+    {N, 0, M, 0, N, 0, M, 0, N, 0, M, N, C, M, 0, N},
+    {N, 0, 0, 0, M, C, M, 0, N, 0, 0, 0, 0, 0, 0, M},
+    {M, 0, M, 0, 0, 0, 0, 0, M, N, M, M, N, C, 0, M},
+    {M, 0, 0, 0, N, N, M, 0, 0, C, M, 0, M, 0, M, M},
+    {M, 0, N, 0, 0, 0, M, M, 0, 0, 0, 0, M, 0, M, N},
+    {M, 0, 0, 0, M, 0, C, 0, 0, M, M, 0, 0, 0, 0, N},
+    {N, 0, M, 0, M, 0, M, 0, 0, 0, C, 0, 0, 0, 0, N},
+    {M, 0, N, 0, C, 0, M, 0, C, 0, M, 0, C, 0, 0, M},
+    {N, M, M, M, N, M, M, N, M, N, M, M, N, M, N, M}
 };
-
 
 void drawCaixaDestruida() {
     glPushMatrix();
@@ -303,7 +302,7 @@ void rastroExplosao(int bombaX, int bombaZ) {
 			if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) break;
             
             removerCaixote(novoX, novoZ);
-        	botMorreu();
+        	danoExplosao();
                
             glutPostRedisplay();
         }
@@ -898,7 +897,7 @@ void spawnarBots(){
 	   	bot2.movimento = movimentoBot;
 	   	
 		bot3.x = -28;
-		bot3.z = -15;
+		bot3.z = -18;
 		bot3.vivo = true;
 	   	bot3.movimento = movimentoBot;
 	   	
@@ -911,25 +910,31 @@ bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
     return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
 }
 
-void botMorreu() {
+bool explosaoBots(int x1, int z1, int x2, int z2) {
+    return (std::abs(x1 - x2) <= 6) && (std::abs(z1 - z2) <= 6);
+}
+
+void danoExplosao() {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
         Bomba& bomba = *it;
-
-        if (rangeColisaoBots((int)bot1.x + bot1.addX, (int)bot1.z + bot1.addZ, bomba.x, bomba.z)) {
+        
+        if (explosaoBots((int)bot1.x + bot1.addX, (int)bot1.z + bot1.addZ, bomba.x, bomba.z)) {
             bot1.vivo = false;
             printf("Bot 1 morreu.\n");
-        } if (rangeColisaoBots((int)bot2.x + bot2.addX, (int)bot2.z + bot2.addZ, bomba.x, bomba.z)) {
+        } if (explosaoBots((int)bot2.x + bot2.addX, (int)bot2.z + bot2.addZ, bomba.x, bomba.z)) {
             bot2.vivo = false;
             printf("Bot 2 morreu.\n");
-        } if (rangeColisaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
+        } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
             bot3.vivo = false;
             printf("Bot 3 morreu.\n");
-        }
+        } if (explosaoBots(player.x, player.z, bomba.x, bomba.z)) {
+            quantVidas -= 1;
+            printf("Player perdeu 1 vida.\n");
+		}
         
         if(!bot1.vivo && !bot2.vivo && !bot3.vivo) printf("ACABOU\n\n");
     }
 }
-
 
 /*
 bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
@@ -943,7 +948,6 @@ bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
     return true;
 }
 */
-
 
 void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
     mudarPais(pais, &r1, &g1, &b1, &r2, &g2, &b2, &r3, &g3, &b3);
@@ -959,7 +963,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 		if (bot.flag) bot.k++;	
         else bot.k--;
         bot.anguloRotacao = 180; // Cima
-    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x + 28, (int)bot.z)) {
+    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x + 31, (int)bot.z)) {
         bot.x += bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
@@ -967,7 +971,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 		if (bot.flag) bot.k++;	
         else bot.k--;
         bot.anguloRotacao = 90; // Direita
-    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x +28, (int)bot.z)) {
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x + 25, (int)bot.z)) {
         bot.x -= bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
@@ -1007,9 +1011,9 @@ void atualizarBots() {
 	// cores: capuz, cor secundaria e corpo
     float r1, g1, b1, r2, g2, b2, r3, g3, b3;
 
-    moverBot(bot1, argentina, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    moverBot(bot2, portugal, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    moverBot(bot3, japao, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    if(bot1.vivo) moverBot(bot1, argentina, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    if(bot2.vivo) moverBot(bot2, portugal, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    if(bot3.vivo) moverBot(bot3, japao, r1, g1, b1, r2, g2, b2, r3, g3, b3);
 }
 
 
