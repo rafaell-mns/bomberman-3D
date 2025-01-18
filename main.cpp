@@ -66,7 +66,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
 	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
 	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
-	{M, 0, 0, 0, N, C, M, 0, N, C, M, 0, 0, C, 0, M},
+	{M, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, M},
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
 
@@ -140,7 +140,7 @@ std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
 
-// Funcao booleanda
+// Funcao booleana
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
 	// Para cada coordenada do conjunto	
     for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
@@ -208,10 +208,6 @@ struct Bomba {
     int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
 
-
-
-
-
 // controla detalhes da animacao
 float escala = 1.0f;    // tamanho da bomba para controlar ela pulsando
 bool isWhite = false;   // alterna entra branco e preto
@@ -228,7 +224,7 @@ void spawnBomba() {
     novaBomba.z = personagemZ;        // Posi??o Z da bomba
     novaBomba.tempoVida = 5650;			// 5 segundos
     novaBomba.imunidade = true;        // Come?a com imunidade
-    novaBomba.tempoImunidade = 700;    // Exemplo: 0.7s de imunidade
+    novaBomba.tempoImunidade = 300;    // Exemplo: 0.3s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
 }
 
@@ -333,6 +329,7 @@ void atualizarBombas(int value) {
             // Caso o tempo de vida expire, remove a bomba
             if (it->tempoVida <= 0) {
                 it = bombas.erase(it); // Remove a bomba do vetor e retorna o pr?ximo iterador v?lido
+                bombasAtuais -= 1;
                 rastroExplosao(round(it->x + 28), round(it->z));
                 continue; // Pula a itera??o para evitar acessar um iterador inv?lido
             }
@@ -810,119 +807,76 @@ void preencherVetor() {
 	glPopMatrix();
 	}
 
-	void andarCima(){
+	void andarCima(){	
+		addZ -= movimento;
+		printf("%f",addZ);
+		anguloRotacao= 180;
 		
-
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
 		
-			
-			addZ -= movimento;
-			printf("%f",addZ);
-			anguloRotacao= 180;
-			
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-			
-			if (flag)
-				k++;	
-            else
-				k--;
-	
-		
+		if (flag)
+			k++;	
+        else
+			k--;
 	}
 	
 	void andarDireita(){
+		addX += movimento;
+		printf("%f\n",addX);
 	
+		anguloRotacao  = 90.0f;
 		
-					
-		
-			addX += movimento;
-			printf("%f\n",addX);
-		
-			anguloRotacao  = 90.0f;
-			
-		
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-		
-			if (flag)
-				k++;	
-            else
-				k--;
-			
-		
-			
+	
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
+	
+		if (flag)
+			k++;	
+        else
+			k--;	
 	}	
 
 	void andarEsquerda(){
+		addX += movimento;
+		anguloRotacao = 270.0f;
+
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		
+		t = v[k];
 		
 
-			addX += movimento;
-			anguloRotacao = 270.0f;
-	
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			
-			t = v[k];
-			
-	
-			if (flag)
-				k++;	
-            else
-				k--;
-		
-			
-			
-		
-		
+		if (flag)
+			k++;	
+        else
+			k--;	
 	}
 	
 	void andarBaixo(){
-	
-			
-			addZ += movimento;
-			anguloRotacao = 0.0f;
-			
-	
-			if (k >= v.size())
-				flag = false;
-			if (k <= 0)
-				flag = true;
-			t = v[k];
-
-			if (flag)
-				k++;	
-            else
-				k--;
-			
+		addZ += movimento;
+		anguloRotacao = 0.0f;
 		
 
-						 
-		
+		if (k >= v.size())
+			flag = false;
+		if (k <= 0)
+			flag = true;
+		t = v[k];
+
+		if (flag)
+			k++;	
+        else
+			k--;
 	}
-	
-	// Funcao booleanda
-bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
-	// Para cada coordenada do conjunto	
-    for (std::set< std::pair<int, int> >::iterator it = colisoes.begin(); it != colisoes.end(); ++it) {
-        if (it->first == x && it->second == y) {
-        	//printf("\nTEM COLISAO\n");
-            return true;
-            
-        }
-    }
-     //printf("\n NAO TEM COLISAO\n");
-    return false;
-   
-}
-	
 	
 };
 
@@ -938,8 +892,8 @@ bool spawnBot = false;
 void spawnarBots(){
 	// spawna bot s? no come?o
 	if(!spawnBot){
-		bot1.x = 18;
-		bot1.z = 15;
+		bot1.x = 22;
+		bot1.z = 14;
 		bot1.movimento = movimentoBot;    // trocar pra 0.2 (para os 3 bots)
 		
 		bot2.x = 18;
@@ -973,53 +927,37 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
     bool mudouDirecao = false;
 
     // Tenta continuar na ?ltima dire??o
-    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro) && !temColisao(bot.x + 28, bot.z - 1, caixa)) {
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro) && !temColisao(bot.x + 28, bot.z - 1, caixa) && !verificarColisaoComBombas(bot.x, bot.z - 3)) {
         bot.z -= bot.movimento;
-    		if (bot.k >= bot.v.size())
-				bot.flag = false;
-			if (bot.k <= 0)
-				bot.flag = true;
-			bot.t = bot.v[bot.k];
-			if (bot.flag)
-				bot.k++;	
-            else
-				bot.k--;
+		if (bot.k >= bot.v.size()) bot.flag = false;
+		if (bot.k <= 0) bot.flag = true;
+		bot.t = bot.v[bot.k];
+		if (bot.flag) bot.k++;	
+        else bot.k--;
         bot.anguloRotacao = 180; // Cima
-    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa)) {
+    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa) && !verificarColisaoComBombas(bot.x + 3, bot.z)) {
         bot.x += bot.movimento;
-    		if (bot.k >= bot.v.size())
-				bot.flag = false;
-			if (bot.k <= 0)
-				bot.flag = true;
-			bot.t = bot.v[bot.k];
-			if (bot.flag)
-				bot.k++;	
-            else
-				bot.k--;
+		if (bot.k >= bot.v.size()) bot.flag = false;
+		if (bot.k <= 0) bot.flag = true;
+		bot.t = bot.v[bot.k];
+		if (bot.flag) bot.k++;	
+        else bot.k--;
         bot.anguloRotacao = 90; // Direita
-    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa)) {
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa) && !verificarColisaoComBombas(bot.x - 3, bot.z)) {
         bot.x -= bot.movimento;
-    		if (bot.k >= bot.v.size())
-				bot.flag = false;
-			if (bot.k <= 0)
-				bot.flag = true;
-			bot.t = bot.v[bot.k];
-			if (bot.flag)
-				bot.k++;	
-            else
-				bot.k--;
+		if (bot.k >= bot.v.size()) bot.flag = false;
+		if (bot.k <= 0) bot.flag = true;
+		bot.t = bot.v[bot.k];
+		if (bot.flag) bot.k++;	
+        else bot.k--;
         bot.anguloRotacao = -90; // Esquerda
-    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro) && !temColisao(bot.x + 29, bot.z + 4, caixa)) {
+    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 32, bot.z + 4, muro) && !temColisao(bot.x + 29, bot.z + 4, caixa) && !verificarColisaoComBombas(bot.x, bot.z + 3)) {
         bot.z += bot.movimento;
-    		if (bot.k >= bot.v.size())
-				bot.flag = false;
-			if (bot.k <= 0)
-				bot.flag = true;
-			bot.t = bot.v[bot.k];
-			if (bot.flag)
-				bot.k++;	
-            else
-				bot.k--;
+		if (bot.k >= bot.v.size()) bot.flag = false;
+		if (bot.k <= 0) bot.flag = true;
+		bot.t = bot.v[bot.k];
+		if (bot.flag) bot.k++;	
+        else bot.k--;
         bot.anguloRotacao = 0; // Baixo
     } else {
         // Sorteia uma nova dire??o que seja diferente da ?ltima
@@ -1238,7 +1176,6 @@ void display()
 		mostrarTexto = false;
 	
 	if (ultima_cam == 1){
-		
 		glPushMatrix();	
 			glTranslated(centerX,centerY,centerZ);
 			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );
@@ -1367,11 +1304,12 @@ void teclado(unsigned char key, int x, int y)
 		ultima_cam = 4;
 		break;
 	case 32:
-
-	    
-	    somBomba();
-	    spawnBomba();
+		if(bombasAtuais < maxBombas){
+			somBomba();
+		    spawnBomba();
+		    bombasAtuais += 1;
 			break;
+		}
 	case 'w':
 	case 'W': // Mover o personagem pra frente
 		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
@@ -1400,11 +1338,7 @@ void teclado(unsigned char key, int x, int y)
             else
 				k--;
 			
-			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-			
-			
-		
-			
+			printf("(%.0f, %.0f)\n", personagemX, personagemZ);	
 		}
 		break;
 	case 's':
