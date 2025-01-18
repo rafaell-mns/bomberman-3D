@@ -1017,17 +1017,17 @@ void spawnarBots(){
 	if(!spawnBot){
 		bot1.x = 22;
 		bot1.z = 14;
-		bot1.vivo = false;
+		bot1.vivo = true;
 		bot1.movimento = movimentoBot;
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
-	   	bot2.vivo = false;
+	   	bot2.vivo = true;
 	   	bot2.movimento = movimentoBot;
 	   	
 		bot3.x = -28;
 		bot3.z = -18;
-		bot3.vivo = false;
+		bot3.vivo = true;
 	   	bot3.movimento = movimentoBot;
 	   	
 	   	spawnBot = true;
@@ -1071,11 +1071,38 @@ void resultado(){
 		if (ultima_cam == 1){
 			desenhaIcone(centerX, centerY + 16, centerZ + 12, 21, texID[7]);
 		}else if (ultima_cam == 2){
-			desenhaIcone(centerX, centerY, centerZ, 15, texID[7]);
+			glPushMatrix();
+			glTranslated(centerX-10,centerY+20,centerZ-11);
+			glRotated(-90,1,0,0);
+			desenhaIcone(17, -12, 0, 21, texID[7]);
+			glPopMatrix();	
 		}else if (ultima_cam == 3){
-			desenhaIcone(centerX, centerY, centerZ, 15, texID[7]);
+			glPushMatrix();
+			glTranslated(centerX-10,centerY+12,centerZ+10);
+			//	glRotated(-90,1,0,0);
+			desenhaIcone(10, 0, 10, 7, texID[7]);
+			glPopMatrix();
 		}
 	}
+	
+	/*
+	lse if (ultima_cam == 3){
+		glPushMatrix();
+			glTranslated(centerX-10,centerY+12,centerZ+10);
+			//	glRotated(-90,1,0,0);
+			desenhaIcone(0, 0, 0, 4, texID[5]);
+			desenhaIcone(7, 0, 0, 4, texID[6]);
+		glPopMatrix();
+	}else if (ultima_cam == 2){
+		glPushMatrix();
+		glTranslated(centerX-10,centerY+20,centerZ-11);
+		glRotated(-90,1,0,0);
+		desenhaIcone(0, 0, 0, 4, texID[5]);
+		desenhaIcone(0, -7, 0, 4, texID[6]);
+		glPopMatrix();	
+	}
+	
+	*/
 }
 
 /*
