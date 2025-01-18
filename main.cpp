@@ -47,11 +47,12 @@ float perdeuTudo = false;
 int quantVidas = 3;
 int maxBombas = 2;
 int bombasAtuais = 0;
-
+bool dano = false;
 // Variaveis para controlar a camera
 float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
 float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
-
+    // Armazena o tempo da ?ltima colis?o
+    static time_t ultimoTempoColisao = 0;
 
 
 void drawCube(float size, float r, float g, float b)
@@ -155,7 +156,7 @@ std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
 // funcao importante de upar um audio em um novo canal de audio criado
 void uparAudio(const char* caminho);
-
+void tocarmusica(const char* caminho);
 
 // Funcao booleana
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
@@ -1042,10 +1043,11 @@ bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
 }
 
 bool explosaoBots(int x1, int z1, int x2, int z2) {
-    return (std::abs(x1 - x2) <= 7) && (std::abs(z1 - z2) <= 7);
+    return (std::abs(x1 - x2) <= 6) && (std::abs(z1 - z2) <= 6);
 }
 
 void danoExplosao() {
+	time_t tempoAtual = time(NULL); 
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
         Bomba& bomba = *it;
         
@@ -1056,7 +1058,18 @@ void danoExplosao() {
         } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
             bot3.vivo = false;
         } if (explosaoBots(player.x+personagemX, player.z+personagemZ, bomba.x, bomba.z) && !playerPerdeuVida) {
-            quantVidas -= 1;
+            
+            
+    			if (difftime(tempoAtual, ultimoTempoColisao) >= 3){
+					dano = false;
+					quantVidas -= 1;
+					ultimoTempoColisao = tempoAtual;
+				}else{
+					dano = true;
+					
+				}
+				
+            
 			if (quantVidas == 0){
 				uparAudio("game_over.wav");
 				perdeuTudo = true;
@@ -1067,6 +1080,7 @@ void danoExplosao() {
     }
 }
 
+int vitoria = 0;
 void resultado(){
 	if(!bot1.vivo && !bot2.vivo && !bot3.vivo){ // tela/evento de vitoria
 		if (ultima_cam == 1){
@@ -1084,6 +1098,16 @@ void resultado(){
 			desenhaIcone(10, 0, 10, 7, texID[7]);
 			glPopMatrix();
 		}
+		vitoria += 1;
+		if (vitoria == 1){
+			mciSendString("close audio999", NULL, 0, NULL); 
+			mciSendString("close audio1", NULL, 0, NULL);
+				mciSendString("close audio914", NULL, 0, NULL); 
+			mciSendString("open \"audios/Vitoria.wav\" type waveaudio alias audio999", NULL, 0, NULL);  // Abre o ?udio com o alias
+			mciSendString("play audio999", NULL, 0, NULL);
+		}
+	
+		
 	}
 	if(perdeuTudo){
 		if (ultima_cam == 1){
@@ -1233,11 +1257,17 @@ void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
 
 
 void verificarColisaoBots() {
-    // Armazena o tempo da ?ltima colis?o
-    static time_t ultimoTempoColisao = 0;
+
 
     // Obt?m o tempo atual
     time_t tempoAtual = time(NULL); 
+    
+	if (difftime(tempoAtual, ultimoTempoColisao) >= 3)
+		dano = false;
+	else
+		dano = true;
+
+	
 
     // Verifica colis?o com bot3
     if (bot3.vivo && rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
@@ -1245,6 +1275,7 @@ void verificarColisaoBots() {
         // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             //printf("PERDEU UMA VIDA\n");
+           
             quantVidas--;
             uparAudio("levar_dano.wav");
             
@@ -1259,7 +1290,7 @@ void verificarColisaoBots() {
             
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
-        }
+		}
     }  else if   (bot2.vivo && rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
 		        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
@@ -1309,6 +1340,8 @@ void desenharTexto(float x, float y, const T& value, float scale, float r, float
     draw_text_stroke(x, y, text, scale, 0.5);
 }
 
+
+float r1 = 0,g1 = 0,b1 = 0 ,r2 = 0 ,g2 = 0 ,b2 = 0 ,r3 = 0 ,g3 = 0 ,b3 = 0;
 void display()
 {
 	
@@ -1388,23 +1421,42 @@ void display()
 
 	verificarColisaoBots();
 
-	
+
 	desenhaBombas(); 
+	if (!dano){
+		
 	
+	mudarPais(brasil, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3); // essa funcao fora do condicional pq vai executar do msm jeito
 	if (andando){
-		float r1,g1,b1,r2,g2,b2,r3,g3,b3;
-		mudarPais(brasil, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
+		
+		
 		player.andarBomberman(personagemX, personagemZ,  r1,g1,b1,    r2,g2,b2,    r3,g3,b3);	
 	}		
 	else{
-		float r1,g1,b1,r2,g2,b2,r3,g3,b3;
-		mudarPais(brasil, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
-	
-
-		drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
 		
+		drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
 	}
-	
+
+		
+		
+	}else{
+		//usa o proprio r1 de flag
+        if (r1 == 0) {
+        
+        	if (andando)
+        		player.andarBomberman(personagemX, personagemZ,  r1,g1,b1,    r2,g2,b2,    r3,g3,b3);
+        	else
+				drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );
+			 r1 = 1;
+		} else{
+			
+       	  //drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );
+       	  r1 = 0;
+		}
+    	
+
+       
+	}
 	spawnarBots();
 	atualizarBots();
 	
@@ -1686,6 +1738,8 @@ void teclado(unsigned char key, int x, int y)
 	*/
 	case 'r':
     case 'R':	
+		mciSendString("close audio999", NULL, 0, NULL); 
+		vitoria = 0;
     	perdeuTudo = false;
 		quantVidas = 3;
 		
@@ -1760,8 +1814,12 @@ void tecladoSolta(unsigned char key, int x, int y){
         	somTocando = false; 
     	}
 		
-
+		break;
 	case 's':
+   
+	 	
+
+	
 	case 'S': // Mover o personagem pra tras
 		andando = false;
 		if (somTocando) {
@@ -1777,6 +1835,8 @@ void tecladoSolta(unsigned char key, int x, int y){
         	somTocando = false; 
     	}
 	case 'd':
+			
+
 	case 'D': // Mover o personagem pra direita
 		andando = false;
 				if (somTocando) {
