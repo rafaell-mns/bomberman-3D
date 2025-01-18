@@ -1851,6 +1851,7 @@ void exibirMenu(){
     printf("|       Comando        |            Acao             |\n");
     printf("+----------------------+-----------------------------+\n");
     printf("|         WASD         | Mover o player              |\n");
+    printf("|    BARRA DE ESPACO   | Dropa uma bomba             |\n");
     printf("|          R           | Reiniciar                   |\n");
     printf("|          M           | Mudar/desativar musica      |\n");
     printf("+----------------------+-----------------------------+\n");
