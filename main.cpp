@@ -4,6 +4,7 @@
 #include <math.h>
 #include <cstdio>
 #include <vector>
+#include <cstring>
 #include <utility>
 #include <conio.h> 
 #include <stdio.h>
@@ -1243,7 +1244,7 @@ void verificarColisaoBots() {
     	
         // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
-            printf("PERDEU UMA VIDA\n");
+            //printf("PERDEU UMA VIDA\n");
             quantVidas--;
             uparAudio("levar_dano.wav");
             
@@ -1262,7 +1263,7 @@ void verificarColisaoBots() {
     }  else if   (bot2.vivo && rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
 		        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
-            printf("PERDEU UMA VIDA\n");
+            //printf("PERDEU UMA VIDA\n");
             quantVidas--;
             uparAudio("levar_dano.wav");
             
@@ -1280,7 +1281,7 @@ void verificarColisaoBots() {
         }
 	} else  if (bot1.vivo && rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
-            printf("PERDEU UMA VIDA\n");
+            //printf("PERDEU UMA VIDA\n");
             quantVidas--;
             uparAudio("levar_dano.wav");
      	   
@@ -1551,7 +1552,7 @@ void teclado(unsigned char key, int x, int y)
             else
 				k--;
 			
-			printf("(%.0f, %.0f)\n", personagemX, personagemZ);	
+			//printf("(%.0f, %.0f)\n", personagemX, personagemZ);	
 		}
 		break;
 	case 's':
@@ -1580,7 +1581,7 @@ void teclado(unsigned char key, int x, int y)
             else
 				k--;
 			
-			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			//printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 
 						
 		}
@@ -1609,7 +1610,7 @@ void teclado(unsigned char key, int x, int y)
 				k++;	
             else
 				k--;
-			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			//printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 			
 			
 		}
@@ -1638,9 +1639,10 @@ void teclado(unsigned char key, int x, int y)
 	        else
 				k--;
 			
-			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
+			//printf("(%.0f, %.0f)\n", personagemX, personagemZ);
 		}
 			break;
+    /*
 	case 't':
 	case 'T': // Mover a camera para frente (ao longo do eixo Z)
 		eyeZ -= movimento;
@@ -1681,20 +1683,20 @@ void teclado(unsigned char key, int x, int y)
 	case 'L': // Mover o ponto de foco para a direita
 		centerX += movimento;
 		break;
+	*/
 	case 'r':
-    case 'R':
-    	
+    case 'R':	
     	perdeuTudo = false;
-		 	quantVidas = 3;
-		 bot1.vivo = true;
-		 	bot2.vivo = true;
-		 	bot3.vivo = true;
-  	 	 mciSendString("close audio914", NULL, 0, NULL); 
-  	 	 mciSendString("close audio1", NULL, 0, NULL);
-  	 	   
- 		 mciSendString("open \"audios/bomb.wav\" type waveaudio alias audio914", NULL, 0, NULL);  // Abre o ?udio com o alias
-
- 	     mciSendString("play audio914", NULL, 0, NULL);
+		quantVidas = 3;
+		
+		bot1.vivo = true;
+	 	bot2.vivo = true;
+	 	bot3.vivo = true;
+	 	
+		mciSendString("close audio914", NULL, 0, NULL); 
+		mciSendString("close audio1", NULL, 0, NULL);
+		mciSendString("open \"audios/bomb.wav\" type waveaudio alias audio914", NULL, 0, NULL);  // Abre o ?udio com o alias
+		mciSendString("play audio914", NULL, 0, NULL);
     	
     	break;
 	case 'm':
@@ -1724,7 +1726,7 @@ void teclado(unsigned char key, int x, int y)
 		} 
 		else if (mudar_musica == 5) {
 	        // N?o h? m?sica, mas o comando de stop n?o ? necess?rio
-	        ultima_tocada = "nenhuma musica selecionada";
+	        ultima_tocada = "Nenhuma musica selecionada";
 	    }
 	    
 	
@@ -1835,8 +1837,24 @@ void mousePassiveMotion(int x, int y)
 	glutPostRedisplay();
 }
 
-#include <cstring> // Para strcmp
+void exibirMenu(){
+    printf("  ____                  _                                       ____      _ \n");
+    printf(" |  _ \\                | |                                     |___ \\    | |\n");
+    printf(" | |_) | ___  _ __ ___ | |__   ___ _ __ _ __ ___   __ _ _ __     __) | __| |\n");
+    printf(" |  _ < / _ \\| '_ ` _ \\| '_ \\ / _ \\ '__| '_ ` _ \\ / _` | '_ \\   |__ < / _` |\n");
+    printf(" | |_) | (_) | | | | | | |_) |  __/ |  | | | | | | (_| | | | |  ___) | (_| |\n");
+    printf(" |____/ \\___/|_| |_| |_|_.__/ \\___|_|  |_| |_| |_|\\__,_|_| |_| |____/ \\__,_|\n");
+    printf("                                                                            \n");
+    printf("                                                                            \n\n");
 
+	printf("+----------------------+-----------------------------+\n");
+    printf("|       Comando        |            Acao             |\n");
+    printf("+----------------------+-----------------------------+\n");
+    printf("|         WASD         | Mover o player              |\n");
+    printf("|          R           | Reiniciar                   |\n");
+    printf("|          M           | Mudar/desativar musica      |\n");
+    printf("+----------------------+-----------------------------+\n");
+}
 
 
 int main(int argc, char** argv)
@@ -1855,16 +1873,8 @@ int main(int argc, char** argv)
 	glutKeyboardUpFunc(tecladoSolta); 
 
 	glutPassiveMotionFunc(mousePassiveMotion); //fucao callback do movimento passivo do mouse
-	printf("W/w: Mover para frente\n");
-	printf("S/s: Mover para tras\n");
-	printf("A/a: Mover para a esquerda\n");
-	printf("D/d: Mover para a direita\n");
-	printf("Q/q: Mover para cima\n");
-	printf("E/e: Mover para baixo\n");
-	printf("I/i: Mover o ponto de foco para frente\n");
-	printf("K/k: Mover o ponto de foco para tras\n");
-	printf("J/j: Mover o ponto de foco para a esquerda\n");
-	printf("L/l: Mover o ponto de foco para a direita\n");
+	
+	exibirMenu();
 
 	// Funcoes de animacao
 	glutTimerFunc(500, atualizarCor, 0);
