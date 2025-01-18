@@ -24,7 +24,7 @@
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
 
-void danoExplosao(); // declaracao
+void danoExplosao();
 
 float personagemX = 0.0f, personagemZ = 0.0f;
 enum cam{um = 1, dois, tres, quatro};
@@ -37,10 +37,13 @@ int tempoInicial = 0;
 int tempoFinal = 0;
 int width = 800, height = 500;
 float flag = true;
-
+float perdeuTudo = false;
 int quantVidas = 3;
 int maxBombas = 2;
 int bombasAtuais = 0;
+
+
+
 
 void drawCube(float size, float r, float g, float b)
 {
@@ -71,6 +74,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
     {M, 0, N, 0, C, 0, M, 0, C, 0, M, 0, C, 0, 0, M},
     {N, M, M, M, N, M, M, N, M, N, M, M, N, M, N, M}
 };
+
 
 void drawCaixaDestruida() {
     glPushMatrix();
@@ -140,6 +144,9 @@ void drawCaixaDestruida() {
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
+// funcao importante de upar um audio em um novo canal de audio criado
+void uparAudio(const char* caminho);
+
 
 // Funcao booleana
 bool temColisao(int x, int y, const std::set< std::pair<int, int> >& colisoes) {
@@ -273,8 +280,8 @@ void removerCaixote(int posX, int posZ) {
     }
 }
 
-
 bool playerPerdeuVida;
+
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
 	playerPerdeuVida = false;
@@ -363,7 +370,6 @@ void atualizarEscala(int value) {
     glutTimerFunc(50, atualizarEscala, 0);
 }
 
-
 // ------------------- Desenha o Personagem -------------------
 // Prot?tipos das fun??es
 void drawSphere(float radius, float r, float g, float b);
@@ -398,6 +404,8 @@ glPushMatrix();
 		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
 		float e = 2;
 		glRotated(anguloRotacao,0,1,0);
+		if (perdeuTudo)
+			glRotated(-90,1,0,0);
 		glScaled(e, e, e);
 		
 		// Fun??o para desenhar o personagem Bomberman
@@ -611,7 +619,6 @@ struct Jogador{
 	float k;
 	int ultimaDirecao;
 	bool vivo;
-	
 void preencherVetor() {
     for (float i = 0.27f; i >= -0.27f; i -= 0.05f) {
         v.push_back(i);
@@ -802,76 +809,188 @@ void preencherVetor() {
 	glPopMatrix();
 	}
 
-	void andarCima(){	
-		addZ -= movimento;
-		printf("%f",addZ);
-		anguloRotacao= 180;
-		
-		if (k >= v.size())
-			flag = false;
-		if (k <= 0)
-			flag = true;
-		t = v[k];
-		
-		if (flag)
-			k++;	
-        else
-			k--;
-	}
-	
-	void andarDireita(){
-		addX += movimento;
-		printf("%f\n",addX);
-	
-		anguloRotacao  = 90.0f;
-		
-	
-		if (k >= v.size())
-			flag = false;
-		if (k <= 0)
-			flag = true;
-		t = v[k];
-	
-		if (flag)
-			k++;	
-        else
-			k--;	
-	}	
 
-	void andarEsquerda(){
-		addX += movimento;
-		anguloRotacao = 270.0f;
-
-		if (k >= v.size())
-			flag = false;
-		if (k <= 0)
-			flag = true;
-		
-		t = v[k];
-		
-
-		if (flag)
-			k++;	
-        else
-			k--;	
-	}
 	
-	void andarBaixo(){
-		addZ += movimento;
-		anguloRotacao = 0.0f;
+	// Fun??o para desenhar o personagem Bomberman
+void drawBomberman(float anguloRotacao, float x_inicial, float z_inicial,float x, float z, float r_capuz, float g_capuz, float b_capuz, float r_sec, float g_sec, float b_sec, float r_corpo, float g_corpo, float b_corpo ){
+	
+glPushMatrix();
+		// mexer na posi??o do player
+		glTranslatef(x_inicial+x, 3.7, z_inicial+z);
+		//glRotated(10,anguloRotacao,anguloRotacao,anguloRotacao); > talvez fique bom quando adicionar as animacoes
+		float e = 2;
+		glRotated(anguloRotacao,0,1,0);
+
+		glScaled(e, e, e);
 		
+		// Fun??o para desenhar o personagem Bomberman
+		glPushMatrix();
+		// mexer no rosto + cabeca + olhos
+		glTranslatef(0, -0.2, 0);
+		glScaled(1.1, 1.1, 1.1);
 
-		if (k >= v.size())
-			flag = false;
-		if (k <= 0)
-			flag = true;
-		t = v[k];
+		//Cabe?a
+		glPushMatrix();
+		glTranslatef(0.0f, 1.2f, 0.0f);
+		drawSphere(0.5f, r_capuz, g_capuz, b_capuz); // Cabe?a branca
+		glPopMatrix();
 
-		if (flag)
-			k++;	
-        else
-			k--;
-	}
+		// rosto
+		glPushMatrix();
+		glTranslatef(0.0f, 1.21f, 0.08);
+		  e = 0.9;
+		glScaled(e, e, e);
+		drawSphere(0.5, 0.961, 0.741, 0.569); // rosto
+		glPopMatrix();
+
+		// olhos
+		glPushMatrix();
+		glTranslatef(-0.15, 1.21f, 0.32);
+		e = 0.6;
+		glScaled(0.2, 1, 1);
+		drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+		glPopMatrix();
+
+		glPushMatrix();
+		glTranslatef(0.15, 1.21f, 0.32);
+		e = 0.6;
+		glScaled(0.2, 1, 1);
+		drawCube(0.4f, 0, 0, 0); // Perna esquerda vermelha
+		glPopMatrix();
+		glPopMatrix();
+		
+		// Corpo
+		glPushMatrix();
+		glTranslatef(0.0f, 0.3, 0.0f);
+		glScaled(1, 1, 1);
+		drawCube(0.7f, r_corpo, g_corpo, b_corpo); // Corpo azul
+		glPopMatrix();
+	
+		// fundo do cinto
+		glPushMatrix();
+		glTranslatef(0.0f, 0.1, 0.35f);
+		e = 0.6;
+		glScaled(1.8, 0.3, 0.1);
+		drawCube(0.4f, r_sec, g_sec, b_sec); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cireita
+		glPushMatrix();
+		glTranslatef(0.1, 0.1, 0.38f);
+		e = 0.2;
+		glScaled(0.05, 0.2, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto esquerda
+		glPushMatrix();
+		glTranslatef(-0.1, 0.1, 0.38f);
+		e = 0.2;
+		glScaled(0.05, 0.2, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cima
+		glPushMatrix();
+		glTranslatef(0, 0.13, 0.38f);
+		e = 0.2;
+		glScaled(0.45, 0.05, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// parte dourada do cinto cima
+		glPushMatrix();
+		glTranslatef(0, 0.07, 0.38f);
+		e = 0.2;
+		glScaled(0.45, 0.05, e);
+		drawCube(0.4f, 1, 1, 0); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		
+		// anteperna esquerda
+		glPushMatrix();
+		glTranslatef(-0.2, -0.2, 0.0f);
+		//glRotated(45, -1,0,0);
+		e = 0.9;
+		glScaled(e, 1.25, e);
+		drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+		glPopMatrix();
+	
+		// Perna  esquerda
+		glPushMatrix();
+		glTranslatef(-0.2f, -0.5, 0.0f);
+		e = 0.9;
+		glScaled(e, e, e);
+		drawCube(0.4f, r_sec, g_sec, b_sec); // Perna esquerda vermelha
+		glPopMatrix();
+	
+		// anteperna direita
+		glPushMatrix();
+		glTranslatef(0.2, -0.2, 0.0f);
+		e = 0.9;
+		glScaled(e, 1.25, e);
+		drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+		glPopMatrix();
+	
+		// Perna  direita
+		glPushMatrix();
+		glTranslatef(0.2f, -0.5, 0.0f);
+		glScaled(e, e, e);
+		drawCube(0.4f, r_sec, g_sec, b_sec); // Perna esquerda vermelha
+		glPopMatrix();
+	
+	
+// mexer nos bra?os
+glPushMatrix();
+		glTranslatef(0.0f, -0.34, 0.0f);
+		// antebra?o esquerdo
+		glPushMatrix();
+		glTranslatef(-0.5f, 0.8f, 0.0f);
+		e = 0.9;
+		//glRotated(45, -1, 0, 0);      
+		glScaled(e, e, e);
+		drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+		glPopMatrix();
+	
+	
+		// Bra?o esquerdo
+		glPushMatrix();
+		glTranslatef(-0.5, 0.63, 0);
+		//glRotated(45, -1, 0, 0);        
+		drawCube(0.3f, r_sec, g_sec, b_sec); // Bra?o esquerdo amarelo
+		glPopMatrix();
+	
+		// antebra?o direito
+		glPushMatrix();
+		glTranslatef(0.5f, 0.8f, 0.0f);
+		e = 0.9;
+		//glRotated(45, -1, 0, 0);  
+		glScaled(e, e, e);
+		drawCube(0.3f, r_capuz, g_capuz, b_capuz); // Bra?o esquerdo amarelo
+		glPopMatrix();
+	
+		// Bra?o direito
+		glPushMatrix();
+		glTranslatef(0.5, 0.63, 0);
+		//glRotated(45, -1, 0, 0);  
+		drawCube(0.3f, r_sec, g_sec, b_sec); // Bra?o esquerdo amarelo
+		glPopMatrix();
+glPopMatrix();
+
+		// Antena
+		glPushMatrix();
+		glTranslatef(0.0f, 1.8f, 0.0f);
+		drawSphere(0.1f, r_sec, g_sec, b_sec); // Bolinha vermelha na antena
+		glPopMatrix();
+	
+		glPushMatrix();
+		glTranslatef(0.0f, 1.5f, 0.0f);
+		glScalef(0.1f, 0.5f, 0.1f);
+		drawCube(1.0f, 0.5f, 0.5f, 0.5f); // Haste da antena cinza
+		glPopMatrix();
+glPopMatrix();
+}
+
 	
 };
 
@@ -884,6 +1003,7 @@ Jogador bot3 = {0,0};
 
 float movimentoBot = 0.08;
 bool spawnBot = false;	
+
 void spawnarBots(){
 	// spawna bot s? no come?o
 	if(!spawnBot){
@@ -906,6 +1026,7 @@ void spawnarBots(){
 	}
 	
 }
+
 
 bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
     return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
@@ -950,6 +1071,7 @@ bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
     return true;
 }
 */
+
 
 void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
     mudarPais(pais, &r1, &g1, &b1, &r2, &g2, &b2, &r3, &g3, &b3);
@@ -1063,6 +1185,8 @@ void tocarmusica(const char* caminho) {
 
 #include <ctime> // Para usar a fun??o time
 
+
+
 void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
     // Dimens?es da face
     float d = tamanho / 2;
@@ -1084,6 +1208,7 @@ void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
     glEnd();
 }
 
+
 void verificarColisaoBots() {
     // Armazena o tempo da ?ltima colis?o
     static time_t ultimoTempoColisao = 0;
@@ -1098,6 +1223,16 @@ void verificarColisaoBots() {
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             quantVidas--;
+            uparAudio("levar_dano.wav");
+            
+            if (quantVidas == 0){
+				uparAudio("game_over.wav");
+				perdeuTudo = true;
+      
+    			mciSendString("close audio1", NULL, 0, NULL);
+			}
+            	
+            
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
@@ -1106,6 +1241,16 @@ void verificarColisaoBots() {
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             quantVidas--;
+            uparAudio("levar_dano.wav");
+            
+        
+            if (quantVidas == 0){
+				uparAudio("game_over.wav");
+				perdeuTudo = true;
+				mciSendString("close audio1", NULL, 0, NULL);
+			}
+            
+            
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
@@ -1113,6 +1258,13 @@ void verificarColisaoBots() {
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             quantVidas--;
+            uparAudio("levar_dano.wav");
+     	   
+            if (quantVidas == 0){
+				uparAudio("game_over.wav");
+				perdeuTudo = true;
+				mciSendString("close audio1", NULL, 0, NULL);
+			}
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
@@ -1145,31 +1297,16 @@ void display()
 	glPushMatrix(); // Salvar o estado da matriz atual
 	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	glPopMatrix(); // Restaurar o estado da matriz
-	if (ultima_cam == 1){
-		desenhaIcone(centerX-23, centerY+21, centerZ, 4, texID[5]);
-		desenhaIcone(centerX-15, centerY+21, centerZ, 4, texID[6]);
-	}
-	else if (ultima_cam == 3){
-		glPushMatrix();
-			glTranslated(centerX-10,centerY+12,centerZ+10);
-			//	glRotated(-90,1,0,0);
-			desenhaIcone(0, 0, 0, 4, texID[5]);
-			desenhaIcone(7, 0, 0, 4, texID[6]);
-		glPopMatrix();
-	}else if (ultima_cam == 2){
-		glPushMatrix();
-			glTranslated(centerX-10,centerY+20,centerZ-11);
-			glRotated(-90,1,0,0);
-			desenhaIcone(0, 0, 0, 4, texID[5]);
-			desenhaIcone(0, -7, 0, 4, texID[6]);
-		glPopMatrix();	
-	}
+	
+
+
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
+	
+
 	glDisable(GL_TEXTURE_2D);   // Desativar texturas para o texto, nao colocar nada que envolva textura depois daqui
 	
-	//glColor3f(1.0f, 1.0f, 1.0f); // Garantir cor branca para o texto
-	//draw_text_stroke(-20, 20, to_string(ultima_tocada), 0.01);
+
 	
 	 if (mostrarTexto) {
 	 	if (ultima_cam == 1){
@@ -1236,7 +1373,10 @@ void display()
 	else{
 		float r1,g1,b1,r2,g2,b2,r3,g3,b3;
 		mudarPais(brasil, &r1,&g1,&b1,&r2,&g2,&b2,&r3,&g3,&b3);
+	
+
 		drawBomberman(player.anguloRotacao, player.x, player.z, personagemX, personagemZ, r1,g1,b1,    r2,g2,b2,    r3,g3,b3 );// cores: capuz, cor secundaria e corpo
+		
 	}
 	
 	spawnarBots();
@@ -1244,7 +1384,29 @@ void display()
 	
 	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necess?rio
 	glPopMatrix();
-
+	
+	
+		if (ultima_cam == 1){
+		desenhaIcone(centerX-23, centerY+21, centerZ, 4, texID[5]);
+		desenhaIcone(centerX-15, centerY+21, centerZ, 4, texID[6]);
+	}
+	else if (ultima_cam == 3){
+		glPushMatrix();
+			glTranslated(centerX-10,centerY+12,centerZ+10);
+			//	glRotated(-90,1,0,0);
+			desenhaIcone(0, 0, 0, 4, texID[5]);
+			desenhaIcone(7, 0, 0, 4, texID[6]);
+		glPopMatrix();
+	}else if (ultima_cam == 2){
+		glPushMatrix();
+			glTranslated(centerX-10,centerY+20,centerZ-11);
+			glRotated(-90,1,0,0);
+			desenhaIcone(0, 0, 0, 4, texID[5]);
+			desenhaIcone(0, -7, 0, 4, texID[6]);
+		glPopMatrix();	
+	}
+	
+	
 	// Finalizar a renderiza??o
  	glFlush();
 	glutSwapBuffers();
@@ -1254,14 +1416,14 @@ bool somTocando = false; // Vari?vel para rastrear o estado do som
 
 const char* audio2;
 
-int quantbombas = 2;
+int audios = 2;
 
-void somBomba() {
+void uparAudio(const char* caminho) {
     // Cria um alias ?nico para cada nova reprodu??o do som
     char audio[20];  // Array para armazenar o nome do alias
 
     // Cria o alias ?nico usando sprintf
-    sprintf(audio, "audio%d", quantbombas);  // Gera um nome como "audio1", "audio2", etc.
+    sprintf(audio, "audio%d", audios);  // Gera um nome como "audio1", "audio2", etc.
 
     // Fecha o alias se ele j? estiver em uso (isso garante que n?o haver? conflitos)
     char closeCommand[50];
@@ -1270,7 +1432,7 @@ void somBomba() {
 
     // Abre o ?udio "bomba.wav" com o alias ?nico
     char openCommand[100];
-    sprintf(openCommand, "open \"audios/bomba.wav\" type waveaudio alias %s", audio);  // Prepara o comando de abertura com o alias ?nico
+    sprintf(openCommand, "open \"audios/%s\" type waveaudio alias %s", caminho,audio);  // Prepara o comando de abertura com o alias ?nico
     mciSendString(openCommand, NULL, 0, NULL);  // Abre o ?udio com o alias
 
     // Reproduz o ?udio "bomba.wav"
@@ -1279,7 +1441,7 @@ void somBomba() {
     mciSendString(playCommand, NULL, 0, NULL);  // Reproduz o ?udio
 
     // Incrementa a vari?vel para o pr?ximo alias
-    quantbombas++;
+    audios++;
 }
 
 
@@ -1330,14 +1492,14 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 32:
 		if(bombasAtuais < maxBombas){
-			somBomba();
+			uparAudio("bomba.wav");
 		    spawnBomba();
 		    bombasAtuais += 1;
 			break;
 		}
 	case 'w':
 	case 'W': // Mover o personagem pra frente
-		if (!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3)){
+		if ( !perdeuTudo &&!temColisao(personagemX,personagemZ - 1, muro) && !temColisao(personagemX, player.z +  personagemZ - 1, caixa) && !verificarColisaoComBombas(personagemX, personagemZ - 3 )){
 			    // Defina os arquivos de ?udio
 
 		if (!somTocando) {
@@ -1368,7 +1530,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 's':
 	case 'S': // Mover o personagem pra tras	anguloRotacao = 0;
-		if (!temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ + 3)){
+		if ( !perdeuTudo && !temColisao(personagemX, personagemZ + 4, muro) && !temColisao(personagemX, personagemZ + 4, caixa) && !verificarColisaoComBombas(personagemX, personagemZ + 3)){
 			if (!somTocando) {
             PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
             somTocando = true;
@@ -1399,7 +1561,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'a':
 	case 'A': // Mover o personagem pra esquerda
-		if (!temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 3, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
+		if (!perdeuTudo && !temColisao(personagemX - 1, personagemZ, muro) && !temColisao(personagemX - 3, personagemZ, caixa) && !verificarColisaoComBombas(personagemX - 3, personagemZ)){
 					if (!somTocando) {
             PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
             somTocando = true;
@@ -1428,7 +1590,7 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
+		if (!perdeuTudo && !temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
 			if (!somTocando) {
 	            PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
 	            somTocando = true;
@@ -1493,9 +1655,22 @@ void teclado(unsigned char key, int x, int y)
 	case 'L': // Mover o ponto de foco para a direita
 		centerX += movimento;
 		break;
+	case 'r':
+    case 'R':
+    	
+    	perdeuTudo = false;
+		 
+  	 	 mciSendString("close audio914", NULL, 0, NULL); 
+  	 	 mciSendString("close audio1", NULL, 0, NULL);
+  	 	   
+ 		 mciSendString("open \"audios/bomb.wav\" type waveaudio alias audio914", NULL, 0, NULL);  // Abre o ?udio com o alias
+
+ 	     mciSendString("play audio914", NULL, 0, NULL);
+    	
+    	break;
 	case 'm':
 	case 'M':
-
+		mciSendString("close audio914", NULL, 0, NULL); 
 	    // Alterna para a pr?xima m?sica
 	    mudar_musica += 1;
 	    if (mudar_musica == 6)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
@@ -1586,6 +1761,7 @@ void tecladoSolta(unsigned char key, int x, int y){
 void init()
 { 
 	glClearColor(0.4, 0.7, 1, 1); // Cor de fundo azul claro
+	//configurarIluminacao();         // Configura a iluminacao
 
 	// Configurar as texturas
 	glEnable(GL_TEXTURE_2D);
@@ -1643,8 +1819,10 @@ int main(int argc, char** argv)
 	glutCreateWindow("Bomberman 3D");
 	glutDisplayFunc(display);
 	glutReshapeFunc(redimensiona);
+	
 	glutKeyboardFunc(teclado);
 	glutKeyboardUpFunc(tecladoSolta); 
+
 	glutPassiveMotionFunc(mousePassiveMotion); //fucao callback do movimento passivo do mouse
 	printf("W/w: Mover para frente\n");
 	printf("S/s: Mover para tras\n");
