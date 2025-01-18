@@ -1051,6 +1051,12 @@ void danoExplosao() {
             printf("Bot 3 morreu.\n");
         } if (explosaoBots(player.x, player.z, bomba.x, bomba.z) && !playerPerdeuVida) {
             quantVidas -= 1;
+                        if (quantVidas == 0){
+				uparAudio("game_over.wav");
+				perdeuTudo = true;
+			
+				mciSendString("close audio1", NULL, 0, NULL);
+			}
             printf("Player perdeu 1 vida.\n");
             playerPerdeuVida = true;
         }
@@ -1217,7 +1223,7 @@ void verificarColisaoBots() {
     time_t tempoAtual = time(NULL); 
 
     // Verifica colis?o com bot3
-    if (rangeColisaoBots((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
+    if (bot3.vivo &&((bot3.x+bot3.addX),(bot3.z+bot3.addZ), (-28 + personagemX), personagemZ )) {
     	
         // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
@@ -1228,6 +1234,7 @@ void verificarColisaoBots() {
             if (quantVidas == 0){
 				uparAudio("game_over.wav");
 				perdeuTudo = true;
+		
       
     			mciSendString("close audio1", NULL, 0, NULL);
 			}
@@ -1236,7 +1243,7 @@ void verificarColisaoBots() {
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
-    }  else if   (rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
+    }  else if   (bot2.vivo && rangeColisaoBots((bot2.x+bot2.addX) ,  (bot2.z+bot2.addZ) , (-28 + personagemX), personagemZ)){
 		        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
@@ -1247,6 +1254,7 @@ void verificarColisaoBots() {
             if (quantVidas == 0){
 				uparAudio("game_over.wav");
 				perdeuTudo = true;
+			
 				mciSendString("close audio1", NULL, 0, NULL);
 			}
             
@@ -1254,7 +1262,7 @@ void verificarColisaoBots() {
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
-	} else  if (rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
+	} else  if (bot1.vivo && rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
             quantVidas--;
@@ -1263,6 +1271,7 @@ void verificarColisaoBots() {
             if (quantVidas == 0){
 				uparAudio("game_over.wav");
 				perdeuTudo = true;
+			
 				mciSendString("close audio1", NULL, 0, NULL);
 			}
             // Atualiza o tempo da ?ltima colis?o
@@ -1659,7 +1668,7 @@ void teclado(unsigned char key, int x, int y)
     case 'R':
     	
     	perdeuTudo = false;
-		 
+		 	quantVidas = 3;
   	 	 mciSendString("close audio914", NULL, 0, NULL); 
   	 	 mciSendString("close audio1", NULL, 0, NULL);
   	 	   
