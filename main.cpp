@@ -1,5 +1,6 @@
 #include <map>
 #include <set>
+#include <ctime>
 #include <math.h>
 #include <cstdio>
 #include <vector>
@@ -18,13 +19,17 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
-#define QTD_TEXTURAS 7
+#define QTD_TEXTURAS 8
 
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
 
+// Vetor de texturas
+GLuint texID[QTD_TEXTURAS];
+
 void danoExplosao();
+void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID);
 
 float personagemX = 0.0f, personagemZ = 0.0f;
 enum cam{um = 1, dois, tres, quatro};
@@ -42,6 +47,9 @@ int quantVidas = 3;
 int maxBombas = 2;
 int bombasAtuais = 0;
 
+// Variaveis para controlar a camera
+float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
+float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
 
 
 
@@ -66,12 +74,12 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
     {M, 0, C, 0, M, 0, 0, 0, M, 0, 0, 0, 0, 0, 0, M},
     {N, 0, M, 0, N, 0, M, 0, N, 0, M, N, C, M, 0, N},
     {N, 0, 0, 0, M, C, M, 0, N, 0, 0, 0, 0, 0, 0, M},
-    {M, 0, M, 0, 0, 0, 0, 0, M, N, M, M, N, C, 0, M},
-    {M, 0, 0, 0, N, N, M, 0, 0, C, M, 0, M, 0, M, M},
-    {M, 0, N, 0, 0, 0, M, M, 0, 0, 0, 0, M, 0, M, N},
+    {M, 0, M, 0, 0, 0, 0, 0, M, N, M, M, N, 0, 0, M},
+    {M, 0, 0, 0, N, N, M, 0, 0, C, M, 0, M, 0, 0, M},
+    {M, 0, N, 0, 0, 0, M, M, 0, 0, 0, 0, M, 0, C, N},
     {M, 0, 0, 0, M, 0, C, 0, 0, M, M, 0, 0, 0, 0, N},
-    {N, 0, M, 0, M, 0, M, 0, 0, 0, C, 0, 0, 0, 0, N},
-    {M, 0, N, 0, C, 0, M, 0, C, 0, M, 0, C, 0, 0, M},
+    {N, 0, M, 0, M, 0, M, 0, 0, 0, C, 0, N, M, 0, N},
+    {M, 0, N, 0, C, 0, M, 0, C, 0, M, 0, 0, 0, 0, M},
     {N, M, M, M, N, M, M, N, M, N, M, M, N, M, N, M}
 };
 
@@ -1009,17 +1017,17 @@ void spawnarBots(){
 	if(!spawnBot){
 		bot1.x = 22;
 		bot1.z = 14;
-		bot1.vivo = true;
+		bot1.vivo = false;
 		bot1.movimento = movimentoBot;
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
-	   	bot2.vivo = true;
+	   	bot2.vivo = false;
 	   	bot2.movimento = movimentoBot;
 	   	
 		bot3.x = -28;
 		bot3.z = -18;
-		bot3.vivo = true;
+		bot3.vivo = false;
 	   	bot3.movimento = movimentoBot;
 	   	
 	   	spawnBot = true;
@@ -1042,27 +1050,32 @@ void danoExplosao() {
         
         if (explosaoBots((int)bot1.x + bot1.addX, (int)bot1.z + bot1.addZ, bomba.x, bomba.z)) {
             bot1.vivo = false;
-            printf("Bot 1 morreu.\n");
         } if (explosaoBots((int)bot2.x + bot2.addX, (int)bot2.z + bot2.addZ, bomba.x, bomba.z)) {
             bot2.vivo = false;
-            printf("Bot 2 morreu.\n");
         } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
             bot3.vivo = false;
-            printf("Bot 3 morreu.\n");
         } if (explosaoBots(player.x, player.z, bomba.x, bomba.z) && !playerPerdeuVida) {
             quantVidas -= 1;
-                        if (quantVidas == 0){
+			if (quantVidas == 0){
 				uparAudio("game_over.wav");
 				perdeuTudo = true;
-			
 				mciSendString("close audio1", NULL, 0, NULL);
 			}
-            printf("Player perdeu 1 vida.\n");
             playerPerdeuVida = true;
         }
-        
-        if(!bot1.vivo && !bot2.vivo && !bot3.vivo) printf("ACABOU\n\n");
     }
+}
+
+void resultado(){
+	if(!bot1.vivo && !bot2.vivo && !bot3.vivo){ // tela/evento de vitoria
+		if (ultima_cam == 1){
+			desenhaIcone(centerX, centerY + 16, centerZ + 12, 21, texID[7]);
+		}else if (ultima_cam == 2){
+			desenhaIcone(centerX, centerY, centerZ, 15, texID[7]);
+		}else if (ultima_cam == 3){
+			desenhaIcone(centerX, centerY, centerZ, 15, texID[7]);
+		}
+	}
 }
 
 /*
@@ -1151,14 +1164,6 @@ void atualizarBots() {
 
 
 // ------------------- Configuracoes do GLUT -------------------
-// Variaveis para controlar a camera
-bool visaoCima = false;
-float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
-float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
-
-// Vetor de texturas
-GLuint texID[QTD_TEXTURAS];
-
 // Funcao de redimensionamento
 void redimensiona(int w, int h)
 {
@@ -1189,7 +1194,7 @@ void tocarmusica(const char* caminho) {
 
 
 
-#include <ctime> // Para usar a fun??o time
+
 
 
 
@@ -1415,6 +1420,7 @@ void display()
 		glPopMatrix();	
 	}
 	
+	resultado();
 	
 	// Finalizar a renderiza??o
  	glFlush();
@@ -1803,6 +1809,7 @@ void init()
 
 	carregaTextura(texID[5], "vidas.png");  		// Textura 5 = coracao que indica as quantVidas
 	carregaTextura(texID[6], "bomba.png");  		// Textura 6 = maximo de bombas
+	carregaTextura(texID[7], "vitoria.png");  		// Textura 6 = maximo de bombas
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
