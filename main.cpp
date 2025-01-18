@@ -74,7 +74,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
     {M, 0, C, 0, M, 0, 0, 0, M, 0, 0, 0, 0, 0, 0, M},
     {N, 0, M, 0, N, 0, M, 0, N, 0, M, N, C, M, 0, N},
     {N, 0, 0, 0, M, C, M, 0, N, 0, 0, 0, 0, 0, 0, M},
-    {M, 0, M, 0, 0, 0, 0, 0, M, N, M, M, N, 0, 0, M},
+    {M, 0, M, 0, 0, 0, C, 0, M, N, M, M, N, 0, 0, M},
     {M, 0, 0, 0, N, N, M, 0, 0, C, M, 0, M, 0, 0, M},
     {M, 0, N, 0, 0, 0, M, M, 0, 0, 0, 0, M, 0, C, N},
     {M, 0, 0, 0, M, 0, C, 0, 0, M, M, 0, 0, 0, 0, N},
@@ -265,8 +265,8 @@ void desenhaBombas() {
 }
 
 void removerCaixote(int posX, int posZ) {
-    for (int i = 0; i <= 2; ++i) {
-        for (int j = 0; j <= 2; ++j) {
+    for (int i = -3; i <= 3; ++i) {
+        for (int j = -3; j <= 3; ++j) {
             int newX = posX + i;
             int newZ = posZ + j;
             
@@ -1041,7 +1041,7 @@ bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
 }
 
 bool explosaoBots(int x1, int z1, int x2, int z2) {
-    return (std::abs(x1 - x2) <= 6) && (std::abs(z1 - z2) <= 6);
+    return (std::abs(x1 - x2) <= 7) && (std::abs(z1 - z2) <= 7);
 }
 
 void danoExplosao() {
