@@ -24,6 +24,8 @@
 #define M 2 	// muro com musgo
 #define C 3 	// caixote
 
+void botMorreu(); // declaracao
+
 float personagemX = 0.0f, personagemZ = 0.0f;
 enum cam{um = 1, dois, tres, quatro};
 enum paises{brasil = 1, argentina, portugal, japao};
@@ -65,7 +67,7 @@ int matrizMapa[LINHAS_MAPA][COLUNAS_MAPA] = {
 	{N, 0, M, N, M, C, M, 0, 0, 0, M, C, N, N, C, N},
 	{M, 0, M, 0, 0, 0, M, 0, N, C, M, 0, 0, 0, C, M},
 	{N, 0, C, 0, 0, 0, C, 0, C, 0, 0, 0, C, 0, 0, N},
-	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, 0, M},
+	{M, 0, M, 0, N, 0, C, 0, 0, 0, N, 0, M, N, M, M},
 	{M, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, M},
 	{N, M, N, N, M, M, N, N, M, M, N, M, N, M, N, N}
 };
@@ -272,6 +274,8 @@ void removerCaixote(int posX, int posZ) {
     }
 }
 
+
+
 void rastroExplosao(int bombaX, int bombaZ) {
 	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
 	
@@ -299,6 +303,7 @@ void rastroExplosao(int bombaX, int bombaZ) {
 			if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) break;
             
             removerCaixote(novoX, novoZ);
+        	botMorreu();
                
             glutPostRedisplay();
         }
@@ -324,9 +329,9 @@ void atualizarBombas(int value) {
 
             // Caso o tempo de vida expire, remove a bomba
             if (it->tempoVida <= 0) {
+            	rastroExplosao(round(it->x + 28), round(it->z));
                 it = bombas.erase(it); // Remove a bomba do vetor e retorna o pr?ximo iterador v?lido
                 bombasAtuais -= 1;
-                rastroExplosao(round(it->x + 28), round(it->z));
                 continue; // Pula a itera??o para evitar acessar um iterador inv?lido
             }
         }
@@ -605,6 +610,7 @@ struct Jogador{
 	 float movimento;
 	float k;
 	int ultimaDirecao;
+	bool vivo;
 	
 void preencherVetor() {
     for (float i = 0.27f; i >= -0.27f; i -= 0.05f) {
@@ -883,14 +889,17 @@ void spawnarBots(){
 	if(!spawnBot){
 		bot1.x = 22;
 		bot1.z = 14;
-		bot1.movimento = movimentoBot;    // trocar pra 0.2 (para os 3 bots)
+		bot1.vivo = true;
+		bot1.movimento = movimentoBot;
 		
 		bot2.x = 18;
 	   	bot2.z = -10;
+	   	bot2.vivo = true;
 	   	bot2.movimento = movimentoBot;
 	   	
 		bot3.x = -28;
 		bot3.z = -15;
+		bot3.vivo = true;
 	   	bot3.movimento = movimentoBot;
 	   	
 	   	spawnBot = true;
@@ -898,6 +907,31 @@ void spawnarBots(){
 	
 }
 
+bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
+    return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
+}
+
+void botMorreu() {
+    for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
+        Bomba& bomba = *it;
+
+        if (rangeColisaoBots((int)bot1.x + bot1.addX, (int)bot1.z + bot1.addZ, bomba.x, bomba.z)) {
+            bot1.vivo = false;
+            printf("Bot 1 morreu.\n");
+        } if (rangeColisaoBots((int)bot2.x + bot2.addX, (int)bot2.z + bot2.addZ, bomba.x, bomba.z)) {
+            bot2.vivo = false;
+            printf("Bot 2 morreu.\n");
+        } if (rangeColisaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
+            bot3.vivo = false;
+            printf("Bot 3 morreu.\n");
+        }
+        
+        if(!bot1.vivo && !bot2.vivo && !bot3.vivo) printf("ACABOU\n\n");
+    }
+}
+
+
+/*
 bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
     // Dire??es opostas n?o s?o consideradas perpendiculares
     if ((ultimaDirecao == cima && novaDirecao == baixo) || 
@@ -908,6 +942,7 @@ bool direcaoEhPerpendicular(int ultimaDirecao, int novaDirecao) {
     }
     return true;
 }
+*/
 
 
 void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2, float &g2, float &b2, float &r3, float &g3, float &b3) {
@@ -1022,10 +1057,6 @@ void tocarmusica(const char* caminho) {
 
 
 #include <ctime> // Para usar a fun??o time
-
-bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
-    return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
-}
 
 void desenhaIcone(float x, float y, float z, float tamanho, GLuint texID) {
     // Dimens?es da face
@@ -1550,7 +1581,6 @@ void tecladoSolta(unsigned char key, int x, int y){
 void init()
 { 
 	glClearColor(0.4, 0.7, 1, 1); // Cor de fundo azul claro
-	//configurarIluminacao();         // Configura a iluminacao
 
 	// Configurar as texturas
 	glEnable(GL_TEXTURE_2D);
