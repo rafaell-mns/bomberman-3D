@@ -1055,7 +1055,7 @@ void danoExplosao() {
             bot2.vivo = false;
         } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
             bot3.vivo = false;
-        } if (explosaoBots(player.x, player.z, bomba.x, bomba.z) && !playerPerdeuVida) {
+        } if (explosaoBots(player.x+personagemX, player.z+personagemZ, bomba.x, bomba.z) && !playerPerdeuVida) {
             quantVidas -= 1;
 			if (quantVidas == 0){
 				uparAudio("game_over.wav");
