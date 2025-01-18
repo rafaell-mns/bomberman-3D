@@ -204,8 +204,6 @@ std::pair<int, int> obterIndiceCaixa(int posX, int posZ) {
 struct Bomba {
     float x, z;   // Posi??o da bomba (X e Z)
     int tempoVida;
-    bool imunidade;      // Flag para imunidade de colis?o
-    int tempoImunidade;  // Tempo restante em imunidade (em frames ou milissegundos)
 };
 
 // controla detalhes da animacao
@@ -223,15 +221,13 @@ void spawnBomba() {
     novaBomba.x = personagemX - 28; // Posi??o X da bomba (relativa ao personagem)
     novaBomba.z = personagemZ;        // Posi??o Z da bomba
     novaBomba.tempoVida = 5650;			// 5 segundos
-    novaBomba.imunidade = true;        // Come?a com imunidade
-    novaBomba.tempoImunidade = 300;    // Exemplo: 0.3s de imunidade
     bombas.push_back(novaBomba);      // Adiciona ao vetor de bombas
 }
 
 // verifica colisao bomba arredondando coordenadas
 bool verificarColisaoComBombas(float jogadorX, float jogadorZ) {
     for (std::vector<Bomba>::iterator it = bombas.begin(); it != bombas.end(); ++it) {
-        if (round(it->x + 28) == round(jogadorX) && round(it->z) == round(jogadorZ) && !it->imunidade) {
+        if (round(it->x + 28) == round(jogadorX) && round(it->z) == round(jogadorZ)) {
             return true;  // Colis?o detectada
         }
     }
@@ -332,13 +328,6 @@ void atualizarBombas(int value) {
                 bombasAtuais -= 1;
                 rastroExplosao(round(it->x + 28), round(it->z));
                 continue; // Pula a itera??o para evitar acessar um iterador inv?lido
-            }
-        }
-
-        if (it->imunidade) {
-            it->tempoImunidade -= 50; // Reduz o tempo de imunidade
-            if (it->tempoImunidade <= 0) {
-                it->imunidade = false; // Remove a imunidade
             }
         }
 
@@ -927,7 +916,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
     bool mudouDirecao = false;
 
     // Tenta continuar na ?ltima dire??o
-    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro) && !temColisao(bot.x + 28, bot.z - 1, caixa) && !verificarColisaoComBombas(bot.x, bot.z - 3)) {
+    if (bot.ultimaDirecao == cima && !temColisao(bot.x + 28, bot.z - 1, muro) && !temColisao(bot.x + 28, bot.z - 1, caixa) && !verificarColisaoComBombas((int)bot.x + 28, (int)bot.z - 3)) {
         bot.z -= bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
@@ -935,7 +924,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 		if (bot.flag) bot.k++;	
         else bot.k--;
         bot.anguloRotacao = 180; // Cima
-    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa) && !verificarColisaoComBombas(bot.x + 3, bot.z)) {
+    } else if (bot.ultimaDirecao == direita && !temColisao(bot.x + 32, bot.z, muro) && !temColisao(bot.x + 32, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x + 28, (int)bot.z)) {
         bot.x += bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
@@ -943,7 +932,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 		if (bot.flag) bot.k++;	
         else bot.k--;
         bot.anguloRotacao = 90; // Direita
-    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa) && !verificarColisaoComBombas(bot.x - 3, bot.z)) {
+    } else if (bot.ultimaDirecao == esquerda && !temColisao(bot.x + 27, bot.z, muro) && !temColisao(bot.x + 27, bot.z, caixa) && !verificarColisaoComBombas((int)bot.x +28, (int)bot.z)) {
         bot.x -= bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
@@ -951,7 +940,7 @@ void moverBot(Jogador &bot, int pais, float &r1, float &g1, float &b1, float &r2
 		if (bot.flag) bot.k++;	
         else bot.k--;
         bot.anguloRotacao = -90; // Esquerda
-    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 32, bot.z + 4, muro) && !temColisao(bot.x + 29, bot.z + 4, caixa) && !verificarColisaoComBombas(bot.x, bot.z + 3)) {
+    } else if (bot.ultimaDirecao == baixo && !temColisao(bot.x + 29, bot.z + 4, muro) && !temColisao(bot.x + 29, bot.z + 4, caixa) && !verificarColisaoComBombas((int)bot.x + 28, (int)bot.z + 3)) {
         bot.z += bot.movimento;
 		if (bot.k >= bot.v.size()) bot.flag = false;
 		if (bot.k <= 0) bot.flag = true;
