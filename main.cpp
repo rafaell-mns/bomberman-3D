@@ -18,7 +18,7 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
-#define QTD_TEXTURAS 6
+#define QTD_TEXTURAS 7
 
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
@@ -33,10 +33,12 @@ int mudar_musica = 1;
 bool mostrarTexto = true;
 int tempoInicial = 0;
 int tempoFinal = 0;
-// Largura e altura da janela
 int width = 800, height = 500;
 float flag = true;
-int vidas = 3;
+
+int quantVidas = 3;
+int maxBombas = 2;
+int bombasAtuais = 0;
 
 void drawCube(float size, float r, float g, float b)
 {
@@ -131,7 +133,6 @@ void drawCaixaDestruida() {
 
     glPopMatrix();
 }
-
 
 
 // Conjunto para armazenar coordenadas de colisoes
@@ -255,24 +256,6 @@ void desenhaBombas() {
     }
 }
 
-std::vector<std::pair<int, int> > posicoesExplosoes;
-
-void desenharExplosao(float x, float z) {
-    glPushMatrix();  // Salva o estado atual da matriz
-
-    glColor3f(1.0f, 0.0f, 0.0f);  // Define a cor da esfera (vermelha)
-    glTranslatef(x, 3.7, z);      // Aplica a transla??o
-    printf("Explosao em (%.1f, %.1f)\n", x, z);
-
-    // Cria um objeto quadr?tico para desenhar a esfera
-    GLUquadric* quadric = gluNewQuadric();
-    gluSphere(quadric, 1.0, 30, 30);  // Desenha uma esfera com raio 1.0 e 30 segmentos
-
-    gluDeleteQuadric(quadric);  // Libera os recursos usados pelo objeto quadr?tico
-
-    glPopMatrix();  // Restaura o estado da matriz
-}
-
 void removerCaixote(int posX, int posZ) {
     for (int i = 0; i <= 2; ++i) {
         for (int j = 0; j <= 2; ++j) {
@@ -323,11 +306,8 @@ void rastroExplosao(int bombaX, int bombaZ) {
 			// se encontrar um muro, interrompe a explosao naquela direcao
 			if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) break;
             
-            
             removerCaixote(novoX, novoZ);
                
-
-            desenharExplosao(novoX, novoZ);
             glutPostRedisplay();
         }
     }
@@ -1154,7 +1134,7 @@ void verificarColisaoBots() {
         // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
-            vidas--;
+            quantVidas--;
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
@@ -1162,14 +1142,14 @@ void verificarColisaoBots() {
 		        // Verifica se j? passou 3 segundos desde a ?ltima colis?o
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
-            vidas--;
+            quantVidas--;
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
 	} else  if (rangeColisaoBots((bot1.x+bot1.addX) , (bot1.z+bot1.addZ) ,(-28 + personagemX),personagemZ)){
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             printf("PERDEU UMA VIDA\n");
-            vidas--;
+            quantVidas--;
             // Atualiza o tempo da ?ltima colis?o
             ultimoTempoColisao = tempoAtual;
         }
@@ -1202,21 +1182,24 @@ void display()
 	glPushMatrix(); // Salvar o estado da matriz atual
 	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	glPopMatrix(); // Restaurar o estado da matriz
-	if (ultima_cam == 1)
+	if (ultima_cam == 1){
 		desenhaIcone(centerX-23, centerY+21, centerZ, 4, texID[5]);
+		desenhaIcone(centerX-15, centerY+21, centerZ, 4, texID[6]);
+	}
 	else if (ultima_cam == 3){
-			glPushMatrix();
+		glPushMatrix();
 			glTranslated(centerX-10,centerY+12,centerZ+10);
 			//	glRotated(-90,1,0,0);
-		desenhaIcone(0, 0, 0, 4, texID[5]);
-			glPopMatrix();
+			desenhaIcone(0, 0, 0, 4, texID[5]);
+			desenhaIcone(7, 0, 0, 4, texID[6]);
+		glPopMatrix();
 	}else if (ultima_cam == 2){
 		glPushMatrix();
 			glTranslated(centerX-10,centerY+20,centerZ-11);
 			glRotated(-90,1,0,0);
-		desenhaIcone(0, 0, 0, 4, texID[5]);
-			glPopMatrix();
-		
+			desenhaIcone(0, 0, 0, 4, texID[5]);
+			desenhaIcone(0, -7, 0, 4, texID[6]);
+		glPopMatrix();	
 	}
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
@@ -1258,20 +1241,23 @@ void display()
 		
 		glPushMatrix();	
 			glTranslated(centerX,centerY,centerZ);
-			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );
+			desenharTexto(-13,20,to_string(maxBombas),0.02, 1,0,0 );
 		glPopMatrix();
 	}else if (ultima_cam == 3){
 		glPushMatrix();	
 			glTranslated(centerX+12,centerY-9,centerZ+10);
 			//glRotated(-90,1,0,0);
-			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );	
+			desenharTexto(-13,20,to_string(maxBombas),0.02, 1,0,0 );
 		glPopMatrix();
 		
 	} else if (ultima_cam == 2){
 	glPushMatrix();	
 			glTranslated(centerX+12,centerY+20,centerZ+10);
 			glRotated(-90,1,0,0);
-			desenharTexto(-20,20,to_string(vidas),0.02, 1,0,0 );	
+			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );	
+			desenharTexto(-20,13,to_string(maxBombas),0.02, 1,0,0 );
 		glPopMatrix();
 	}
 
@@ -1483,11 +1469,11 @@ void teclado(unsigned char key, int x, int y)
 		break;
 	case 'd':
 	case 'D': // Mover o personagem pra direita
-	if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
-					if (!somTocando) {
-            PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
-            somTocando = true;
-        	}
+		if (!temColisao(personagemX + 4, personagemZ, muro) && !temColisao(personagemX + 4, personagemZ, caixa) && !verificarColisaoComBombas(personagemX + 3, personagemZ)){
+			if (!somTocando) {
+	            PlaySound(TEXT("audios/passos.WAV"), NULL, SND_ASYNC | SND_FILENAME | SND_LOOP);
+	            somTocando = true;
+	  		}
 			eyeX += movimento;
 			centerX += movimento;
 			personagemX += movimento;
@@ -1502,14 +1488,12 @@ void teclado(unsigned char key, int x, int y)
 			//printf("t: %f ",t);
 			if (flag)
 				k++;	
-            else
+	        else
 				k--;
 			
 			printf("(%.0f, %.0f)\n", personagemX, personagemZ);
-			
-			
 		}
-		break;
+			break;
 	case 't':
 	case 'T': // Mover a camera para frente (ao longo do eixo Z)
 		eyeZ -= movimento;
@@ -1553,37 +1537,37 @@ void teclado(unsigned char key, int x, int y)
 	case 'm':
 	case 'M':
 
-    // Alterna para a pr?xima m?sica
-    mudar_musica += 1;
-    if (mudar_musica == 6)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
-        mudar_musica = 1;
-
-    // Para a m?sica atual e fecha, mas sem interromper o fluxo
-    mciSendString("close audio1", NULL, 0, NULL);
-
-    // Abrir e tocar a pr?xima m?sica
-    if (mudar_musica == 1) {
-        tocarmusica("bomb");
-        ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
-    } else if (mudar_musica == 2) {
-        tocarmusica("bomb2");
-        ultima_tocada = "Super Bomberman - Level 2 (ost snes)";
-    } else if (mudar_musica == 3) {
-        tocarmusica("metatron_OST");
-        ultima_tocada = "Undertale OST: 068 - Death by Glamour";
-    }else if (mudar_musica == 4){
-    	tocarmusica("HK_mantis_lord");
-        ultima_tocada = "Hollow Knight OST - Mantis Lords";
-	} 
-	else if (mudar_musica == 5) {
-        // N?o h? m?sica, mas o comando de stop n?o ? necess?rio
-        ultima_tocada = "nenhuma musica selecionada";
-    }
-    
-
-    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
-    mostrarTexto = true; // Garante que o texto ser? exibido
-    break;
+	    // Alterna para a pr?xima m?sica
+	    mudar_musica += 1;
+	    if (mudar_musica == 6)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
+	        mudar_musica = 1;
+	
+	    // Para a m?sica atual e fecha, mas sem interromper o fluxo
+	    mciSendString("close audio1", NULL, 0, NULL);
+	
+	    // Abrir e tocar a pr?xima m?sica
+	    if (mudar_musica == 1) {
+	        tocarmusica("bomb");
+	        ultima_tocada = "Super Bomberman - Level 1 (ost snes)";
+	    } else if (mudar_musica == 2) {
+	        tocarmusica("bomb2");
+	        ultima_tocada = "Super Bomberman - Level 2 (ost snes)";
+	    } else if (mudar_musica == 3) {
+	        tocarmusica("metatron_OST");
+	        ultima_tocada = "Undertale OST: 068 - Death by Glamour";
+	    }else if (mudar_musica == 4){
+	    	tocarmusica("HK_mantis_lord");
+	        ultima_tocada = "Hollow Knight OST - Mantis Lords";
+		} 
+		else if (mudar_musica == 5) {
+	        // N?o h? m?sica, mas o comando de stop n?o ? necess?rio
+	        ultima_tocada = "nenhuma musica selecionada";
+	    }
+	    
+	
+	    tempoInicial = glutGet(GLUT_ELAPSED_TIME);
+	    mostrarTexto = true; // Garante que o texto ser? exibido
+	    break;
 
 
 	case 'p':
@@ -1592,14 +1576,9 @@ void teclado(unsigned char key, int x, int y)
 		return;
 		break;
 
-	default:
-
-		
+	default:	
 		break;
 	}
-	
-
-	
 	glutPostRedisplay();
 }
 
@@ -1639,17 +1618,10 @@ void tecladoSolta(unsigned char key, int x, int y){
         	PlaySound(NULL, NULL, 0); // Para o som
         	somTocando = false; 
     	} 
-
 	default:
-		
-		
 		break;
 	}
-	
-	
-
 	glutPostRedisplay();
-	
 }
 
 void init()
@@ -1661,6 +1633,9 @@ void init()
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glGenTextures(QTD_TEXTURAS, texID);
+	
+	glEnable(GL_BLEND); // Ativa o blending
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
 	//carregando vetores para animacao do player e dos bots	
      preencherVetor(v);
@@ -1678,10 +1653,10 @@ void init()
 	carregaTextura(texID[1], "grama_lateral.jpg");  // Textura 1 = lateral da grama
 	carregaTextura(texID[2], "pedra.jpg");  		// Textura 2 = muro normal
 	carregaTextura(texID[3], "pedra_musgo.png");  	// Textura 3 = muro com musgo
-	carregaTextura(texID[4], "caixa.jpg");  
+	carregaTextura(texID[4], "caixa.jpg");  		// Textura 4 = caixa
 
-	carregaTextura(texID[5], "vidas.png");  // Textura 5 = caixa
-	// Textura 5 = caixa
+	carregaTextura(texID[5], "vidas.png");  		// Textura 5 = coracao que indica as quantVidas
+	carregaTextura(texID[6], "bomba.png");  		// Textura 6 = maximo de bombas
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	

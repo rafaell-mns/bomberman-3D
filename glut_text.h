@@ -65,13 +65,28 @@ void draw_text_stroke(float x, float y, std::string text, float scale = SCALE, f
 {
     glPushMatrix();
         glTranslatef(x, y, 0);
-		glColor3f(0.0f, 0.0f, 0.0f); 
-        glScalef(scale, scale, scale); // define o tamanho do fonte
-        glLineWidth(lineWidth); // define a espessura da fonte
-        for(char * i = (char *)text.c_str(); *i; i++){
+        glScalef(scale, scale, scale); // Define o tamanho da fonte
+        
+        // Reforça o contorno (simula negrito)
+        glLineWidth(lineWidth); // Espessura principal
+        for (float offset = -0.5f; offset <= 0.5f; offset += 0.5f) { 
+            glPushMatrix();
+                glTranslatef(offset, 0, 0); // Deslocamento leve horizontal
+                glColor3f(0.0f, 0.0f, 0.0f); // Cor do contorno/negrito
+                for (char *i = (char *)text.c_str(); *i; i++) {
+                    glutStrokeCharacter(font, *i);
+                }
+            glPopMatrix();
+        }
+
+        // Renderiza o texto principal
+        glLineWidth(lineWidth + 1); // Aumenta o "peso" para negrito
+        glColor3f(0.0f, 0.0f, 0.0f); // Cor do texto principal
+        for (char *i = (char *)text.c_str(); *i; i++) {
             glutStrokeCharacter(font, *i);
         }
     glPopMatrix();
 }
+
 
 #endif /* glut_text_h */
