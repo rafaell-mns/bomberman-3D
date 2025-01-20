@@ -79,25 +79,16 @@ void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[], 
                 desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[3], texID[3]); // muro com musgo
             } else if (matrizMapa[i][j] == 3) {
                 desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[4], texID[4]); // caixote
+            } else if (matrizMapa[i][j] == 9) {
+            	printf("desenha o 9\n");
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[9], texID[9]); // power up
+            } else if (matrizMapa[i][j] == 10) {
+            	printf("desenha o 10\n");
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[10], texID[10]); // power up
+            } else if (matrizMapa[i][j] == 11) {
+            	printf("desenha o 11\n");
+                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[11], texID[11]); // power up
             }
         }
     }
-}
-
-// Funcao de iluminacao
-void configurarIluminacao() {
-    GLfloat light_position[] = {-1, 1, 1, 0};
-    GLfloat light_color[] = {1, 1, 1, 0};
-    glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, light_color);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    GLfloat mat_ambient_diffuse[] = {1, 1, 1, 1};
-    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mat_ambient_diffuse);
-    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
-
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_DEPTH_TEST);
 }

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <cstdio>
 #include <vector>
+#include <cstdlib>
 #include <cstring>
 #include <utility>
 #include <conio.h> 
@@ -20,7 +21,7 @@
 
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
-#define QTD_TEXTURAS 9
+#define QTD_TEXTURAS 12
 
 #define N 1 	// muro normal
 #define M 2 	// muro com musgo
@@ -48,12 +49,18 @@ int quantVidas = 3;
 int maxBombas = 2;
 int bombasAtuais = 0;
 bool dano = false;
+
 // Variaveis para controlar a camera
 float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
 float centerX = -2, centerY = 0, centerZ = -2; // Ponto de foco inicial
-    // Armazena o tempo da ?ltima colis?o
-    static time_t ultimoTempoColisao = 0;
 
+// Armazena o tempo da ?ltima colis?o
+static time_t ultimoTempoColisao = 0;
+
+// Fun??o para gerar um n?mero aleat?rio dentro de um intervalo
+int numeroAleatorio(int minimo, int maximo) {
+    return minimo + rand() % ((maximo - minimo) + 1);
+}
 
 void drawCube(float size, float r, float g, float b)
 {
@@ -155,6 +162,7 @@ std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
 std::set<std::pair<int, int> > caixasRemovidas;
+std::set<std::pair<int, int> > powerUps;
 
 // funcao importante de upar um audio em um novo canal de audio criado
 void uparAudio(const char* caminho);
@@ -282,16 +290,29 @@ void removerCaixote(int posX, int posZ) {
                 
                 // remover da matriz que o desenha no mapa
                 std::pair<int, int> indices = obterIndiceCaixa(newX, newZ);
-
-				// adicionar a caixa ao set de caixas removidas (somente se ja nao foi adicionada)
-				if(caixasRemovidas.find(indices) == caixasRemovidas.end()){
-					caixasRemovidas.insert(indices);
-				}
 				
 				// remover da matriz para nao ser mais renderizada
 				int yMatriz = indices.first;
 				int xMatriz = indices.second;
-				matrizMapa[xMatriz][yMatriz] = 0;				
+				
+				// adicionar a caixa ao set de caixas removidas (somente se ja nao foi adicionada)
+				if(caixasRemovidas.find(indices) == caixasRemovidas.end()){
+					caixasRemovidas.insert(indices);
+					
+					// sorteia com 50% de chance se vai ter power up
+					int temPowerUp = numeroAleatorio(0, 1);
+					if(temPowerUp == 1){ // caso tenha, sorteia qual o power up
+						int qualPowerUp = numeroAleatorio(9, 11); // 9, 10 ou 11
+						
+						printf("trocado pra %d\n", qualPowerUp);
+						matrizMapa[xMatriz][yMatriz] = qualPowerUp;	
+						desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
+						
+						// desenhar o cubo com power up
+						// armazenar onde tem Power up
+						// se o player passar por cima substituir o elemento por 0
+					}
+				} else matrizMapa[xMatriz][yMatriz] = 0; // remove a caixa pq nao tem nada dentro dela
             }
         }
     }
@@ -612,16 +633,6 @@ void mudarPais(float pais ,float*Rcapuz,float*Gcapuz,float*Bcapuz, float*Rsec, f
  	    *Rsec = 1; *Gsec = 0; *Bsec = 0;
 		*Rcorpo = 0.8; *Gcorpo = 0; *Bcorpo = 0;
 	}
-}
-
-
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-
-// Fun??o para gerar um n?mero aleat?rio dentro de um intervalo
-int numeroAleatorio(int minimo, int maximo) {
-    return minimo + rand() % ((maximo - minimo) + 1);
 }
 
 
@@ -1360,12 +1371,12 @@ void display()
 	gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
 
 	// Desenhar o terreno
-	glPushMatrix(); // Salvar o estado da matriz atual
-	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
-	glPopMatrix(); // Restaurar o estado da matriz
+	//glPushMatrix(); // Salvar o estado da matriz atual
+	
+	//glPopMatrix(); // Restaurar o estado da matriz
 	
 
-
+	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
 	
@@ -1466,6 +1477,7 @@ void display()
 	}
 	spawnarBots();
 	atualizarBots();
+	
 	
 	glEnable(GL_TEXTURE_2D);    // Reativar texturas caso necess?rio
 	glPopMatrix();
@@ -1891,6 +1903,10 @@ void init()
 	carregaTextura(texID[6], "bomba.png");  		// Textura 6 = maximo de bombas
 	carregaTextura(texID[7], "vitoria.png");  		// Textura 7 = player ganhou
 	carregaTextura(texID[8], "derrota.png");  		// Textura 8 = player perdeu
+	
+	carregaTextura(texID[9], "powerUpBomba.png");
+	carregaTextura(texID[10], "vidas.png");
+	carregaTextura(texID[11], "powerUpBomba.png");
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
