@@ -276,47 +276,51 @@ void desenhaBombas() {
     }
 }
 
+std::set<std::pair<int, int> > indicesProcessados;
 void removerCaixote(int posX, int posZ) {
     for (int i = -3; i <= 3; ++i) {
         for (int j = -3; j <= 3; ++j) {
             int newX = posX + i;
             int newZ = posZ + j;
-            
-            // iterador
+
+            // Localizar a posição na lista de caixas
             std::set<std::pair<int, int> >::iterator it = caixa.find(std::make_pair(newX, newZ));
             if (it != caixa.end()) {
-            	// remover colisoes do bloco
-                caixa.erase(it);
-                
-                // remover da matriz que o desenha no mapa
+                caixa.erase(it); // Remove a colisão do bloco
+
+                // Obtém os índices correspondentes
                 std::pair<int, int> indices = obterIndiceCaixa(newX, newZ);
-				
-				// remover da matriz para nao ser mais renderizada
-				int yMatriz = indices.first;
-				int xMatriz = indices.second;
-				
-				// adicionar a caixa ao set de caixas removidas (somente se ja nao foi adicionada)
-				if(caixasRemovidas.find(indices) == caixasRemovidas.end()){
-					caixasRemovidas.insert(indices);
-					
-					// sorteia com 50% de chance se vai ter power up
-					int temPowerUp = numeroAleatorio(0, 1);
-					if(temPowerUp == 1){ // caso tenha, sorteia qual o power up
-						int qualPowerUp = numeroAleatorio(9, 11); // 9, 10 ou 11
-						
-						printf("trocado pra %d\n", qualPowerUp);
-						matrizMapa[xMatriz][yMatriz] = qualPowerUp;	
-						desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
-						
-						// desenhar o cubo com power up
-						// armazenar onde tem Power up
-						// se o player passar por cima substituir o elemento por 0
-					}
-				} else matrizMapa[xMatriz][yMatriz] = 0; // remove a caixa pq nao tem nada dentro dela
+                int yMatriz = indices.first;
+                int xMatriz = indices.second;
+
+                // Verifique se este índice já foi processado nesta chamada
+                if (indicesProcessados.find(indices) == indicesProcessados.end()) {
+                    indicesProcessados.insert(indices); // Marca o índice como processado
+
+                    // Adiciona ao conjunto de caixas removidas globalmente
+                    if (caixasRemovidas.find(indices) == caixasRemovidas.end()) {
+                        caixasRemovidas.insert(indices);
+
+                        // Sorteia se terá power-up
+                        int temPowerUp = numeroAleatorio(0, 1);
+                        if (temPowerUp == 1) {
+                            int qualPowerUp = numeroAleatorio(9, 11); // 9, 10 ou 11
+                            matrizMapa[xMatriz][yMatriz] = qualPowerUp;
+                        } else {
+                            matrizMapa[xMatriz][yMatriz] = 0;
+                        }
+                    } else {
+                        matrizMapa[xMatriz][yMatriz] = 0;
+                    }
+
+                    // Atualiza o terreno
+                    desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
+                }
             }
         }
     }
 }
+
 
 bool playerPerdeuVida;
 
@@ -1906,7 +1910,7 @@ void init()
 	
 	carregaTextura(texID[9], "powerUpBomba.png");
 	carregaTextura(texID[10], "vidas.png");
-	carregaTextura(texID[11], "powerUpBomba.png");
+	carregaTextura(texID[11], "powerUpVelocidade.png");
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
