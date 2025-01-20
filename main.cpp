@@ -1907,13 +1907,14 @@ void exibirMenu(){
     printf("                                                                            \n");
     printf("                                                                            \n\n");
 
-	printf("+----------------------+-----------------------------+\n");
+    printf("+----------------------+-----------------------------+\n");
     printf("|       Comando        |            Acao             |\n");
     printf("+----------------------+-----------------------------+\n");
     printf("|         WASD         | Mover o player              |\n");
     printf("|    BARRA DE ESPACO   | Dropa uma bomba             |\n");
     printf("|          R           | Reiniciar                   |\n");
     printf("|          M           | Mudar/desativar musica      |\n");
+    printf("|        1/2/3         | Mudar a camera              |\n");
     printf("+----------------------+-----------------------------+\n");
 }
 
