@@ -80,14 +80,11 @@ void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[], 
             } else if (matrizMapa[i][j] == 3) {
                 desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[4], texID[4]); // caixote
             } else if (matrizMapa[i][j] == 9) {
-            	printf("desenha o 9\n");
-                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[9], texID[9]); // power up
+            	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[9], texID[9]); // power up
             } else if (matrizMapa[i][j] == 10) {
-            	printf("desenha o 10\n");
-                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[10], texID[10]); // power up
+            	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[10], texID[10]); // power up
             } else if (matrizMapa[i][j] == 11) {
-            	printf("desenha o 11\n");
-                desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[11], texID[11]); // power up
+            	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[11], texID[11]); // power up
             }
         }
     }
