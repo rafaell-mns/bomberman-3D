@@ -154,6 +154,8 @@ void drawCaixaDestruida() {
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
+std::set<std::pair<int, int> > caixasRemovidas;
+
 // funcao importante de upar um audio em um novo canal de audio criado
 void uparAudio(const char* caminho);
 void tocarmusica(const char* caminho);
@@ -281,9 +283,14 @@ void removerCaixote(int posX, int posZ) {
                 // remover da matriz que o desenha no mapa
                 std::pair<int, int> indices = obterIndiceCaixa(newX, newZ);
 
+				// adicionar a caixa ao set de caixas removidas (somente se ja nao foi adicionada)
+				if(caixasRemovidas.find(indices) == caixasRemovidas.end()){
+					caixasRemovidas.insert(indices);
+				}
+				
+				// remover da matriz para nao ser mais renderizada
 				int yMatriz = indices.first;
 				int xMatriz = indices.second;
-				
 				matrizMapa[xMatriz][yMatriz] = 0;				
             }
         }
@@ -293,7 +300,7 @@ void removerCaixote(int posX, int posZ) {
 bool playerPerdeuVida;
 
 void rastroExplosao(int bombaX, int bombaZ) {
-	printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
+	// printf("\nBomba explodiu em (%d, %d)\n", bombaX, bombaZ);
 	playerPerdeuVida = false;
 	
     // Vetores para definir as direcoes (cima, baixo, esquerda, direita)
@@ -314,7 +321,7 @@ void rastroExplosao(int bombaX, int bombaZ) {
             int novoX = bombaX + dx * passo;
             int novoZ = bombaZ + dz * passo;
 
-			printf("Explosao em (%d, %d)\n", novoX, novoZ);
+			// printf("Explosao em (%d, %d)\n", novoX, novoZ);
 			
 			// se encontrar um muro, interrompe a explosao naquela direcao
 			if (muro.find(std::make_pair(novoX, novoZ)) != muro.end()) break;
