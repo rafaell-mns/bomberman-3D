@@ -50,12 +50,23 @@ int maxBombas = 2;
 int bombasAtuais = 0;
 bool dano = false;
 int quantBotsMortos = 0; // quantidade bots que o player matou 
-
+float movimento = 0.5;
 // Conjunto para armazenar coordenadas de colisoes
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
 std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
 std::set<std::pair<int, int> > caixasRemovidas;
+
+
+
+struct Itens {
+    float x, z;
+    bool JaAdquirido;
+};
+
+// armazenar as coordenadas dos powerups
+std::vector<Itens> bombasItem;
+std::vector<Itens> botas;
 
 // Variaveis para controlar a camera
 float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
@@ -85,6 +96,11 @@ void drawSphere(float radius, float r, float g, float b)
 	glColor3f(r, g, b);
 	glutSolidSphere(radius, 20, 20);
 }
+
+bool rangeColisaoitem(int x1, int z1, int x2, int z2) {
+    return (std::abs(x1 - x2) <= 3) && (std::abs(z1 - z2) <= 3);
+}
+
 
 // Coordenadas da posicao atual do mouse
 int m_x, m_y;
@@ -287,30 +303,46 @@ void removerCaixote(int posX, int posZ) {
             int newX = posX + i;
             int newZ = posZ + j;
 
-            // Localizar a posição na lista de caixas
+            // Localizar a posi??o na lista de caixas
             std::set<std::pair<int, int> >::iterator it = caixa.find(std::make_pair(newX, newZ));
             if (it != caixa.end()) {
-                caixa.erase(it); // Remove a colisão do bloco
+                caixa.erase(it); // Remove a colis?o do bloco
 
-                // Obtém os índices correspondentes
+                // Obt?m os ?ndices correspondentes
                 std::pair<int, int> indices = obterIndiceCaixa(newX, newZ);
                 int yMatriz = indices.first;
                 int xMatriz = indices.second;
 
-                // Verifique se este índice já foi processado nesta chamada
+                // Verifique se este ?ndice j? foi processado nesta chamada
                 if (indicesProcessados.find(indices) == indicesProcessados.end()) {
-                    indicesProcessados.insert(indices); // Marca o índice como processado
+                    indicesProcessados.insert(indices); // Marca o ?ndice como processado
 
                     // Adiciona ao conjunto de caixas removidas globalmente
                     if (caixasRemovidas.find(indices) == caixasRemovidas.end()) {
                         caixasRemovidas.insert(indices);
                         totalScore = calcularScore();
 
-                        // Sorteia se terá power-up
-                        int temPowerUp = numeroAleatorio(0, 1);
-                        if (temPowerUp == 1) {
-                            int qualPowerUp = numeroAleatorio(9, 10); // 9 ou 10
+                        // Sorteia se ter? power-up
+                        int temPowerUp = numeroAleatorio(0, 4);
+                        if (temPowerUp > 0) {
+                            int qualPowerUp = numeroAleatorio(9,10); // 9 ou 10
                             matrizMapa[xMatriz][yMatriz] = qualPowerUp;
+                            if (qualPowerUp == 9){
+                            	Itens obj;
+                            	obj.x = newX;
+                            	obj.z = newZ;
+                            	obj.JaAdquirido = false;
+								bombasItem.push_back(obj);
+							}else {
+               					Itens obj;
+                            	obj.x = newX;
+                            	obj.z = newZ;
+                            	obj.JaAdquirido = false;
+								botas.push_back(obj);
+							}
+
+                            
+                            
                         } else {
                             matrizMapa[xMatriz][yMatriz] = 0;
                         }
@@ -1031,7 +1063,51 @@ glPopMatrix();
 	
 };
 
+
+
+
 Jogador player;
+
+void VerificarItemAdquirido(){
+	// verificando as bombas
+	for (size_t i = 0; i < bombasItem.size(); ++i) {
+	
+		
+	if (rangeColisaoitem(bombasItem[i].x , bombasItem[i].z ,  personagemX , personagemZ ) && !bombasItem[i].JaAdquirido){
+		bombasItem[i].JaAdquirido = true;
+ 		std::pair<int, int> indices = obterIndiceCaixa(bombasItem[i].x , bombasItem[i].z);
+        int yMatriz = indices.first;
+        int xMatriz = indices.second;
+        matrizMapa[xMatriz][yMatriz] = 0;
+        maxBombas +=1;
+       
+	}
+
+}
+	// verificando as botas
+	for (size_t i = 0; i < botas.size(); ++i) {
+		
+		
+	if (rangeColisaoitem(botas[i].x , botas[i].z ,  personagemX , personagemZ ) && !botas[i].JaAdquirido){
+		botas[i].JaAdquirido = true;
+ 		std::pair<int, int> indices = obterIndiceCaixa(botas[i].x , botas[i].z);
+        int yMatriz = indices.first;
+        int xMatriz = indices.second;
+        matrizMapa[xMatriz][yMatriz] = 0;
+        movimento+=0.1;
+       
+	}
+
+}
+
+
+		
+}
+
+
+
+
+
 enum direcoes{cima = 1, direita, baixo, esquerda};
 float dir = 1;
 Jogador bot1 = {0,0};
@@ -1054,7 +1130,7 @@ void spawnarBots(){
 	   	bot2.vivo = true;
 	   	bot2.movimento = movimentoBot;
 	   	
-		bot3.x = -28;
+		bot3.x = -20;
 		bot3.z = -18;
 		bot3.vivo = true;
 	   	bot3.movimento = movimentoBot;
@@ -1532,7 +1608,7 @@ void display()
 		glPopMatrix();	
 	}
 	
-	
+	VerificarItemAdquirido();
 	resultado();
 	
 	// Finalizar a renderiza??o
@@ -1578,7 +1654,7 @@ void uparAudio(const char* caminho) {
 // Funcao para capturar entradas do teclado
 void teclado(unsigned char key, int x, int y)
 {	
-	float movimento =0.5; // Define a quantidade de movimento
+
 	switch (key)
 	{
 	case '1':
@@ -1789,6 +1865,8 @@ void teclado(unsigned char key, int x, int y)
     case 'R':	
 		mciSendString("close audio999", NULL, 0, NULL); 
 		vitoria = 0;
+		movimento = 0.5;
+		maxBombas = 2;
     	perdeuTudo = false;
 		quantVidas = 3;
 		totalScore = 0;
