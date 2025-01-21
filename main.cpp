@@ -1863,8 +1863,7 @@ void teclado(unsigned char key, int x, int y)
 		
 		totalScore = 0;
 		vitoria = 0;
-		movimento = 0.5;
-		maxBombas = 2;
+		
     	perdeuTudo = false;
 		quantVidas = 3;
 		totalScore = 0;
