@@ -1866,6 +1866,7 @@ void teclado(unsigned char key, int x, int y)
 		mciSendString("close audio999", NULL, 0, NULL); 
 		vitoria = 0;
 		movimento = 0.5;
+	    	totalScore = 0;
 		maxBombas = 2;
     	perdeuTudo = false;
 		quantVidas = 3;
