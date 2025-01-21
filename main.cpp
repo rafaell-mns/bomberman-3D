@@ -49,6 +49,13 @@ int quantVidas = 3;
 int maxBombas = 2;
 int bombasAtuais = 0;
 bool dano = false;
+int quantBotsMortos = 0; // quantidade bots que o player matou 
+
+// Conjunto para armazenar coordenadas de colisoes
+std::set<std::pair<int, int> > muro;
+std::set<std::pair<int, int> > caixa;
+std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
+std::set<std::pair<int, int> > caixasRemovidas;
 
 // Variaveis para controlar a camera
 float eyeX = -2, eyeY = 41, eyeZ = 47;   	   // Posicao inicial da camera
@@ -60,6 +67,11 @@ static time_t ultimoTempoColisao = 0;
 // Fun??o para gerar um n?mero aleat?rio dentro de um intervalo
 int numeroAleatorio(int minimo, int maximo) {
     return minimo + rand() % ((maximo - minimo) + 1);
+}
+
+int totalScore;
+int calcularScore(){
+	return (caixasRemovidas.size() * 10) - ((3 - quantVidas) * 20) + (quantBotsMortos * 30);
 }
 
 void drawCube(float size, float r, float g, float b)
@@ -155,14 +167,6 @@ void drawCaixaDestruida() {
 
     glPopMatrix();
 }
-
-
-// Conjunto para armazenar coordenadas de colisoes
-std::set<std::pair<int, int> > muro;
-std::set<std::pair<int, int> > caixa;
-std::map<std::pair<int, int>, std::pair<int, int> > caixaMatriz; 
-std::set<std::pair<int, int> > caixasRemovidas;
-std::set<std::pair<int, int> > powerUps;
 
 // funcao importante de upar um audio em um novo canal de audio criado
 void uparAudio(const char* caminho);
@@ -300,11 +304,12 @@ void removerCaixote(int posX, int posZ) {
                     // Adiciona ao conjunto de caixas removidas globalmente
                     if (caixasRemovidas.find(indices) == caixasRemovidas.end()) {
                         caixasRemovidas.insert(indices);
+                        totalScore = calcularScore();
 
                         // Sorteia se terá power-up
                         int temPowerUp = numeroAleatorio(0, 1);
                         if (temPowerUp == 1) {
-                            int qualPowerUp = numeroAleatorio(9, 11); // 9, 10 ou 11
+                            int qualPowerUp = numeroAleatorio(9, 10); // 9 ou 10
                             matrizMapa[xMatriz][yMatriz] = qualPowerUp;
                         } else {
                             matrizMapa[xMatriz][yMatriz] = 0;
@@ -1059,7 +1064,6 @@ void spawnarBots(){
 	
 }
 
-
 bool rangeColisaoBots(int x1, int z1, int x2, int z2) {
     return (std::abs(x1 - x2) <= 2) && (std::abs(z1 - z2) <= 2);
 }
@@ -1074,11 +1078,14 @@ void danoExplosao() {
         Bomba& bomba = *it;
         
         if (explosaoBots((int)bot1.x + bot1.addX, (int)bot1.z + bot1.addZ, bomba.x, bomba.z)) {
+        	if(bot1.vivo) quantBotsMortos++;
             bot1.vivo = false;
         } if (explosaoBots((int)bot2.x + bot2.addX, (int)bot2.z + bot2.addZ, bomba.x, bomba.z)) {
-            bot2.vivo = false;
+            if(bot2.vivo) quantBotsMortos++;
+			bot2.vivo = false;
         } if (explosaoBots((int)bot3.x + bot3.addX, (int)bot3.z + bot3.addZ, bomba.x, bomba.z)) {
-            bot3.vivo = false;
+            if(bot3.vivo) quantBotsMortos++;
+			bot3.vivo = false;
         } if (explosaoBots(player.x+personagemX, player.z+personagemZ, bomba.x, bomba.z) && !playerPerdeuVida) {
             
             
@@ -1104,6 +1111,8 @@ void danoExplosao() {
 
 int vitoria = 0;
 void resultado(){
+	totalScore = calcularScore();
+	
 	if(!bot1.vivo && !bot2.vivo && !bot3.vivo){ // tela/evento de vitoria
 		if (ultima_cam == 1){
 			desenhaIcone(centerX, centerY + 16, centerZ + 12, 21, texID[7]);
@@ -1211,9 +1220,15 @@ void atualizarBots() {
 	// cores: capuz, cor secundaria e corpo
     float r1, g1, b1, r2, g2, b2, r3, g3, b3;
 
-    if(bot1.vivo) moverBot(bot1, argentina, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    if(bot2.vivo) moverBot(bot2, portugal, r1, g1, b1, r2, g2, b2, r3, g3, b3);
-    if(bot3.vivo) moverBot(bot3, japao, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+    if(bot1.vivo){
+    	moverBot(bot1, argentina, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+	} 
+    if(bot2.vivo){
+		moverBot(bot2, portugal, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+	}
+    if(bot3.vivo){
+		moverBot(bot3, japao, r1, g1, b1, r2, g2, b2, r3, g3, b3);
+	} 
 }
 
 
@@ -1299,6 +1314,7 @@ void verificarColisaoBots() {
             //printf("PERDEU UMA VIDA\n");
            
             quantVidas--;
+            totalScore = calcularScore();
             uparAudio("levar_dano.wav");
             
             if (quantVidas == 0){
@@ -1318,6 +1334,7 @@ void verificarColisaoBots() {
         if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             //printf("PERDEU UMA VIDA\n");
             quantVidas--;
+            totalScore = calcularScore();
             uparAudio("levar_dano.wav");
             
         
@@ -1336,6 +1353,7 @@ void verificarColisaoBots() {
      	 if (difftime(tempoAtual, ultimoTempoColisao) >= 3) {
             //printf("PERDEU UMA VIDA\n");
             quantVidas--;
+            totalScore = calcularScore();
             uparAudio("levar_dano.wav");
      	   
             if (quantVidas == 0){
@@ -1375,12 +1393,12 @@ void display()
 	gluLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, 0, 1, 0);
 
 	// Desenhar o terreno
-	//glPushMatrix(); // Salvar o estado da matriz atual
-	
-	//glPopMatrix(); // Restaurar o estado da matriz
+	glPushMatrix(); // Salvar o estado da matriz atual
+	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
+	glPopMatrix(); // Restaurar o estado da matriz
 	
 
-	desenhaTerreno(LINHAS_MAPA, COLUNAS_MAPA, 4, texID, matrizMapa);
+	
 	// Desenhar o texto das coordenadas do mouse
 	glPushMatrix();
 	
@@ -1423,13 +1441,15 @@ void display()
 			glTranslated(centerX,centerY,centerZ);
 			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );
 			desenharTexto(-13,20,to_string(maxBombas),0.02, 1,0,0 );
+			desenharTexto(2,20,to_string(totalScore),0.02, 1,0,0 );
 		glPopMatrix();
 	}else if (ultima_cam == 3){
 		glPushMatrix();	
 			glTranslated(centerX+12,centerY-9,centerZ+10);
 			//glRotated(-90,1,0,0);
 			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );	
-			desenharTexto(-13,20,to_string(maxBombas),0.02, 1,0,0 );
+			desenharTexto(-15,20,to_string(maxBombas),0.02, 1,0,0 ); // zoom
+			desenharTexto(-5,20,to_string(totalScore),0.02, 1,0,0 );
 		glPopMatrix();
 		
 	} else if (ultima_cam == 2){
@@ -1438,6 +1458,7 @@ void display()
 			glRotated(-90,1,0,0);
 			desenharTexto(-20,20,to_string(quantVidas),0.02, 1,0,0 );	
 			desenharTexto(-20,13,to_string(maxBombas),0.02, 1,0,0 );
+			desenharTexto(-19,7.3,to_string(totalScore),0.02, 1,0,0 );
 		glPopMatrix();
 	}
 
@@ -1487,16 +1508,19 @@ void display()
 	glPopMatrix();
 	
 	
-		if (ultima_cam == 1){
+	
+	if (ultima_cam == 1){
 		desenhaIcone(centerX-23, centerY+21, centerZ, 4, texID[5]);
 		desenhaIcone(centerX-15, centerY+21, centerZ, 4, texID[6]);
+		desenhaIcone(centerX-4, centerY+20.8, centerZ, 11, texID[11]); // exibe score
 	}
 	else if (ultima_cam == 3){
 		glPushMatrix();
 			glTranslated(centerX-10,centerY+12,centerZ+10);
 			//	glRotated(-90,1,0,0);
 			desenhaIcone(0, 0, 0, 4, texID[5]);
-			desenhaIcone(7, 0, 0, 4, texID[6]);
+			desenhaIcone(5, 0, 0, 4, texID[6]);
+			desenhaIcone(13, 0, 0, 8, texID[11]);
 		glPopMatrix();
 	}else if (ultima_cam == 2){
 		glPushMatrix();
@@ -1504,8 +1528,10 @@ void display()
 			glRotated(-90,1,0,0);
 			desenhaIcone(0, 0, 0, 4, texID[5]);
 			desenhaIcone(0, -7, 0, 4, texID[6]);
+			desenhaIcone(4, -13, 26, 4, texID[11]);
 		glPopMatrix();	
 	}
+	
 	
 	resultado();
 	
@@ -1765,6 +1791,8 @@ void teclado(unsigned char key, int x, int y)
 		vitoria = 0;
     	perdeuTudo = false;
 		quantVidas = 3;
+		totalScore = 0;
+		quantBotsMortos = 0;
 		
 		bot1.vivo = true;
 	 	bot2.vivo = true;
@@ -1875,8 +1903,7 @@ void tecladoSolta(unsigned char key, int x, int y){
 void init()
 { 
 	glClearColor(0.4, 0.7, 1, 1); // Cor de fundo azul claro
-	//configurarIluminacao();         // Configura a iluminacao
-
+	
 	// Configurar as texturas
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -1909,8 +1936,8 @@ void init()
 	carregaTextura(texID[8], "derrota.png");  		// Textura 8 = player perdeu
 	
 	carregaTextura(texID[9], "powerUpBomba.png");
-	carregaTextura(texID[10], "vidas.png");
-	carregaTextura(texID[11], "powerUpVelocidade.png");
+	carregaTextura(texID[10], "powerUpVelocidade.png");
+	carregaTextura(texID[11], "score.png");
 
 	glEnable(GL_DEPTH_TEST);  // Ativa o teste de profundidade
 	
@@ -1942,6 +1969,12 @@ void exibirMenu(){
     printf("|          R           | Reiniciar                   |\n");
     printf("|          M           | Mudar/desativar musica      |\n");
     printf("|        1/2/3         | Mudar a camera              |\n");
+    printf("+----------------------+-----------------------------+\n");
+    printf("|         Acao         |            Score            |\n");
+    printf("+----------------------+-----------------------------+\n");
+	printf("|      Matar bot       |          + 30 pts           |\n");
+    printf("|    Destruir caixa    |          + 10 pts           |\n");
+    printf("|     Perder vida      |          - 20 pts           |\n");
     printf("+----------------------+-----------------------------+\n");
 }
 

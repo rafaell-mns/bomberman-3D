@@ -83,8 +83,6 @@ void desenhaTerreno(int linhas, int colunas, float tamanhoCubo, GLuint texID[], 
             	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[9], texID[9]); // power up
             } else if (matrizMapa[i][j] == 10) {
             	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[10], texID[10]); // power up
-            } else if (matrizMapa[i][j] == 11) {
-            	desenhaCubo(x, tamanhoCubo, z, tamanhoCubo, texID[11], texID[11]); // power up
             }
         }
     }
