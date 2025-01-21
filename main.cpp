@@ -18,9 +18,9 @@
 #include "cenario.h"
 #include "stb_image.h"
 #include "glut_text.h"
-
 #define LINHAS_MAPA 11
 #define COLUNAS_MAPA 16
+
 #define QTD_TEXTURAS 12
 
 #define N 1 	// muro normal
@@ -51,6 +51,11 @@ int bombasAtuais = 0;
 bool dano = false;
 int quantBotsMortos = 0; // quantidade bots que o player matou 
 float movimento = 0.5;
+
+
+
+
+
 // Conjunto para armazenar coordenadas de colisoes
 std::set<std::pair<int, int> > muro;
 std::set<std::pair<int, int> > caixa;
@@ -1080,6 +1085,7 @@ void VerificarItemAdquirido(){
         int xMatriz = indices.second;
         matrizMapa[xMatriz][yMatriz] = 0;
         maxBombas +=1;
+        uparAudio("item.wav");
        
 	}
 
@@ -1095,6 +1101,7 @@ void VerificarItemAdquirido(){
         int xMatriz = indices.second;
         matrizMapa[xMatriz][yMatriz] = 0;
         movimento+=0.1;
+        uparAudio("item.wav");
        
 	}
 
@@ -1103,9 +1110,6 @@ void VerificarItemAdquirido(){
 
 		
 }
-
-
-
 
 
 enum direcoes{cima = 1, direita, baixo, esquerda};
@@ -1496,14 +1500,6 @@ void display()
 				
         		desenharTexto(-20, 20, ultima_tocada, 0.01, 0,0,0.545);
   		glPopMatrix();
-		 }else if (ultima_cam == 3){
-		 	glPushMatrix();
-		 	
-					glTranslated(centerX+6,centerY,centerZ+10);
-						glScaled(0.6,0.6,0.6);
-        		desenharTexto(-20, 20, ultima_tocada, 0.01, 0,0,0.545);
-  		glPopMatrix();
-			 
 		 }
 	
   	
@@ -1864,9 +1860,10 @@ void teclado(unsigned char key, int x, int y)
 	case 'r':
     case 'R':	
 		mciSendString("close audio999", NULL, 0, NULL); 
+		
+		totalScore = 0;
 		vitoria = 0;
 		movimento = 0.5;
-	    	totalScore = 0;
 		maxBombas = 2;
     	perdeuTudo = false;
 		quantVidas = 3;
@@ -1888,7 +1885,7 @@ void teclado(unsigned char key, int x, int y)
 		mciSendString("close audio914", NULL, 0, NULL); 
 	    // Alterna para a pr?xima m?sica
 	    mudar_musica += 1;
-	    if (mudar_musica == 6)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
+	    if (mudar_musica == 9)  // Se ultrapassar o n?mero de m?sicas, volta para a primeira
 	        mudar_musica = 1;
 	
 	    // Para a m?sica atual e fecha, mas sem interromper o fluxo
@@ -1907,8 +1904,16 @@ void teclado(unsigned char key, int x, int y)
 	    }else if (mudar_musica == 4){
 	    	tocarmusica("HK_mantis_lord");
 	        ultima_tocada = "Hollow Knight OST - Mantis Lords";
-		} 
-		else if (mudar_musica == 5) {
+		} else if (mudar_musica == 5){
+	    	tocarmusica("hxh");
+	        ultima_tocada = "Hunting for your Dream [8 bit Cover] - Hunter X Hunter";
+		}else if (mudar_musica == 6){
+	    	tocarmusica("TopGear");
+	        ultima_tocada = "Top Gear Sound Theme - Tema de TopGear";
+		}else if (mudar_musica == 7){
+	    	tocarmusica("grimn");
+	        ultima_tocada = "Nightmare King Grimn theme - Hollow Knight";
+		}else if (mudar_musica == 8) {
 	        // N?o h? m?sica, mas o comando de stop n?o ? necess?rio
 	        ultima_tocada = "Nenhuma musica selecionada";
 	    }
