@@ -1,21 +1,40 @@
 # Bomberman 3D 💣
 
-Jogo desenvolvido como trabalho final da disciplina de Computação Gráfica utilizando a biblioteca `GLUT` do `OpenGL` em `C++` na IDE `Falcon`.  
+**Bomberman 3D** é uma adaptação tridimensional do famoso jogo Bomberman, desenvolvido como projeto final da disciplina **Computação Gráfica**. Criado em **C++** utilizando a biblioteca **GLUT** do **OpenGL**, o jogo oferece uma experiência de combate e estratégia com visual 3D.
 
-## Integrantes
-- Bernardo de Carvalho Cavalcante
-- Francisco Rafael Meneses Gonçalves
+## 🎮 Descrição do Jogo
+Neste jogo, o jogador controla um personagem em um ambiente 3D e deve **posicionar bombas** para:
+- **Destruir caixotes**, que liberam **power-ups**.
+- **Eliminar oponentes**, que causam dano ao jogador ao encostar nele.
 
-## Descrição
-Esta é uma versão adaptada do clássico jogo Bomberman, onde o jogador controla um personagem que deve posicionar bombas para **destruir caixotes** (que liberam **power-ups**) e **eliminar os oponentes**, que causam dano ao encostar no jogador, em um ambiente tridimensional. O jogo combina mecânicas de combate, estratégia e movimentação em 3D, aproveitando os recursos gráficos oferecidos pela biblioteca GLUT do OpenGL, e conta com um **sistema de pontuação** baseado nas ações do jogador.
+O jogo oferece uma mistura de combate, estratégia e movimentação, com um **sistema de pontuação** baseado em suas ações durante as partidas.
 
-## Imagens
-![Jogo](imagens/exemplo.PNG)
-![Cenário de Vitória](imagens/exemplo-vitoria.PNG)
-![Cenário de Derrota](imagens/exemplo-derrota.PNG)
+## 🚀 Tecnologias
+- **Linguagem**: C++
+- **Biblioteca Gráfica**: OpenGL (GLUT)
+- **IDE**: Falcon
 
-## Como executar
-- Clone este repositório ou baixe os arquivos do projeto.
-- Abra o projeto na IDE Falcon.
-- Compile e execute o código `main.cpp`.
-- Siga as instruções exibidas no terminal para jogar.
+## 🖼️ Imagens
+- **Jogo em ação**:  
+  ![Jogo](imagens/exemplo.PNG)
+
+- **Tela de Vitória**:  
+  ![Cenário de Vitória](imagens/exemplo-vitoria.PNG)
+
+- **Tela de Derrota**:  
+  ![Cenário de Derrota](imagens/exemplo-derrota.PNG)
+
+- **Tutorial de Controle**:  
+  ![Tutorial de Controle](imagens/tela-movimentos.png)
+
+## ⚙️ Como Executar
+Siga os passos abaixo para rodar o jogo no seu ambiente:
+
+1. **Clone o repositório** ou baixe os arquivos do projeto.
+2. **Abra o projeto** na IDE **Falcon**.
+3. **Compile e execute** o arquivo `main.cpp`.
+4. **Siga as instruções no terminal** para começar a jogar.
+
+## 👥 Integrantes
+- **Bernardo de Carvalho Cavalcante**
+- **Francisco Rafael Meneses Gonçalves**
